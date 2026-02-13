@@ -102,8 +102,8 @@ bun install
 # Set up environment
 cp .env.example .env
 
-# Start development
-bun run dev
+# Start development (all projects)
+moon run :dev
 ```
 
 ## Contributing

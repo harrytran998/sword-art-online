@@ -115,7 +115,16 @@
 | **Communication** | Native WebSocket | Built-in | Server connection |
 | **Styling** | Tailwind CSS | 3.0+ | Utility-first CSS |
 
-### 2.3 Infrastructure Stack
+### 2.3 Tooling Stack
+
+| Component | Technology | Purpose |
+|-----------|------------|---------|
+| **Monorepo** | moonrepo (moon) | Task runner, project orchestration, caching |
+| **Linting** | oxlint (oxc) | Fast Rust-based linter (600+ rules) |
+| **Formatting** | oxfmt (oxc) | Fast Rust-based code formatter |
+| **Toolchain** | proto (moonrepo) | Language version management (Bun, Node) |
+
+### 2.4 Infrastructure Stack
 
 | Component | Technology | Purpose |
 |-----------|------------|---------|
@@ -1324,92 +1333,417 @@ const rebalanceZones = (assignments: ZoneAssignment[]) =>
 
 ## 12. Client Architecture
 
-### 12.1 Client Application Structure
+The client follows the same **Clean Architecture** principles as the server. Dependencies point inward: Adapters → Application → Ports → Domain. The UI framework (React), renderer (PixiJS), and network (WebSocket) are all **adapters** — they can be swapped without touching business logic.
+
+### 12.1 Client Project Structure
+
+```
+packages/client/src/
+├── domain/                           # Pure TypeScript - ZERO dependencies
+│   ├── entities/                     # Client-side entity representations
+│   │   ├── player.ts                # LocalPlayer, RemotePlayer
+│   │   ├── monster.ts               # MonsterEntity (render state)
+│   │   ├── item.ts                  # ItemDefinition, InventorySlot
+│   │   └── skill.ts                 # SkillDefinition, SkillSlot
+│   ├── value-objects/
+│   │   ├── position.ts              # Position, Velocity, Direction
+│   │   ├── stats.ts                 # HP, MP, StatBlock
+│   │   └── chat-message.ts          # ChatChannel, ChatEntry
+│   └── errors.ts                    # Client domain errors
+│
+├── ports/                            # Interfaces (what the app needs)
+│   ├── inbound/                     # Use case interfaces (called by adapters)
+│   │   ├── game.port.ts             # startGame, stopGame, processInput
+│   │   ├── combat.port.ts           # activateSkill, cancelSkill
+│   │   ├── inventory.port.ts        # equipItem, useItem, moveItem
+│   │   ├── social.port.ts           # sendChat, inviteToParty
+│   │   └── auth.port.ts             # login, register, logout
+│   └── outbound/                    # Infrastructure interfaces (implemented by adapters)
+│       ├── network.port.ts          # connect, send, onMessage, disconnect
+│       ├── renderer.port.ts         # renderEntity, removeEntity, updateCamera
+│       ├── audio.port.ts            # playSound, playMusic, stopMusic
+│       └── storage.port.ts          # saveSettings, loadSettings
+│
+├── application/                      # Use cases + state management
+│   ├── use-cases/
+│   │   ├── process-input.ts         # Keyboard/mouse → game action
+│   │   ├── handle-server-message.ts # ServerMessage → state update
+│   │   ├── prediction.ts           # Client-side prediction + reconciliation
+│   │   ├── activate-skill.ts       # Validate cooldown, send to server
+│   │   ├── manage-inventory.ts     # Equip, use, move items locally
+│   │   └── send-chat.ts            # Validate + dispatch chat message
+│   └── stores/                      # Zustand stores (application state)
+│       ├── game.store.ts            # tick, entities, currentZone
+│       ├── player.store.ts          # localPlayer, stats, skills, inventory
+│       ├── ui.store.ts              # menus, tooltips, modals
+│       └── network.store.ts         # connectionStatus, latency, pendingInputs
+│
+├── adapters/                         # Concrete implementations
+│   ├── inbound/                     # Input adapters (things that trigger use cases)
+│   │   ├── keyboard.adapter.ts     # WASD, hotkeys → processInput use case
+│   │   ├── mouse.adapter.ts        # Click, drag → target selection, UI interaction
+│   │   └── touch.adapter.ts        # Mobile touch controls
+│   ├── outbound/                    # Infrastructure adapters
+│   │   ├── websocket.adapter.ts    # WebSocket connection, reconnect, heartbeat
+│   │   ├── pixi-renderer.adapter.ts # PixiJS sprite rendering, camera, particles
+│   │   ├── audio.adapter.ts        # Web Audio API for sound effects/music
+│   │   └── local-storage.adapter.ts # Browser localStorage for settings
+│   └── ui/                          # React UI components (presentation adapters)
+│       ├── App.tsx
+│       ├── GameCanvas.tsx           # PixiJS mount point
+│       ├── hud/
+│       │   ├── HpMpBar.tsx
+│       │   ├── SkillBar.tsx
+│       │   └── Minimap.tsx
+│       ├── panels/
+│       │   ├── InventoryPanel.tsx
+│       │   ├── CharacterPanel.tsx
+│       │   ├── QuestLog.tsx
+│       │   └── SettingsPanel.tsx
+│       ├── social/
+│       │   ├── ChatWindow.tsx
+│       │   ├── PartyFrame.tsx
+│       │   └── GuildPanel.tsx
+│       ├── auth/
+│       │   ├── LoginPage.tsx
+│       │   ├── RegisterPage.tsx
+│       │   └── CharacterCreate.tsx
+│       └── shared/
+│           ├── Tooltip.tsx
+│           ├── Modal.tsx
+│           └── ItemIcon.tsx
+│
+└── index.tsx                         # App entry point, wire adapters
+```
+
+### 12.2 Clean Architecture Layers (Client)
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                     CLIENT ARCHITECTURE                          │
+│                     CLIENT CLEAN ARCHITECTURE                    │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                  │
-│    ┌─────────────────────────────────────────────────────┐      │
-│    │                   UI Layer (React)                   │      │
-│    │  • HUD (HP, MP, skills)                              │      │
-│    │  • Menus (inventory, character, settings)            │      │
-│    │  • Chat                                              │      │
-│    └────────────────────────┬────────────────────────────┘      │
-│                             │                                    │
-│    ┌────────────────────────▼────────────────────────────┐      │
-│    │              Game State (Zustand)                    │      │
-│    │  • Local player state                                │      │
-│    │  • Nearby entities                                   │      │
-│    │  • UI state                                          │      │
-│    └────────────────────────┬────────────────────────────┘      │
-│                             │                                    │
-│    ┌────────────────────────▼────────────────────────────┐      │
-│    │              Network Layer                           │      │
-│    │  • WebSocket connection                              │      │
-│    │  • Message queueing                                  │      │
-│    │  • Reconnection logic                                │      │
-│    │  • Input prediction                                  │      │
-│    └────────────────────────┬────────────────────────────┘      │
-│                             │                                    │
-│    ┌────────────────────────▼────────────────────────────┐      │
-│    │              Render Layer (PixiJS)                   │      │
-│    │  • Sprite rendering                                  │      │
-│    │  • Animation system                                  │      │
-│    │  • Particle effects                                  │      │
-│    │  • Camera control                                    │      │
-│    └─────────────────────────────────────────────────────┘      │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │                      ADAPTERS                             │   │
+│  │  ┌────────────┐  ┌────────────┐  ┌────────────────────┐  │   │
+│  │  │   React    │  │   PixiJS   │  │   WebSocket        │  │   │
+│  │  │ Components │  │  Renderer  │  │   Adapter          │  │   │
+│  │  └─────┬──────┘  └─────┬──────┘  └────────┬───────────┘  │   │
+│  │        │               │                   │              │   │
+│  │  ┌─────▼───────────────▼───────────────────▼──────────┐   │   │
+│  │  │                  APPLICATION                        │   │   │
+│  │  │  ┌─────────────┐  ┌─────────────────────────────┐  │   │   │
+│  │  │  │  Use Cases  │  │   Zustand Stores             │  │   │   │
+│  │  │  │  (actions)  │  │   (application state)        │  │   │   │
+│  │  │  └──────┬──────┘  └──────────────┬──────────────┘  │   │   │
+│  │  │         │                        │                  │   │   │
+│  │  │  ┌──────▼────────────────────────▼──────────────┐   │   │   │
+│  │  │  │                   PORTS                       │   │   │   │
+│  │  │  │  (network.port, renderer.port, game.port)     │   │   │   │
+│  │  │  │  ┌──────────────────────────────────────┐    │   │   │   │
+│  │  │  │  │             DOMAIN                    │    │   │   │   │
+│  │  │  │  │  (Player, Monster, Item, Position)    │    │   │   │   │
+│  │  │  │  └──────────────────────────────────────┘    │   │   │   │
+│  │  │  └──────────────────────────────────────────────┘   │   │   │
+│  │  └─────────────────────────────────────────────────────┘   │   │
+│  └──────────────────────────────────────────────────────────┘   │
+│                                                                  │
+│  Dependency direction: React/PixiJS/WS → Use Cases → Ports → Domain │
 │                                                                  │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### 12.2 Client Prediction & Reconciliation
+### 12.3 Client Domain Layer
+
+Pure TypeScript entities that mirror server state. No React, no PixiJS, no WebSocket — just data and logic.
 
 ```typescript
-// client/network/prediction.ts
-class ClientPrediction {
+// domain/entities/player.ts
+import type { Position, Velocity } from "../value-objects/position"
+import type { StatBlock } from "../value-objects/stats"
+
+export interface LocalPlayer {
+  readonly id: string
+  readonly name: string
+  readonly level: number
+  readonly position: Position
+  readonly velocity: Velocity
+  readonly hp: number
+  readonly maxHp: number
+  readonly mp: number
+  readonly maxMp: number
+  readonly stats: StatBlock
+  readonly animationState: string
+}
+
+export interface RemotePlayer {
+  readonly id: string
+  readonly name: string
+  readonly level: number
+  readonly position: Position
+  readonly velocity: Velocity
+  readonly hp: number
+  readonly maxHp: number
+  readonly animationState: string
+  readonly guildTag?: string
+}
+
+// domain/value-objects/position.ts
+export interface Position {
+  readonly x: number
+  readonly y: number
+  readonly z: number
+  readonly floorId: number
+  readonly zoneId: string
+}
+
+export interface Velocity {
+  readonly vx: number
+  readonly vy: number
+}
+
+export const lerp = (a: Position, b: Position, t: number): Position => ({
+  x: a.x + (b.x - a.x) * t,
+  y: a.y + (b.y - a.y) * t,
+  z: a.z + (b.z - a.z) * t,
+  floorId: b.floorId,
+  zoneId: b.zoneId,
+})
+```
+
+### 12.4 Client Ports
+
+Interfaces that define what the application layer needs from the outside world. Adapters implement these.
+
+```typescript
+// ports/outbound/network.port.ts
+export interface NetworkPort {
+  connect(url: string, token: string): Promise<void>
+  disconnect(): void
+  send(message: ClientMessage): void
+  onMessage(handler: (message: ServerMessage) => void): void
+  onDisconnect(handler: (reason: string) => void): void
+  readonly isConnected: boolean
+  readonly latency: number
+}
+
+// ports/outbound/renderer.port.ts
+export interface RendererPort {
+  init(container: HTMLElement): void
+  destroy(): void
+  addEntity(id: string, sprite: SpriteConfig): void
+  updateEntity(id: string, position: Position, animation: string): void
+  removeEntity(id: string): void
+  updateCamera(target: Position): void
+  showDamageNumber(position: Position, amount: number, isCrit: boolean): void
+  playSkillEffect(skillId: string, origin: Position, targets: Position[]): void
+}
+
+// ports/inbound/game.port.ts
+export interface GamePort {
+  processInput(input: PlayerInput): void
+  handleServerMessage(message: ServerMessage): void
+  startGameLoop(): void
+  stopGameLoop(): void
+}
+```
+
+### 12.5 Client Application Layer (Use Cases + Stores)
+
+Use cases orchestrate domain logic. Zustand stores hold application state.
+
+```typescript
+// application/use-cases/prediction.ts
+// Client-side prediction with server reconciliation (pure logic, no framework deps)
+export class ClientPrediction {
   private inputSequence = 0
   private pendingInputs: PendingInput[] = []
-  private serverState: EntityState | null = null
 
-  processInput(input: PlayerInput): void {
+  processInput(input: PlayerInput, localPlayer: LocalPlayer): PredictionResult {
     const seq = this.inputSequence++
     input.sequence = seq
 
-    // Apply prediction immediately
-    const predictedState = this.applyPrediction(input)
-    this.updateLocalState(predictedState)
+    // Apply prediction using domain logic
+    const predictedPosition = applyMovement(localPlayer.position, input)
 
-    // Queue for reconciliation
-    this.pendingInputs.push({ sequence: seq, input, predictedState })
+    this.pendingInputs.push({ sequence: seq, input, predictedPosition })
 
-    // Send to server
-    this.sendInput(input)
+    return { predictedPosition, sequenceNumber: seq }
   }
 
-  onServerState(serverState: EntityState): void {
-    this.serverState = serverState
-
+  reconcile(serverState: EntityState): ReconciliationResult {
     // Remove acknowledged inputs
     this.pendingInputs = this.pendingInputs.filter(
-      (pending) => pending.sequence > serverState.lastProcessedSeq
+      (p) => p.sequence > serverState.lastProcessedSeq
     )
 
     // Check for misprediction
-    const localState = this.getLocalState()
-    const delta = this.calculateDelta(localState, serverState)
+    const currentPredicted = this.getCurrentPredictedPosition()
+    const delta = distance(currentPredicted, serverState.position)
 
-    if (delta.position > RECONCILIATION_THRESHOLD) {
-      // Snap to server state + re-apply pending inputs
-      this.snapToServerState(serverState)
+    if (delta > RECONCILIATION_THRESHOLD) {
+      // Re-apply pending inputs from server state
+      let corrected = serverState.position
       for (const pending of this.pendingInputs) {
-        const corrected = this.applyPrediction(pending.input)
-        this.updateLocalState(corrected)
+        corrected = applyMovement(corrected, pending.input)
       }
+      return { needsCorrection: true, correctedPosition: corrected }
     }
+
+    return { needsCorrection: false }
   }
 }
+
+// application/stores/player.store.ts
+import { create } from "zustand"
+import type { LocalPlayer } from "../../domain/entities/player"
+
+interface PlayerStore {
+  localPlayer: LocalPlayer | null
+  inventory: InventorySlot[]
+  skillSlots: SkillSlot[]
+
+  // Actions (called by use cases)
+  setPlayer: (player: LocalPlayer) => void
+  updatePosition: (position: Position) => void
+  updateHp: (hp: number) => void
+  setInventory: (items: InventorySlot[]) => void
+}
+
+export const usePlayerStore = create<PlayerStore>((set) => ({
+  localPlayer: null,
+  inventory: [],
+  skillSlots: [],
+
+  setPlayer: (player) => set({ localPlayer: player }),
+  updatePosition: (position) =>
+    set((state) => ({
+      localPlayer: state.localPlayer
+        ? { ...state.localPlayer, position }
+        : null,
+    })),
+  updateHp: (hp) =>
+    set((state) => ({
+      localPlayer: state.localPlayer
+        ? { ...state.localPlayer, hp }
+        : null,
+    })),
+  setInventory: (items) => set({ inventory: items }),
+}))
+```
+
+### 12.6 Client Adapters
+
+Concrete implementations of ports. These are the ONLY places that touch React, PixiJS, or WebSocket APIs.
+
+```typescript
+// adapters/outbound/websocket.adapter.ts
+import type { NetworkPort } from "../../ports/outbound/network.port"
+
+export class WebSocketAdapter implements NetworkPort {
+  private ws: WebSocket | null = null
+  private messageHandler: ((msg: ServerMessage) => void) | null = null
+  private heartbeatInterval: number | null = null
+  latency = 0
+  isConnected = false
+
+  async connect(url: string, token: string): Promise<void> {
+    this.ws = new WebSocket(`${url}?token=${token}`)
+
+    return new Promise((resolve, reject) => {
+      this.ws!.onopen = () => {
+        this.isConnected = true
+        this.startHeartbeat()
+        resolve()
+      }
+      this.ws!.onmessage = (event) => {
+        const msg = JSON.parse(event.data) as ServerMessage
+        if (msg.type === "heartbeat_ack") {
+          this.latency = Date.now() - msg.serverTime
+        } else {
+          this.messageHandler?.(msg)
+        }
+      }
+      this.ws!.onerror = () => reject(new Error("WebSocket connection failed"))
+    })
+  }
+
+  send(message: ClientMessage): void {
+    this.ws?.send(JSON.stringify(message))
+  }
+
+  onMessage(handler: (msg: ServerMessage) => void): void {
+    this.messageHandler = handler
+  }
+
+  // ...
+}
+
+// adapters/outbound/pixi-renderer.adapter.ts
+import { Application, Sprite, Container } from "pixi.js"
+import type { RendererPort } from "../../ports/outbound/renderer.port"
+
+export class PixiRendererAdapter implements RendererPort {
+  private app: Application | null = null
+  private entities = new Map<string, Sprite>()
+  private camera = new Container()
+
+  init(container: HTMLElement): void {
+    this.app = new Application()
+    this.app.init({ resizeTo: container }).then(() => {
+      container.appendChild(this.app!.canvas)
+      this.app!.stage.addChild(this.camera)
+    })
+  }
+
+  addEntity(id: string, config: SpriteConfig): void {
+    const sprite = Sprite.from(config.texture)
+    sprite.anchor.set(0.5, 1)
+    this.entities.set(id, sprite)
+    this.camera.addChild(sprite)
+  }
+
+  updateEntity(id: string, position: Position, animation: string): void {
+    const sprite = this.entities.get(id)
+    if (sprite) {
+      sprite.x = position.x
+      sprite.y = position.y
+    }
+  }
+
+  updateCamera(target: Position): void {
+    this.camera.x = -target.x + (this.app?.screen.width ?? 0) / 2
+    this.camera.y = -target.y + (this.app?.screen.height ?? 0) / 2
+  }
+
+  // ...
+}
+
+// adapters/ui/hud/SkillBar.tsx
+// React components are presentation adapters — they read from stores and call use cases
+import { usePlayerStore } from "../../../application/stores/player.store"
+import { useGameActions } from "../../../application/use-cases/activate-skill"
+
+export function SkillBar() {
+  const skillSlots = usePlayerStore((s) => s.skillSlots)
+  const { activateSkill } = useGameActions()
+
+  return (
+    <div className="flex gap-1 absolute bottom-4 left-1/2 -translate-x-1/2">
+      {skillSlots.map((slot, i) => (
+        <button
+          key={slot.skillId}
+          onClick={() => activateSkill(slot.skillId)}
+          className="w-12 h-12 border border-white/30 bg-black/60 rounded"
+        >
+          <img src={slot.iconUrl} alt={slot.name} />
+          <span className="text-xs text-white">{i + 1}</span>
+        </button>
+      ))}
+    </div>
+  )
+}
+```
 ```
 
 ---

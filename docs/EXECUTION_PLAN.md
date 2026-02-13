@@ -25,16 +25,49 @@
 
 #### 1.1 Monorepo & Tooling `[PARALLEL]`
 
-- [ ] Initialize monorepo with Bun workspaces (`packages/server`, `packages/client`, `packages/shared`)
+- [ ] Install moonrepo: `curl -fsSL https://moonrepo.dev/install/moon.sh | bash`
+- [ ] Install proto (toolchain manager): `curl -fsSL https://moonrepo.dev/install/proto.sh | bash`
+- [ ] Initialize monorepo with moon: `moon init`
+- [ ] Configure `.moon/workspace.yml`:
+  ```yaml
+  projects:
+    server: "packages/server"
+    client: "packages/client"
+    shared: "packages/shared"
+  vcs:
+    manager: "git"
+    defaultBranch: "main"
+  ```
+- [ ] Configure `.moon/toolchain.yml`:
+  ```yaml
+  bun:
+    version: "1.2"
+  node:
+    version: "22"
+    packageManager: "bun"
+  ```
+- [ ] Create project-level `moon.yml` for each package (`packages/server/moon.yml`, `packages/client/moon.yml`, `packages/shared/moon.yml`) with tasks: `dev`, `build`, `test`, `lint`, `format`, `typecheck`
+- [ ] Configure shared tasks in `.moon/tasks.yml`:
+  ```yaml
+  tasks:
+    lint:
+      command: "oxlint"
+      inputs: ["src/**/*.ts", "src/**/*.tsx"]
+    format:
+      command: "oxfmt ."
+      inputs: ["src/**/*.ts", "src/**/*.tsx"]
+    typecheck:
+      command: "bun tsc --noEmit"
+      inputs: ["src/**/*.ts", "src/**/*.tsx", "tsconfig.json"]
+  ```
 - [ ] Configure TypeScript (`tsconfig.json` with strict mode, path aliases)
 - [ ] Set up oxlint + oxfmt (oxc toolchain) with `.oxlintrc.json` and `.oxfmtrc.json` configs
 - [ ] Create `.env.example` with all required environment variables
 - [ ] Set up `CLAUDE.md` with project conventions and architecture decisions
-- [ ] Add `biome` or equivalent for fast linting (optional, Bun-native)
 
 #### 1.2 CI/CD Pipeline `[PARALLEL]`
 
-- [ ] Create GitHub Actions workflow: lint + typecheck + test on PR
+- [ ] Create GitHub Actions workflow using `moon ci` for lint + typecheck + test on PR (only affected projects)
 - [ ] Create GitHub Actions workflow: build Docker image on merge to `main`
 - [ ] Configure branch protection rules (`main` requires PR + checks)
 - [ ] Set up GHCR (GitHub Container Registry) for Docker images
@@ -46,7 +79,9 @@
 - [ ] Write `docker/postgres/init/01-schema.sql` for initial tables
 - [ ] Create seed scripts for development data
 - [ ] Document local setup in `README.md` (clone, install, run)
-- [ ] Verify `bun run dev` starts server with hot reload
+- [ ] Verify `moon run server:dev` starts server with hot reload
+- [ ] Verify `moon run client:dev` starts client with Vite HMR
+- [ ] Verify `moon run :dev` starts all projects in development mode
 
 #### 1.4 Backend Project Structure `[DEPENDS: 1.1]`
 
@@ -360,64 +395,89 @@
   - `floor_1_forest` (First Forest)
   - `floor_1_labyrinth` (Floor 1 Labyrinth Tower)
 
-#### 4.2 Frontend Setup `[PARALLEL]`
+#### 4.2 Frontend Setup (Clean Architecture) `[PARALLEL]`
 
 - [ ] Create `packages/client/` with React + TypeScript + Vite
+- [ ] Create `packages/client/moon.yml` with tasks: `dev`, `build`, `test`, `lint`, `format`
 - [ ] Install and configure: Tailwind CSS, Zustand, PixiJS 8
-- [ ] Create project structure:
+- [ ] Create Clean Architecture project structure:
   ```
-  src/
-  ├── App.tsx
-  ├── game/                 (PixiJS game engine)
-  │   ├── GameCanvas.tsx
-  │   ├── renderer/         (sprite rendering, camera)
-  │   ├── systems/          (input, animation)
-  │   └── assets/           (sprites, tilesets)
-  ├── ui/                   (React UI overlay)
-  │   ├── HUD.tsx           (HP, MP, skills bar)
-  │   ├── Chat.tsx
-  │   ├── Inventory.tsx
-  │   └── Login.tsx
-  ├── network/              (WebSocket client)
-  │   ├── connection.ts
-  │   ├── prediction.ts
-  │   └── messages.ts
-  ├── stores/               (Zustand stores)
-  │   ├── gameStore.ts
-  │   ├── playerStore.ts
-  │   └── uiStore.ts
-  └── types/                (shared types)
+  packages/client/src/
+  ├── domain/                           # Pure TypeScript - ZERO dependencies
+  │   ├── entities/                     # LocalPlayer, RemotePlayer, MonsterEntity, Item
+  │   ├── value-objects/                # Position, Velocity, HP, MP, StatBlock
+  │   └── errors.ts
+  │
+  ├── ports/                            # Interfaces
+  │   ├── inbound/                     # Use case interfaces (game.port, combat.port, etc.)
+  │   └── outbound/                    # Infrastructure interfaces (network.port, renderer.port)
+  │
+  ├── application/                      # Use cases + state
+  │   ├── use-cases/                   # processInput, handleServerMessage, prediction
+  │   └── stores/                      # Zustand stores (game, player, ui, network)
+  │
+  ├── adapters/                         # Concrete implementations
+  │   ├── inbound/                     # keyboard.adapter, mouse.adapter
+  │   ├── outbound/                    # websocket.adapter, pixi-renderer.adapter, audio.adapter
+  │   └── ui/                          # React components (presentation adapters)
+  │       ├── App.tsx
+  │       ├── GameCanvas.tsx
+  │       ├── hud/                     # HpMpBar, SkillBar, Minimap
+  │       ├── panels/                  # InventoryPanel, CharacterPanel, QuestLog
+  │       ├── social/                  # ChatWindow, PartyFrame, GuildPanel
+  │       ├── auth/                    # LoginPage, RegisterPage, CharacterCreate
+  │       └── shared/                  # Tooltip, Modal, ItemIcon
+  │
+  └── index.tsx                         # Wire adapters + launch
   ```
-- [ ] Create WebSocket client service: connect, send, receive, reconnect
-- [ ] Implement heartbeat sending (every 10s)
-- [ ] Create Zustand game store: localPlayer, nearbyEntities, currentZone
 
-#### 4.3 Game Rendering `[DEPENDS: 4.2]`
+#### 4.3 Client Domain & Ports `[DEPENDS: 4.2]`
 
-- [ ] Set up PixiJS Application with canvas
+- [ ] Create `domain/entities/player.ts`: `LocalPlayer`, `RemotePlayer` interfaces (pure TypeScript)
+- [ ] Create `domain/entities/monster.ts`: `MonsterEntity` (render-side representation)
+- [ ] Create `domain/value-objects/position.ts`: `Position`, `Velocity`, `Direction`, `lerp()` function
+- [ ] Create `domain/value-objects/stats.ts`: `HP`, `MP`, `StatBlock`
+- [ ] Create `ports/outbound/network.port.ts`: `NetworkPort` interface (connect, send, onMessage, disconnect)
+- [ ] Create `ports/outbound/renderer.port.ts`: `RendererPort` interface (addEntity, updateEntity, removeEntity, updateCamera)
+- [ ] Create `ports/inbound/game.port.ts`: `GamePort` interface (processInput, handleServerMessage)
+
+#### 4.4 Client Adapters - Network & Renderer `[DEPENDS: 4.3]`
+
+- [ ] Create `adapters/outbound/websocket.adapter.ts` implementing `NetworkPort`: connect, send, reconnect, heartbeat (every 10s)
+- [ ] Create `adapters/outbound/pixi-renderer.adapter.ts` implementing `RendererPort`: PixiJS Application setup, sprite management, camera
 - [ ] Create basic tile-based map renderer for Floor 1 Town
 - [ ] Implement player sprite rendering (placeholder art)
 - [ ] Implement other-player sprite rendering from server state updates
 - [ ] Create camera system: follow local player, smooth scrolling
-- [ ] Implement WASD keyboard input -> send `movement_start`/`movement_stop` to server
-- [ ] Create basic client prediction: apply movement locally, reconcile with server state
-- [ ] Render player name labels above sprites
 
-#### 4.4 Login & Character Creation UI `[DEPENDS: 4.2]`
+#### 4.5 Client Application Layer `[DEPENDS: 4.3]`
 
-- [ ] Create Login page: email + password form, use `authClient.signIn.email()`
-- [ ] Create Register page: email + username + password, use `authClient.signUp.email()`
-- [ ] Create Character Creation page:
+- [ ] Create `application/stores/game.store.ts` (Zustand): tick, entities map, currentZone
+- [ ] Create `application/stores/player.store.ts` (Zustand): localPlayer, stats, inventory, skillSlots
+- [ ] Create `application/stores/ui.store.ts` (Zustand): activePanel, tooltips, modals
+- [ ] Create `application/stores/network.store.ts` (Zustand): connectionStatus, latency, pendingInputs
+- [ ] Create `application/use-cases/process-input.ts`: keyboard/mouse → game action → send to server
+- [ ] Create `application/use-cases/handle-server-message.ts`: ServerMessage → update stores
+- [ ] Create `application/use-cases/prediction.ts`: client-side prediction + server reconciliation
+
+#### 4.6 Client Adapters - Input & UI `[DEPENDS: 4.4, 4.5]`
+
+- [ ] Create `adapters/inbound/keyboard.adapter.ts`: WASD movement, 1-9 skill hotkeys, Escape menu
+- [ ] Create `adapters/inbound/mouse.adapter.ts`: click target selection, drag-and-drop
+- [ ] Create `adapters/ui/auth/LoginPage.tsx`: email + password form, use `authClient.signIn.email()`
+- [ ] Create `adapters/ui/auth/RegisterPage.tsx`: email + username + password, use `authClient.signUp.email()`
+- [ ] Create `adapters/ui/auth/CharacterCreate.tsx`:
   - Name input (validated against `^[A-Za-z0-9_]{2,64}$`)
   - Class selection (7 classes with descriptions)
   - Appearance options (face, hair style, hair color, eye color, skin tone)
   - Preview panel
 - [ ] After login/create: fetch JWT via `authClient.token()`, then establish WebSocket with `?token={jwt}`
-- [ ] Handle `connection_ready` message: load player data into store, render game
+- [ ] Handle `connection_ready` message: load player data into stores, initialize renderer
+- [ ] Render player name labels above sprites
 
 ### Phase 0 Exit Checklist
 
-- [ ] `bun run dev` starts server + client in development mode
+- [ ] `moon run :dev` starts server + client in development mode
 - [ ] Player can register, login, create character
 - [ ] WebSocket connects with JWT auth
 - [ ] Player appears on Floor 1 Town of Beginnings

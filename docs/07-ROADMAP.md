@@ -78,7 +78,7 @@
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                  │
 │  INFRASTRUCTURE:                                                │
-│  ├── [ ] Initialize monorepo (Turborepo/Bun workspaces)         │
+│  ├── [ ] Initialize monorepo with moonrepo (moon init)          │
 │  ├── [ ] Configure TypeScript, oxlint, oxfmt (oxc)              │
 │  ├── [ ] Set up GitHub Actions CI/CD                            │
 │  ├── [ ] Configure Docker development environment               │
