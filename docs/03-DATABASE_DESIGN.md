@@ -1389,42 +1389,81 @@ CREATE INDEX CONCURRENTLY idx_characters_level_leaderboard ON characters(level D
 
 ## 7. Migration Strategy
 
-### 7.1 Drizzle ORM Configuration
+### 7.1 Kysely Query Builder Configuration
 
 ```typescript
-// drizzle.config.ts
-import { defineConfig } from "drizzle-kit"
+// shared/infrastructure/database/kysely.ts
+import { Kysely, PostgresDialect } from "kysely"
+import { Pool } from "pg"
+import type { Database } from "./types"
 
-export default defineConfig({
-  schema: "./src/db/schema.ts",
-  out: "./drizzle",
-  driver: "pg",
-  dbCredentials: {
-    host: process.env.DB_HOST!,
-    port: parseInt(process.env.DB_PORT || "5432"),
-    database: process.env.DB_NAME!,
-    user: process.env.DB_USER!,
-    password: process.env.DB_PASSWORD!
-  },
-  verbose: true,
-  strict: true
-})
+export const createDatabase = (config: DatabaseConfig): Kysely<Database> =>
+  new Kysely<Database>({
+    dialect: new PostgresDialect({
+      pool: new Pool({
+        host: config.host,
+        port: config.port,
+        database: config.name,
+        user: config.user,
+        password: config.password,
+        max: config.poolSize,
+      }),
+    }),
+    log: process.env.NODE_ENV === "development" ? ["query", "error"] : ["error"],
+  })
 ```
 
-### 7.2 Migration Workflow
+### 7.2 go-migrate Migration Workflow
+
+Migrations are managed by [go-migrate](https://github.com/golang-migrate/migrate), using plain SQL files in `migrations/`.
+
+```
+migrations/
+├── 000001_create_accounts.up.sql
+├── 000001_create_accounts.down.sql
+├── 000002_create_characters.up.sql
+├── 000002_create_characters.down.sql
+├── 000003_create_skills.up.sql
+├── 000003_create_skills.down.sql
+└── ...
+```
 
 ```
 1. Development:
-   - Modify schema in src/db/schema.ts
-   - Run: bunx drizzle-kit generate
-   - Review generated migration
-   - Run: bunx drizzle-kit push (dev)
+   - Create new migration: migrate create -ext sql -dir migrations -seq <name>
+   - Write UP migration (create/alter tables) in .up.sql
+   - Write DOWN migration (rollback) in .down.sql
+   - Apply: migrate -path ./migrations -database "postgresql://..." up
+   - Rollback: migrate -path ./migrations -database "postgresql://..." down 1
 
 2. Production:
-   - Migrations stored in drizzle/migrations/
+   - Migrations stored in migrations/ (plain SQL, version controlled)
    - Deploy with zero-downtime strategy
-   - Apply migrations before code deployment
-   - Rollback plan for each migration
+   - Apply migrations before code deployment (migrate up)
+   - Rollback plan for each migration (migrate down N)
+   - Use -lock-timeout flag for production safety
+```
+
+### 7.3 PostgreSQL 18 Features
+
+Leverage PostgreSQL 18's native capabilities:
+
+```sql
+-- UUIDv7 as primary keys (time-sortable, index-friendly)
+CREATE TABLE characters (
+  id UUID PRIMARY KEY DEFAULT uuidv7(),
+  name VARCHAR(64) NOT NULL UNIQUE,
+  -- ...
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Extract timestamp from UUIDv7 for debugging/auditing
+SELECT id, uuid_extract_timestamp(id) AS created_from_uuid
+FROM characters;
+
+-- Built-in full-text search for item/quest lookups
+CREATE INDEX idx_items_search ON item_definitions
+  USING GIN (to_tsvector('english', name || ' ' || description));
 ```
 
 ---
