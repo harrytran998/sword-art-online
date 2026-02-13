@@ -353,7 +353,7 @@ RUN bun install --frozen-lockfile --production
 
 # Copy source code
 COPY src ./src
-COPY drizzle ./drizzle
+COPY migrations ./migrations
 
 # Build TypeScript
 RUN bun build ./src/index.ts --outfile ./dist/index.js --target bun
@@ -371,7 +371,7 @@ RUN adduser --system --uid 1001 gameuser
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./
-COPY --from=builder /app/drizzle ./drizzle
+COPY --from=builder /app/migrations ./migrations
 
 # Set environment
 ENV NODE_ENV=production
@@ -420,10 +420,10 @@ services:
         condition: service_started
     volumes:
       - ./src:/app/src:ro
-      - ./drizzle:/app/drizzle:ro
+      - ./migrations:/app/migrations:ro
 
   postgres:
-    image: postgres:16-alpine
+    image: postgres:18-alpine
     ports:
       - "5432:5432"
     environment:
@@ -448,7 +448,7 @@ services:
     command: redis-server --appendonly yes
 
   timescaledb:
-    image: timescale/timescaledb:latest-pg16
+    image: timescale/timescaledb:latest-pg18
     ports:
       - "5433:5432"
     environment:
