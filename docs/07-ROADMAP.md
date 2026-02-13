@@ -79,7 +79,7 @@
 │                                                                  │
 │  INFRASTRUCTURE:                                                │
 │  ├── [ ] Initialize monorepo (Turborepo/Bun workspaces)         │
-│  ├── [ ] Configure TypeScript, ESLint, Prettier                 │
+│  ├── [ ] Configure TypeScript, oxlint, oxfmt (oxc)              │
 │  ├── [ ] Set up GitHub Actions CI/CD                            │
 │  ├── [ ] Configure Docker development environment               │
 │  └── [ ] Set up staging environment                             │
@@ -87,13 +87,13 @@
 │  BACKEND FOUNDATION:                                            │
 │  ├── [ ] Create Bun + Effect-TS project structure               │
 │  ├── [ ] Implement basic HTTP server with @effect/platform      │
-│  ├── [ ] Set up database connection (PostgreSQL + Drizzle)      │
+│  ├── [ ] Set up database connection (PostgreSQL 18 + Kysely)    │
 │  ├── [ ] Configure Redis client                                 │
 │  └── [ ] Create basic logging infrastructure                    │
 │                                                                  │
 │  DATABASE:                                                      │
 │  ├── [ ] Design initial schema migrations                       │
-│  ├── [ ] Set up Drizzle ORM configuration                       │
+│  ├── [ ] Set up Kysely + go-migrate configuration               │
 │  └── [ ] Create accounts and characters tables                  │
 │                                                                  │
 └─────────────────────────────────────────────────────────────────┘
