@@ -1,4 +1,4 @@
-# Aincrad Online - Execution Plan
+# Sword Art Online - Execution Plan
 
 **Created:** February 2026
 **Based on:** All documentation in `/docs/`
@@ -229,8 +229,8 @@
     plugins: [
       jwt({
         jwt: {
-          issuer: "aincrad-online",
-          audience: "aincrad-game",
+          issuer: "sword-art-online",
+          audience: "sword-art-game",
           expirationTime: "1h",
         },
       }),
@@ -262,8 +262,8 @@
   import { jwtVerify, createRemoteJWKSet } from "jose"
   const JWKS = createRemoteJWKSet(new URL("http://localhost:8080/api/auth/jwks"))
   const { payload } = await jwtVerify(token, JWKS, {
-    issuer: "aincrad-online",
-    audience: "aincrad-game",
+    issuer: "sword-art-online",
+    audience: "sword-art-game",
   })
   ```
 - [ ] Create client auth setup (`packages/client/src/auth.ts`):

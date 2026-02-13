@@ -21,6 +21,7 @@ This folder contains the complete planning documentation for **Aincrad Online** 
 | 05 | [Security Architecture](./05-SECURITY.md) | Anti-cheat, server-authoritative design |
 | 06 | [Deployment Infrastructure](./06-DEPLOYMENT.md) | Kubernetes, CI/CD, monitoring |
 | 07 | [Development Roadmap](./07-ROADMAP.md) | 15-month development plan |
+| 08 | [Claude Code Agents & Automation](./08-AGENTS.md) | Agents, hooks, skills, MCP for `.claude/` setup |
 
 ## Quick Start
 
