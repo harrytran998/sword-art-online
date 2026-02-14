@@ -11,7 +11,7 @@ export class DatabaseService extends Context.Tag("DatabaseService")<
 
 export const DatabaseServiceLive = Layer.effect(
   DatabaseService,
-  Effect.gen(function* () {
+  Effect.sync(() => {
     const dialect = new PostgresDialect({
       pool: new pg.Pool({
         connectionString: process.env.DATABASE_URL,

@@ -20,7 +20,7 @@ export class CacheService extends Context.Tag("CacheService")<
 
 export const CacheServiceLive = Layer.effect(
   CacheService,
-  Effect.gen(function* () {
+  Effect.sync(() => {
     const redis = new Redis(process.env.REDIS_URL ?? "redis://localhost:6379")
 
     return {

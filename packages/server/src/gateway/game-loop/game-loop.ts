@@ -10,7 +10,7 @@ export class GameLoopService extends Context.Tag("GameLoopService")<
 
 export const GameLoopServiceLive = Layer.effect(
   GameLoopService,
-  Effect.gen(function* () {
+  Effect.sync(() => {
     let intervalId: ReturnType<typeof setInterval> | null = null
 
     return {

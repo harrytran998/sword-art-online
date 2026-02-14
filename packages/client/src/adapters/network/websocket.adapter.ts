@@ -10,7 +10,7 @@ export const createWebSocketAdapter = (): NetworkPort => {
       ws = new WebSocket(`${url}?token=${token}`)
 
       ws.onmessage = (event) => {
-        const data = JSON.parse(event.data)
+        const data: unknown = JSON.parse(String(event.data))
         messageHandlers.forEach((handler) => handler(data))
       }
 
