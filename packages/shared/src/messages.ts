@@ -44,6 +44,11 @@ export interface ItemEquipMessage {
   readonly slot: string
 }
 
+export interface HeartbeatMessage {
+  readonly _tag: "heartbeat"
+  readonly timestamp: number
+}
+
 export type ClientMessage =
   | MovementMessage
   | SkillActivateMessage
@@ -51,6 +56,7 @@ export type ClientMessage =
   | TradeRequestMessage
   | ItemUseMessage
   | ItemEquipMessage
+  | HeartbeatMessage
 
 // ============================================================
 // Server → Client messages
@@ -91,8 +97,37 @@ export interface ErrorMessage {
   readonly message: string
 }
 
+export interface HeartbeatAckMessage {
+  readonly _tag: "heartbeat_ack"
+  readonly serverTime: number
+}
+
+export interface ConnectionReadyMessage {
+  readonly _tag: "connection_ready"
+  readonly playerId: string
+  readonly name: string
+  readonly level: number
+  readonly floor: number
+}
+
+export interface PlayerJoinedMessage {
+  readonly _tag: "player_joined"
+  readonly playerId: string
+  readonly name: string
+  readonly level: number
+}
+
+export interface PlayerLeftMessage {
+  readonly _tag: "player_left"
+  readonly playerId: string
+}
+
 export type ServerMessage =
   | StateUpdateMessage
   | DamageMessage
   | ChatBroadcastMessage
   | ErrorMessage
+  | HeartbeatAckMessage
+  | ConnectionReadyMessage
+  | PlayerJoinedMessage
+  | PlayerLeftMessage
