@@ -10,7 +10,7 @@ export const checkRateLimit = (
     const cache = yield* CacheService
     const count = yield* cache.increment(`rl:${key}`)
     if (count === 1) {
-      yield* cache.set(`rl:${key}`, "1", windowSeconds)
+      yield* cache.expire(`rl:${key}`, windowSeconds)
     }
     return count <= maxTokens
   })

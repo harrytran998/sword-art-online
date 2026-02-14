@@ -24,7 +24,7 @@ export class Account {
   get username(): string {
     return this.props.username
   }
-  get status(): string {
+  get status(): "active" | "banned" | "suspended" {
     return this.props.status
   }
   get createdAt(): Date {
