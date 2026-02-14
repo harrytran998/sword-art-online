@@ -1,4 +1,4 @@
-# Sword Art Online: Aincrad Online
+# Sword Art Online
 ## Database Design Document
 
 **Version:** 1.0.0  

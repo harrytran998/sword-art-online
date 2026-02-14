@@ -1,4 +1,4 @@
-# Sword Art Online: Aincrad Online
+# Sword Art Online
 ## Claude Code Agents & Automation Guide
 
 **Version:** 1.0.0
@@ -24,7 +24,7 @@
 
 ## 1. Overview
 
-Claude Code is the primary AI-assisted development tool for Aincrad Online. This document defines how every team configures their `.claude/` folders so that Claude understands our architecture, follows our conventions, and automates repetitive work.
+Claude Code is the primary AI-assisted development tool for Sword Art Online. This document defines how every team configures their `.claude/` folders so that Claude understands our architecture, follows our conventions, and automates repetitive work.
 
 **Why this matters:**
 - Claude loads `.claude/` configuration at session start — bad config = bad output
@@ -94,7 +94,7 @@ CLAUDE.md files are loaded automatically at session start and give Claude persis
 ### 3.2 Root CLAUDE.md
 
 ```markdown
-# Aincrad Online — Project Context
+# Sword Art Online — Project Context
 
 ## Architecture
 - Modular Clean Architecture: domain → ports → application → adapters
@@ -507,7 +507,7 @@ Add hooks to `.claude/settings.json`:
         "hooks": [
           {
             "type": "command",
-            "command": "osascript -e 'display notification \"Claude needs your attention\" with title \"Aincrad Online\"'"
+            "command": "osascript -e 'display notification \"Claude needs your attention\" with title \"Sword Art Online\"'"
           }
         ]
       }
@@ -632,7 +632,7 @@ allowed-tools: Read, Glob, Grep, Bash
 ---
 ```
 ```markdown
-Review pull request $ARGUMENTS for the Aincrad Online project.
+Review pull request $ARGUMENTS for the Sword Art Online project.
 
 Get the PR diff: !`gh pr diff $0 2>/dev/null || echo "No PR number provided, reviewing staged changes" && git diff --staged`
 
@@ -689,7 +689,7 @@ maxTurns: 30
 ---
 ```
 ```markdown
-You are a code architecture reviewer for the Aincrad Online project.
+You are a code architecture reviewer for the Sword Art Online project.
 
 Your job is to verify that modules in `packages/server/src/modules/` follow these rules:
 
@@ -716,7 +716,7 @@ maxTurns: 40
 ---
 ```
 ```markdown
-You are a security auditor for the Aincrad Online MMORPG.
+You are a security auditor for the Sword Art Online MMORPG.
 
 Focus areas:
 - **Server-authoritative violations**: Any code that trusts client input for game state
@@ -744,7 +744,7 @@ skills:
 ---
 ```
 ```markdown
-You are an Effect-TS expert for the Aincrad Online project.
+You are an Effect-TS expert for the Sword Art Online project.
 
 You help developers:
 - Write use cases with `Effect.gen(function* () { ... })`
@@ -776,7 +776,7 @@ maxTurns: 20
 ---
 ```
 ```markdown
-You are a database migration specialist for Aincrad Online.
+You are a database migration specialist for Sword Art Online.
 
 When asked to create a migration:
 1. Read `migrations/` to find the latest version number
@@ -807,7 +807,7 @@ MCP (Model Context Protocol) servers extend Claude with access to external tools
       "command": "npx",
       "args": ["-y", "@bytebase/dbhub", "--dsn", "${DATABASE_URL}"],
       "env": {
-        "DATABASE_URL": "${DATABASE_URL:-postgresql://postgres:postgres@localhost:5432/aincrad}"
+        "DATABASE_URL": "${DATABASE_URL:-postgresql://postgres:postgres@localhost:5432/sao}"
       }
     }
   }

@@ -1,4 +1,4 @@
-# Sword Art Online: Aincrad Online
+# Sword Art Online
 ## API & Network Protocol Document
 
 **Version:** 1.0.0  
@@ -71,7 +71,7 @@
 ### 2.1 Connection URL
 
 ```
-wss://game.aincrad-online.com/ws?token={jwt_token}&version={client_version}
+wss://game.sword-art-online.com/ws?token={jwt_token}&version={client_version}
 ```
 
 ### 2.2 Connection Flow
@@ -83,7 +83,7 @@ wss://game.aincrad-online.com/ws?token={jwt_token}&version={client_version}
      │                                                │
      │  1. WebSocket Upgrade Request                 │
      │    GET /ws?token=xxx&version=1.0.0            │
-     │    Origin: https://aincrad-online.com         │
+     │    Origin: https://sword-art-online.com         │
      │──────────────────────────────────────────────▶│
      │                                                │
      │                    2. Validate Token          │
@@ -120,7 +120,7 @@ const validateConnection = (request: Request): Effect.Effect<PlayerData, AuthErr
     
     // 1. Validate origin (CSWSH protection)
     const origin = request.headers.get("origin")
-    const allowedOrigins = ["https://aincrad-online.com", "https://www.aincrad-online.com"]
+    const allowedOrigins = ["https://sword-art-online.com", "https://www.sword-art-online.com"]
     if (!origin || !allowedOrigins.includes(origin)) {
       return yield* Effect.fail(new OriginNotAllowedError({ origin }))
     }

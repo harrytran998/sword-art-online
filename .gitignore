@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+.pnp.*
+
+# Build output
+dist/
+build/
+*.tsbuildinfo
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Test coverage
+coverage/
+
+# Bun
+bun.lockb
+
+# Moon
+.moon/cache/
+
+# Docker
+docker/data/
+
+# Claude Code local settings
+.claude/settings.local.json
+CLAUDE.local.md
+
+# OS
+Thumbs.db

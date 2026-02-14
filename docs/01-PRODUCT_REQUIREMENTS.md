@@ -1,4 +1,4 @@
-# Sword Art Online: Aincrad Online
+# Sword Art Online
 ## Product Requirements Document (PRD)
 
 **Version:** 1.0.0  
@@ -30,7 +30,7 @@
 
 ### 1.1 Product Overview
 
-**Aincrad Online** is a browser-based MMORPG inspired by the Sword Art Online anime/light novel series. Players explore the floating castle of Aincrad, a 100-floor structure with diverse environments, challenging bosses, and a deep combat system based on the SAO "Sword Skills" mechanic.
+**Sword Art Online** is a browser-based MMORPG inspired by the Sword Art Online anime/light novel series. Players explore the floating castle of Aincrad, a 100-floor structure with diverse environments, challenging bosses, and a deep combat system based on the SAO "Sword Skills" mechanic.
 
 ### 1.2 Key Differentiators
 
@@ -73,7 +73,7 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                        AINCRAD ONLINE                        │
+│                       SWORD ART ONLINE                       │
 ├─────────────────┬─────────────────┬─────────────────────────┤
 │   IMMERSION     │    COMMUNITY    │      CHALLENGE          │
 │                 │                 │                         │

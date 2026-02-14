@@ -1,0 +1,11 @@
+projects:
+  server: "packages/server"
+  client: "packages/client"
+  shared: "packages/shared"
+
+vcs:
+  manager: "git"
+  defaultBranch: "main"
+
+hasher:
+  optimization: "performance"

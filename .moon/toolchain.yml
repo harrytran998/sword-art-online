@@ -1,0 +1,6 @@
+bun:
+  version: "1.2"
+
+node:
+  version: "22"
+  packageManager: "bun"

@@ -1,4 +1,4 @@
-# Sword Art Online: Aincrad Online
+# Sword Art Online
 ## Development Roadmap Document
 
 **Version:** 1.0.0  
@@ -27,7 +27,7 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                    AINCRAD ONLINE DEVELOPMENT ROADMAP                    │
+│                   SWORD ART ONLINE DEVELOPMENT ROADMAP                    │
 ├─────────────────────────────────────────────────────────────────────────┤
 │                                                                          │
 │  2026                          2027                                     │
