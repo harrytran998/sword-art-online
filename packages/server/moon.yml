@@ -7,9 +7,12 @@ tasks:
     local: true
 
   build:
-    command: "bun build src/index.ts --outdir dist --target bun"
+    command: "tsdown"
+    deps:
+      - "shared:build"
     inputs:
       - "src/**/*.ts"
+      - "tsdown.config.ts"
     outputs:
       - "dist"
 
@@ -31,6 +34,8 @@ tasks:
 
   typecheck:
     command: "bun tsc --noEmit"
+    deps:
+      - "shared:build"
     inputs:
       - "src/**/*.ts"
       - "tsconfig.json"

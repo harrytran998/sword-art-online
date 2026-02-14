@@ -1,10 +1,11 @@
-{
-  "$schema": "https://raw.githubusercontent.com/nicolo-ribaudo/oxc/json-schema/npm/oxlint/configuration_schema.json",
-  "rules": {
+import { defineConfig } from "oxlint"
+
+export default defineConfig({
+  rules: {
     "no-unused-vars": "warn",
     "no-console": "warn",
     "no-debugger": "error",
-    "eqeqeq": "error",
+    eqeqeq: "error",
     "no-var": "error",
     "prefer-const": "error",
     "no-eval": "error",
@@ -13,13 +14,7 @@
     "no-return-await": "warn",
     "require-await": "warn",
     "no-throw-literal": "error",
-    "no-duplicate-imports": "error"
+    "no-duplicate-imports": "error",
   },
-  "ignorePatterns": [
-    "node_modules",
-    "dist",
-    ".moon",
-    "*.config.js",
-    "*.config.ts"
-  ]
-}
+  ignorePatterns: ["node_modules", "dist", ".moon"],
+})

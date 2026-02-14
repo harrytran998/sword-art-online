@@ -3,9 +3,10 @@ type: "library"
 
 tasks:
   build:
-    command: "bun build src/index.ts --outdir dist"
+    command: "tsdown"
     inputs:
       - "src/**/*.ts"
+      - "tsdown.config.ts"
     outputs:
       - "dist"
 
