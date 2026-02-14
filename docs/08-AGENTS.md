@@ -48,7 +48,7 @@ project-root/
 │   │   ├── database.md            # Kysely + go-migrate conventions
 │   │   ├── testing.md             # Test conventions and structure
 │   │   ├── security.md            # Anti-cheat, validation, trust boundaries
-│   │   └── frontend.md            # React + PixiJS + client Clean Architecture
+│   │   └── frontend.md            # React + PixiJS + ThreeJS + client Clean Architecture
 │   ├── skills/                    # Custom slash commands
 │   │   ├── create-module/         # /create-module — scaffold a new module
 │   │   ├── create-migration/      # /create-migration — create go-migrate files
