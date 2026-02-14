@@ -25,7 +25,6 @@
       "@application/*": ["./src/application/*"],
       "@adapters/*": ["./src/adapters/*"]
     },
-    "baseUrl": ".",
     "composite": true,
     "outDir": "dist"
   },

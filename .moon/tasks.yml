@@ -1,9 +1,10 @@
 tasks:
   lint:
-    command: "oxlint"
+    command: "oxlint --type-aware"
     inputs:
       - "src/**/*.ts"
       - "src/**/*.tsx"
+      - "tsconfig.json"
 
   format:
     command: "oxfmt ."

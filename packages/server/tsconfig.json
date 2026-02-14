@@ -24,7 +24,6 @@
       "@shared/*": ["./src/shared/*"],
       "@gateway/*": ["./src/gateway/*"]
     },
-    "baseUrl": ".",
     "composite": true,
     "outDir": "dist"
   },
