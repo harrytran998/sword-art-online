@@ -1,5 +1,5 @@
 {
-  "name": "@sword-art-online/client",
+  "name": "@sao/client",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -14,7 +14,7 @@
     "react-dom": "^18.3.0",
     "pixi.js": "^8.6.0",
     "zustand": "^4.5.0",
-    "@sword-art-online/shared": "workspace:*"
+    "@sao/shared": "workspace:*"
   },
   "devDependencies": {
     "@types/react": "^18.3.0",
