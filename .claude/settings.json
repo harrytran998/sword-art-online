@@ -5,6 +5,8 @@
       "Read",
       "Glob",
       "Grep",
+      "Edit",
+      "Write",
       "Bash(moon run *)",
       "Bash(bun test *)",
       "Bash(bun tsc --noEmit *)",
@@ -31,11 +33,10 @@
       "Bash(docker *)"
     ],
     "ask": [
-      "Edit",
-      "Write",
       "Bash(git push --force *)",
       "Bash(git reset --hard *)",
-      "Bash(sudo *)"
+      "Bash(sudo *)",
+      "Bash(curl *)"
     ],
     "deny": [
       "Bash(rm -rf *)",
