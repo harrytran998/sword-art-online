@@ -1,4 +1,4 @@
-# Sword Art Online: Aincrad Online
+# Sword Art Online
 ## Game Development Documentation
 
 **Version:** 1.0.0  
@@ -8,7 +8,7 @@
 
 ## Overview
 
-This folder contains the complete planning documentation for **Aincrad Online** - a browser-based MMORPG inspired by Sword Art Online.
+This folder contains the complete planning documentation for **Sword Art Online** - a browser-based MMORPG inspired by Sword Art Online.
 
 ## Document Index
 
@@ -95,7 +95,7 @@ Target Launch: Q1 2027
 
 ```bash
 # Clone repository
-git clone https://github.com/your-org/aincrad-online.git
+git clone https://github.com/your-org/sword-art-online.git
 
 # Install dependencies
 bun install

@@ -15,7 +15,7 @@
 ## 1. Executive Summary
 
 ### 1.1 Project Overview
-**Project Name**: Aincrad Online  
+**Project Name**: Sword Art Online
 **Genre**: Browser-based Action MMORPG  
 **Tech Stack**: Bun WebSocket + Effect-TS + PostgreSQL + Redis  
 **Architecture**: Server-authoritative real-time multiplayer
@@ -2649,8 +2649,8 @@ export const validateWebSocketOrigin = (
 ): Effect.Effect<boolean, never, never> =>
   Effect.sync(() => {
     const allowedOrigins = [
-      "https://aincrad-online.com",
-      "https://www.aincrad-online.com",
+      "https://sword-art-online.com",
+      "https://www.sword-art-online.com",
     ]
     
     const origin = request.headers.get("origin")
@@ -3162,10 +3162,10 @@ metadata:
 spec:
   tls:
     - hosts:
-        - game.aincrad-online.com
+        - game.sword-art-online.com
       secretName: game-tls
   rules:
-    - host: game.aincrad-online.com
+    - host: game.sword-art-online.com
       http:
         paths:
           - path: /

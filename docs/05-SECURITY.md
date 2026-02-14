@@ -1,4 +1,4 @@
-# Sword Art Online: Aincrad Online
+# Sword Art Online
 ## Security Architecture Document
 
 **Version:** 1.0.0  
@@ -252,8 +252,8 @@ interface GameToken {
   jti: string        // Unique token ID (for revocation)
   iat: number        // Issued at
   exp: number        // Expiration (1 hour)
-  iss: "aincrad-online.com"
-  aud: "aincrad-game"
+  iss: "sword-art-online.com"
+  aud: "sao-game"
   
   // Custom claims
   role: "player" | "moderator" | "admin"
@@ -1032,9 +1032,9 @@ const validateOrigin = (request: Request): Effect.Effect<void, SecurityError> =>
     
     // STRICT allowlist - never use denylist
     const allowedOrigins = [
-      "https://aincrad-online.com",
-      "https://www.aincrad-online.com",
-      "https://game.aincrad-online.com"
+      "https://sword-art-online.com",
+      "https://www.sword-art-online.com",
+      "https://game.sword-art-online.com"
     ]
     
     if (!origin) {

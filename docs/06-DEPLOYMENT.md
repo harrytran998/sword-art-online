@@ -1,4 +1,4 @@
-# Sword Art Online: Aincrad Online
+# Sword Art Online
 ## Deployment Infrastructure Document
 
 **Version:** 1.0.0  
@@ -125,7 +125,7 @@ apiVersion: eksctl.io/v1alpha5
 kind: ClusterConfig
 
 metadata:
-  name: aincrad-production
+  name: sao-production
   region: us-east-1
   version: "1.28"
 
@@ -175,14 +175,14 @@ managedNodeGroups:
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: aincrad-production
+  name: sao-production
   labels:
     name: production
 ---
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: aincrad-monitoring
+  name: sao-monitoring
   labels:
     name: monitoring
 ```
@@ -195,7 +195,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: game-server
-  namespace: aincrad-production
+  namespace: sao-production
   labels:
     app: game-server
 spec:
@@ -217,7 +217,7 @@ spec:
           effect: NoSchedule
       containers:
         - name: game-server
-          image: aincrad/game-server:latest
+          image: sao/game-server:latest
           ports:
             - containerPort: 8080
               name: websocket
@@ -272,7 +272,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: game-server
-  namespace: aincrad-production
+  namespace: sao-production
 spec:
   selector:
     app: game-server
@@ -293,8 +293,8 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: aincrad-ingress
-  namespace: aincrad-production
+  name: sao-ingress
+  namespace: sao-production
   annotations:
     nginx.ingress.kubernetes.io/websocket-services: "game-server"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
@@ -305,11 +305,11 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - game.aincrad-online.com
-        - api.aincrad-online.com
-      secretName: aincrad-tls
+        - game.sword-art-online.com
+        - api.sword-art-online.com
+      secretName: sao-tls
   rules:
-    - host: game.aincrad-online.com
+    - host: game.sword-art-online.com
       http:
         paths:
           - path: /ws
@@ -319,7 +319,7 @@ spec:
                 name: game-server
                 port:
                   number: 8080
-    - host: api.aincrad-online.com
+    - host: api.sword-art-online.com
       http:
         paths:
           - path: /
@@ -408,8 +408,8 @@ services:
       - NODE_ENV=development
       - DB_HOST=postgres
       - DB_PORT=5432
-      - DB_NAME=aincrad
-      - DB_USER=aincrad
+      - DB_NAME=sao
+      - DB_USER=sao
       - DB_PASSWORD=dev_password
       - REDIS_HOST=redis
       - REDIS_PORT=6379
@@ -427,14 +427,14 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_DB=aincrad
-      - POSTGRES_USER=aincrad
+      - POSTGRES_DB=sao
+      - POSTGRES_USER=sao
       - POSTGRES_PASSWORD=dev_password
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U aincrad"]
+      test: ["CMD-SHELL", "pg_isready -U sao"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -452,8 +452,8 @@ services:
     ports:
       - "5433:5432"
     environment:
-      - POSTGRES_DB=aincrad_analytics
-      - POSTGRES_USER=aincrad
+      - POSTGRES_DB=sao_analytics
+      - POSTGRES_USER=sao
       - POSTGRES_PASSWORD=dev_password
     volumes:
       - timescale_data:/var/lib/postgresql/data
@@ -557,17 +557,17 @@ jobs:
       
       - name: Set kubeconfig
         run: |
-          aws eks update-kubeconfig --name aincrad-staging --region us-east-1
+          aws eks update-kubeconfig --name sao-staging --region us-east-1
       
       - name: Deploy to staging
         run: |
           kubectl set image deployment/game-server \
             game-server=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
-            -n aincrad-staging
+            -n sao-staging
       
       - name: Wait for rollout
         run: |
-          kubectl rollout status deployment/game-server -n aincrad-staging --timeout=300s
+          kubectl rollout status deployment/game-server -n sao-staging --timeout=300s
 
   deploy-production:
     needs: deploy-staging
@@ -582,19 +582,19 @@ jobs:
       
       - name: Set kubeconfig
         run: |
-          aws eks update-kubeconfig --name aincrad-production --region us-east-1
+          aws eks update-kubeconfig --name sao-production --region us-east-1
       
       - name: Deploy to production (canary)
         run: |
           # Start with 10% of traffic to new version
           kubectl patch deployment game-server \
-            -n aincrad-production \
+            -n sao-production \
             --type='json' \
             -p='[{"op": "replace", "path": "/spec/replicas", "value": 1}]'
           
           kubectl set image deployment/game-server \
             game-server=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
-            -n aincrad-production
+            -n sao-production
       
       - name: Verify canary
         run: |
@@ -605,13 +605,13 @@ jobs:
       - name: Full rollout
         run: |
           kubectl patch deployment game-server \
-            -n aincrad-production \
+            -n sao-production \
             --type='json' \
             -p='[{"op": "replace", "path": "/spec/replicas", "value": 3}]'
       
       - name: Wait for rollout
         run: |
-          kubectl rollout status deployment/game-server -n aincrad-production --timeout=300s
+          kubectl rollout status deployment/game-server -n sao-production --timeout=300s
       
       - name: Notify deployment
         uses: 8398a7/action-slack@v3
@@ -707,7 +707,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: game-server
-  namespace: aincrad-monitoring
+  namespace: sao-monitoring
   labels:
     release: prometheus
 spec:
@@ -716,7 +716,7 @@ spec:
       app: game-server
   namespaceSelector:
     matchNames:
-      - aincrad-production
+      - sao-production
   endpoints:
     - port: metrics
       path: /metrics
@@ -763,7 +763,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: game-server-alerts
-  namespace: aincrad-monitoring
+  namespace: sao-monitoring
 spec:
   groups:
     - name: game-server
@@ -826,7 +826,7 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: game-server
-  namespace: aincrad-production
+  namespace: sao-production
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
@@ -878,7 +878,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: zone-scaling-config
-  namespace: aincrad-production
+  namespace: sao-production
 data:
   zones.yaml: |
     zones:
@@ -962,26 +962,26 @@ backups:
 ```bash
 # PostgreSQL Point-in-Time Recovery
 # 1. Stop application
-kubectl scale deployment game-server --replicas=0 -n aincrad-production
+kubectl scale deployment game-server --replicas=0 -n sao-production
 
 # 2. Restore from base backup
 aws rds restore-db-instance-from-s3 \
-  --db-instance-identifier aincrad-restored \
-  --s3-bucket-name aincrad-backups \
+  --db-instance-identifier sao-restored \
+  --s3-bucket-name sao-backups \
   --s3-prefix postgresql/backups/$(date +%Y-%m-%d)
 
 # 3. Apply WAL files to target time
 # (Automated by RDS)
 
 # 4. Verify data integrity
-psql -h aincrad-restored.xxx.region.rds.amazonaws.com -c "SELECT COUNT(*) FROM players"
+psql -h sao-restored.xxx.region.rds.amazonaws.com -c "SELECT COUNT(*) FROM players"
 
 # 5. Update application connection string
 kubectl set env deployment/game-server \
-  DB_HOST=aincrad-restored.xxx.region.rds.amazonaws.com
+  DB_HOST=sao-restored.xxx.region.rds.amazonaws.com
 
 # 6. Scale application back up
-kubectl scale deployment game-server --replicas=3 -n aincrad-production
+kubectl scale deployment game-server --replicas=3 -n sao-production
 ```
 
 ### 8.3 Failover Configuration
@@ -992,7 +992,7 @@ apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: game-server-pdb
-  namespace: aincrad-production
+  namespace: sao-production
 spec:
   minAvailable: 2
   selector:
