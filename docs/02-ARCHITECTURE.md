@@ -1,4 +1,4 @@
-# Sword Art Online: Aincrad Online
+# Sword Art Online
 ## Architecture Design Document
 
 **Version:** 2.0.0
@@ -146,147 +146,41 @@ The server is organized as **vertical feature modules** (bounded contexts). Each
 src/
 ├── modules/                          # Feature modules (bounded contexts)
 │   ├── identity/                     # Auth, accounts, sessions
-│   │   ├── domain/                   # Entities, value objects, domain errors
+│   │   ├── domain/
 │   │   │   ├── entities/             # Account, Session
 │   │   │   ├── value-objects/        # Email, Password, SessionToken
-│   │   │   ├── errors.ts            # IdentityNotFoundError, InvalidCredentials
+│   │   │   ├── errors.ts
 │   │   │   └── index.ts
-│   │   ├── ports/                    # Interfaces (inbound + outbound)
-│   │   │   ├── inbound/             # Use case interfaces
-│   │   │   │   └── auth.port.ts     # login, register, validateToken
-│   │   │   ├── outbound/            # Repository + external service interfaces
-│   │   │   │   ├── account.repository.ts
-│   │   │   │   └── session.store.ts
+│   │   ├── ports/
+│   │   │   ├── inbound/             # login, register, validateToken
+│   │   │   ├── outbound/            # account.repository, session.store
 │   │   │   └── index.ts
-│   │   ├── application/              # Use cases (orchestration logic)
-│   │   │   ├── login.use-case.ts
-│   │   │   ├── register.use-case.ts
+│   │   ├── application/              # login, register use cases
+│   │   ├── adapters/
+│   │   │   ├── inbound/             # auth.handler (WS/HTTP)
+│   │   │   ├── outbound/            # pg-account.repository, redis-session.store
 │   │   │   └── index.ts
-│   │   ├── adapters/                 # Implementations of ports
-│   │   │   ├── inbound/             # WebSocket/HTTP handlers
-│   │   │   │   └── auth.handler.ts
-│   │   │   ├── outbound/            # DB/cache implementations
-│   │   │   │   ├── pg-account.repository.ts
-│   │   │   │   └── redis-session.store.ts
-│   │   │   └── index.ts
-│   │   ├── events/                   # Domain events this module publishes/subscribes
+│   │   ├── events/
 │   │   │   ├── published.ts         # PlayerLoggedIn, PlayerRegistered
-│   │   │   ├── subscriptions.ts     # What events from other modules we react to
+│   │   │   ├── subscriptions.ts
 │   │   │   └── index.ts
-│   │   ├── module.ts                 # Effect Layer composition for this module
-│   │   └── index.ts                  # Public API (only exports ports + events)
+│   │   ├── module.ts                 # Effect Layer composition
+│   │   └── index.ts                  # Public API (only: Layer, events, port interfaces)
+│   │
+│   │   # All other modules follow the SAME structure:
+│   │   #   domain/ → ports/ → application/ → adapters/ → events/ → module.ts → index.ts
 │   │
 │   ├── player/                       # Character, stats, progression
-│   │   ├── domain/
-│   │   │   ├── entities/             # Character, PlayerStats
-│   │   │   ├── value-objects/        # PlayerId, CharacterName, Level, ExperiencePoints
-│   │   │   ├── errors.ts            # PlayerNotFoundError, InvalidStatsError
-│   │   │   └── index.ts
-│   │   ├── ports/
-│   │   ├── application/              # CreateCharacter, GetPlayer, AllocateStats, LevelUp
-│   │   ├── adapters/
-│   │   ├── events/                   # PlayerCreated, PlayerLeveledUp, StatsAllocated
-│   │   ├── module.ts
-│   │   └── index.ts
-│   │
 │   ├── combat/                       # Sword Skills, damage calc, hit detection
-│   │   ├── domain/
-│   │   │   ├── entities/             # SwordSkill, CombatSession
-│   │   │   ├── value-objects/        # DamageValue, CriticalHit, SkillPhase
-│   │   │   ├── errors.ts            # SkillOnCooldownError, OutOfRangeError
-│   │   │   └── index.ts
-│   │   ├── ports/
-│   │   ├── application/              # ActivateSkill, ProcessCombatTick, CalculateDamage
-│   │   ├── adapters/
-│   │   ├── events/                   # SkillExecuted, DamageDealt, PlayerDefeated
-│   │   ├── module.ts
-│   │   └── index.ts
-│   │
 │   ├── monster/                      # Spawning, AI, loot tables
-│   │   ├── domain/
-│   │   │   ├── entities/             # Monster, SpawnPoint, LootTable
-│   │   │   ├── value-objects/        # AggroRange, RespawnTimer
-│   │   │   └── index.ts
-│   │   ├── ports/
-│   │   ├── application/              # SpawnMonster, UpdateMonsterAI, DropLoot
-│   │   ├── adapters/
-│   │   ├── events/                   # MonsterSpawned, MonsterKilled, LootDropped
-│   │   ├── module.ts
-│   │   └── index.ts
-│   │
 │   ├── inventory/                    # Items, equipment, enhancement
-│   │   ├── domain/
-│   │   │   ├── entities/             # InventorySlot, Equipment, ItemDefinition
-│   │   │   ├── value-objects/        # ItemId, EquipmentSlot, EnhancementLevel
-│   │   │   └── index.ts
-│   │   ├── ports/
-│   │   ├── application/              # AddItem, EquipItem, UseItem, EnhanceItem
-│   │   ├── adapters/
-│   │   ├── events/                   # ItemPickedUp, ItemEquipped, ItemEnhanced
-│   │   ├── module.ts
-│   │   └── index.ts
-│   │
 │   ├── economy/                      # Col, trading, auction house
-│   │   ├── domain/
-│   │   │   ├── entities/             # Trade, AuctionListing, NpcShop
-│   │   │   ├── value-objects/        # Col, TradeId, AuctionBid
-│   │   │   └── index.ts
-│   │   ├── ports/
-│   │   ├── application/              # InitiateTrade, ExecuteTrade, CreateAuction, PlaceBid
-│   │   ├── adapters/
-│   │   ├── events/                   # TradeCompleted, AuctionSold, ColTransferred
-│   │   ├── module.ts
-│   │   └── index.ts
-│   │
 │   ├── social/                       # Party, guild, friends, chat
-│   │   ├── domain/
-│   │   │   ├── entities/             # Party, Guild, Friendship, ChatMessage
-│   │   │   ├── value-objects/        # PartyId, GuildId, GuildRank, ChatChannel
-│   │   │   └── index.ts
-│   │   ├── ports/
-│   │   ├── application/              # CreateParty, InviteToGuild, SendChat, AddFriend
-│   │   ├── adapters/
-│   │   ├── events/                   # PartyCreated, GuildCreated, ChatSent, FriendAdded
-│   │   ├── module.ts
-│   │   └── index.ts
-│   │
 │   ├── world/                        # Floors, zones, navigation, teleportation
-│   │   ├── domain/
-│   │   │   ├── entities/             # Floor, Zone, SpawnPoint
-│   │   │   ├── value-objects/        # FloorId, ZoneId, Position, ZoneBounds
-│   │   │   └── index.ts
-│   │   ├── ports/
-│   │   ├── application/              # ChangeZone, ValidateMovement, Teleport
-│   │   ├── adapters/
-│   │   ├── events/                   # PlayerEnteredZone, PlayerLeftZone, FloorUnlocked
-│   │   ├── module.ts
-│   │   └── index.ts
-│   │
 │   ├── quest/                        # Quest system, NPC interactions
-│   │   ├── domain/
-│   │   │   ├── entities/             # Quest, QuestObjective, NpcDialogue
-│   │   │   ├── value-objects/        # QuestId, ObjectiveProgress, QuestStatus
-│   │   │   └── index.ts
-│   │   ├── ports/
-│   │   ├── application/              # AcceptQuest, UpdateProgress, CompleteQuest
-│   │   ├── adapters/
-│   │   ├── events/                   # QuestAccepted, QuestCompleted, ObjectiveUpdated
-│   │   ├── module.ts
-│   │   └── index.ts
-│   │
 │   └── analytics/                    # Event logging, metrics, leaderboards
-│       ├── domain/
-│       │   ├── entities/             # GameEvent, LeaderboardEntry
-│       │   ├── value-objects/        # MetricName, TimeRange
-│       │   └── index.ts
-│       ├── ports/
-│       ├── application/              # LogEvent, UpdateLeaderboard, QueryMetrics
-│       ├── adapters/
-│       ├── events/                   # (subscribes to events from ALL modules)
-│       ├── module.ts
-│       └── index.ts
 │
-├── shared/                           # Cross-cutting concerns
+├── shared/
 │   ├── kernel/                       # TYPES ONLY - no logic
 │   │   ├── types.ts                 # PlayerId, ZoneId, FloorId (branded types)
 │   │   ├── events.ts               # Base DomainEvent interface
@@ -298,16 +192,16 @@ src/
 │   │   └── config/                 # AppConfig Effect Layer
 │   └── index.ts
 │
-├── gateway/                          # Entry point - routes messages to modules
-│   ├── websocket/                   # Bun WebSocket server + upgrade handler
-│   │   ├── server.ts
+├── gateway/
+│   ├── websocket/
+│   │   ├── server.ts               # Bun WebSocket server + upgrade handler
 │   │   ├── message-router.ts       # Routes client messages → correct module handler
 │   │   └── binary-protocol.ts      # Position update binary encoding
-│   ├── game-loop/                   # 60Hz tick-based simulation
-│   │   ├── game-loop.ts
+│   ├── game-loop/
+│   │   ├── game-loop.ts            # 60Hz tick-based simulation
 │   │   └── tick-pipeline.ts        # Per-tick processing pipeline
-│   └── http/                        # REST endpoints (health, auth via Better Auth)
-│       └── routes.ts
+│   └── http/
+│       └── routes.ts               # REST endpoints (health, auth)
 │
 └── index.ts                          # Main entry - compose all module Layers
 ```
@@ -335,25 +229,24 @@ These are **strict architectural constraints** enforced across the entire codeba
 
 ### Rule 1: No Direct Module Imports
 
-Modules **NEVER** import from other modules directly. The only shared code comes from `shared/kernel/`, which contains only types and interfaces.
+Modules **NEVER** import from other modules directly. The only shared code comes from `shared/kernel/`.
 
 ```typescript
-// ✅ ALLOWED - import shared kernel types
+// ✅ ALLOWED
 import { PlayerId, ZoneId } from "@/shared/kernel/types"
 import { DomainEvent } from "@/shared/kernel/events"
 
-// ❌ FORBIDDEN - never import another module
+// ❌ FORBIDDEN
 import { PlayerService } from "@/modules/player"
 import { CombatSession } from "@/modules/combat/domain"
 ```
 
 ### Rule 2: EventBus-Only Communication
 
-All inter-module communication goes through the **EventBus**. If module A needs to react to something that happens in module B, module B publishes a domain event and module A subscribes to it.
+All inter-module communication goes through the **EventBus**.
 
 ```typescript
-// modules/combat/events/published.ts
-// Combat publishes when a monster is killed
+// combat publishes
 export class MonsterKilled extends Data.TaggedClass("MonsterKilled")<{
   readonly monsterId: string
   readonly killerId: PlayerId
@@ -361,68 +254,54 @@ export class MonsterKilled extends Data.TaggedClass("MonsterKilled")<{
   readonly timestamp: number
 }> {}
 
-// modules/inventory/events/subscriptions.ts
-// Inventory subscribes to generate loot drops
+// inventory subscribes
 eventBus.subscribe("MonsterKilled", (event) =>
   Effect.gen(function* () {
     const loot = yield* generateLoot(event.monsterId)
     yield* addItemsToPlayer(event.killerId, loot)
   })
 )
-
-// modules/analytics/events/subscriptions.ts
-// Analytics also subscribes to log the kill
-eventBus.subscribe("MonsterKilled", (event) =>
-  logGameEvent("monster_kill", event)
-)
 ```
 
 ### Rule 3: Minimal Public API
 
 Each module's `index.ts` ONLY exports:
-1. Its **Effect Layer** (for composition in `index.ts`)
-2. Its **published event types** (for other modules to subscribe to)
-3. Its **port interfaces** (for type checking at boundaries)
+1. Its **Effect Layer** (for composition)
+2. Its **published event types** (for subscriptions)
+3. Its **port interfaces** (for type checking)
 
 ```typescript
 // modules/combat/index.ts
-export { CombatModule } from "./module"                    // Effect Layer
-export type { CombatPort } from "./ports/inbound/combat.port"  // Port interface
-export * from "./events/published"                         // Event types
-// Nothing else is exported
+export { CombatModule } from "./module"
+export type { CombatPort } from "./ports/inbound/combat.port"
+export * from "./events/published"
 ```
 
 ### Rule 4: Pure Domain Layer
 
-The domain layer has **ZERO external dependencies** — no Effect, no database, no Redis. It contains only pure TypeScript: entities, value objects, and domain errors.
+The domain layer has **ZERO external dependencies** — no Effect, no database, no Redis. Only pure TypeScript.
 
 ```typescript
 // modules/combat/domain/value-objects/damage-value.ts
-// Pure TypeScript - no imports from Effect, Kysely, Redis, etc.
 export class DamageValue {
   readonly value: number
-
-  private constructor(value: number) {
-    this.value = value
-  }
+  private constructor(value: number) { this.value = value }
 
   static create(base: number, multiplier: number, defense: number): DamageValue {
     const reduced = base * multiplier * (1 - defense / (defense + 100))
     return new DamageValue(Math.max(1, Math.floor(reduced)))
   }
 
-  isLethal(currentHp: number): boolean {
-    return this.value >= currentHp
-  }
+  isLethal(currentHp: number): boolean { return this.value >= currentHp }
 }
 ```
 
 ### Rule 5: Kernel Contains Only Types
 
-The `shared/kernel/` contains **ONLY types and interfaces**, never implementations. It exists to provide shared vocabulary (branded types, base event interface) without creating coupling.
+The `shared/kernel/` contains **ONLY types and interfaces**, never implementations.
 
 ```typescript
-// shared/kernel/types.ts - ONLY branded types
+// shared/kernel/types.ts
 import { Brand } from "effect"
 
 export type PlayerId = string & Brand.Brand<"PlayerId">
@@ -437,14 +316,14 @@ export const FloorId = Brand.nominal<FloorId>()
 export type ItemId = string & Brand.Brand<"ItemId">
 export const ItemId = Brand.nominal<ItemId>()
 
-// shared/kernel/events.ts - ONLY base event interface
+// shared/kernel/events.ts
 export interface DomainEvent {
   readonly _tag: string
   readonly timestamp: number
   readonly aggregateId: string
 }
 
-// shared/kernel/errors.ts - ONLY base error types
+// shared/kernel/errors.ts
 export class DomainError extends Data.TaggedError("DomainError")<{
   readonly message: string
 }> {}
@@ -488,7 +367,7 @@ export class DomainError extends Data.TaggedError("DomainError")<{
 
 ## 5. Clean Architecture Layers
 
-Each module follows Clean Architecture internally. Dependencies ALWAYS point inward — outer layers depend on inner layers, never the reverse.
+Each module follows Clean Architecture internally. Dependencies ALWAYS point inward.
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -513,7 +392,7 @@ Dependency direction: Adapters → Application → Ports → Domain
 
 ### 5.1 Domain Layer
 
-Pure TypeScript entities, value objects, and domain errors. No external dependencies whatsoever.
+Pure TypeScript entities, value objects, and domain errors. No external dependencies.
 
 ```typescript
 // modules/player/domain/entities/character.ts
@@ -530,29 +409,14 @@ interface CharacterProps {
 
 export class Character {
   private constructor(private readonly props: CharacterProps) {}
-
-  static create(props: CharacterProps): Character {
-    return new Character(props)
-  }
+  static create(props: CharacterProps): Character { return new Character(props) }
 
   get id(): PlayerId { return this.props.id }
   get level(): number { return this.props.level }
-
-  canLevelUp(): boolean {
-    return this.props.experience >= this.experienceNeeded()
-  }
-
-  experienceNeeded(): number {
-    return 100 * this.props.level ** 2
-  }
-
-  maxHp(): number {
-    return 100 + (this.props.level - 1) * 20 + this.props.stats.vit * 10
-  }
-
-  maxMp(): number {
-    return 50 + (this.props.level - 1) * 5 + this.props.stats.int * 5
-  }
+  canLevelUp(): boolean { return this.props.experience >= this.experienceNeeded() }
+  experienceNeeded(): number { return 100 * this.props.level ** 2 }
+  maxHp(): number { return 100 + (this.props.level - 1) * 20 + this.props.stats.vit * 10 }
+  maxMp(): number { return 50 + (this.props.level - 1) * 5 + this.props.stats.int * 5 }
 }
 ```
 
@@ -562,9 +426,6 @@ Interfaces defining what the module can do (inbound) and what it needs (outbound
 
 ```typescript
 // modules/player/ports/inbound/player.port.ts
-import { Context, Effect } from "effect"
-import type { PlayerId } from "@/shared/kernel/types"
-
 export class PlayerPort extends Context.Tag("PlayerPort")<
   PlayerPort,
   {
@@ -591,46 +452,27 @@ export class CharacterRepository extends Context.Tag("CharacterRepository")<
 
 ### 5.3 Application Layer
 
-Use case implementations that orchestrate domain logic and depend on ports. Use `Effect.gen`.
+Use case implementations that orchestrate domain logic. Always use `Effect.gen`.
 
 ```typescript
 // modules/player/application/create-character.use-case.ts
-import { Effect } from "effect"
-import { CharacterRepository } from "../ports/outbound/character.repository"
-import { EventBus } from "@/shared/infrastructure/event-bus"
-import { Character } from "../domain/entities/character"
-import { PlayerCreated } from "../events/published"
-
 export const createCharacter = (params: CreateCharacterParams) =>
   Effect.gen(function* () {
     const repo = yield* CharacterRepository
     const eventBus = yield* EventBus
 
-    // 1. Check name uniqueness (domain rule)
     const existing = yield* repo.findByName(params.name)
-    if (existing) {
-      return yield* Effect.fail(new CharacterNameTakenError({ name: params.name }))
-    }
+    if (existing) return yield* Effect.fail(new CharacterNameTakenError({ name: params.name }))
 
-    // 2. Create domain entity
     const character = Character.create({
-      id: params.playerId,
-      name: params.name,
-      classId: params.classId,
-      level: 1,
-      experience: 0,
-      stats: getStartingStats(params.classId),
+      id: params.playerId, name: params.name, classId: params.classId,
+      level: 1, experience: 0, stats: getStartingStats(params.classId),
     })
 
-    // 3. Persist via outbound port
     yield* repo.save(character)
-
-    // 4. Publish domain event
     yield* eventBus.publish(new PlayerCreated({
-      playerId: character.id,
-      name: character.name,
-      classId: character.classId,
-      timestamp: Date.now(),
+      playerId: character.id, name: character.name,
+      classId: character.classId, timestamp: Date.now(),
     }))
 
     return character
@@ -639,77 +481,42 @@ export const createCharacter = (params: CreateCharacterParams) =>
 
 ### 5.4 Adapters Layer
 
-Concrete implementations of ports. Database queries, Redis calls, WebSocket handlers.
+Concrete implementations of ports using `Layer.effect`.
 
 ```typescript
 // modules/player/adapters/outbound/pg-character.repository.ts
-import { Effect, Layer } from "effect"
-import { CharacterRepository } from "../../ports/outbound/character.repository"
-import { DatabaseService } from "@/shared/infrastructure/database"
-
 export const PgCharacterRepositoryLive = Layer.effect(
   CharacterRepository,
   Effect.gen(function* () {
-    const db = yield* DatabaseService  // provides Kysely instance
+    const db = yield* DatabaseService
 
     return {
       findById: (id) =>
         Effect.tryPromise(() =>
-          db.kysely
-            .selectFrom("characters")
-            .selectAll()
-            .where("id", "=", id)
-            .executeTakeFirst()
+          db.kysely.selectFrom("characters").selectAll()
+            .where("id", "=", id).executeTakeFirst()
         ).pipe(Effect.map((row) => row ? Character.create(row) : null)),
 
       findByName: (name) =>
         Effect.tryPromise(() =>
-          db.kysely
-            .selectFrom("characters")
-            .selectAll()
-            .where("name", "=", name)
-            .executeTakeFirst()
+          db.kysely.selectFrom("characters").selectAll()
+            .where("name", "=", name).executeTakeFirst()
         ).pipe(Effect.map((row) => row ? Character.create(row) : null)),
 
       save: (character) =>
         Effect.tryPromise(() =>
-          db.kysely
-            .insertInto("characters")
-            .values({
-              id: character.id,  // UUIDv7 via PostgreSQL 18 uuidv7()
-              name: character.name,
-              class_id: character.classId,
-              level: character.level,
-              experience: 0,
-            })
-            .execute()
+          db.kysely.insertInto("characters").values({
+            id: character.id, name: character.name,
+            class_id: character.classId, level: character.level, experience: 0,
+          }).execute()
         ),
 
       update: (character) =>
         Effect.tryPromise(() =>
-          db.kysely
-            .updateTable("characters")
+          db.kysely.updateTable("characters")
             .set({ level: character.level, experience: character.experience })
-            .where("id", "=", character.id)
-            .execute()
+            .where("id", "=", character.id).execute()
         ),
-    }
-  })
-)
-
-// modules/player/adapters/inbound/player.handler.ts
-import { Effect, Layer } from "effect"
-import { PlayerPort } from "../../ports/inbound/player.port"
-import { createCharacter } from "../../application/create-character.use-case"
-import { getPlayer } from "../../application/get-player.use-case"
-
-export const PlayerHandlerLive = Layer.effect(
-  PlayerPort,
-  Effect.gen(function* () {
-    return {
-      createCharacter,
-      getPlayer,
-      allocateStats,
     }
   })
 )
@@ -721,12 +528,6 @@ Each module's `module.ts` composes its layers into a single Effect Layer.
 
 ```typescript
 // modules/player/module.ts
-import { Layer } from "effect"
-import { PlayerHandlerLive } from "./adapters/inbound/player.handler"
-import { PgCharacterRepositoryLive } from "./adapters/outbound/pg-character.repository"
-import { RedisPlayerCacheLive } from "./adapters/outbound/redis-player-cache"
-import { playerEventSubscriptions } from "./events/subscriptions"
-
 export const PlayerModule = Layer.mergeAll(
   PlayerHandlerLive,
   PgCharacterRepositoryLive,
@@ -745,9 +546,6 @@ The EventBus is the **backbone** for all inter-module communication. No module e
 
 ```typescript
 // shared/infrastructure/event-bus/event-bus.ts
-import { Context, Effect, Data } from "effect"
-import type { DomainEvent } from "@/shared/kernel/events"
-
 export class EventBus extends Context.Tag("EventBus")<
   EventBus,
   {
@@ -763,21 +561,15 @@ export class EventBus extends Context.Tag("EventBus")<
 ### 6.2 In-Memory Implementation (Phase 0-1)
 
 ```typescript
-// shared/infrastructure/event-bus/in-memory-event-bus.ts
-import { Effect, Layer, Queue, Schedule } from "effect"
-import { EventBus } from "./event-bus"
-
 export const InMemoryEventBusLive = Layer.effect(
   EventBus,
   Effect.gen(function* () {
     const subscribers = new Map<string, Set<(event: any) => Effect.Effect<void>>>()
     const eventQueue = yield* Queue.unbounded<DomainEvent>()
 
-    // Process events asynchronously
     const processEvents = Effect.gen(function* () {
       const event = yield* Queue.take(eventQueue)
       const handlers = subscribers.get(event._tag) || new Set()
-
       yield* Effect.forEach(
         Array.from(handlers),
         (handler) => handler(event).pipe(Effect.catchAll(Effect.logError)),
@@ -785,16 +577,13 @@ export const InMemoryEventBusLive = Layer.effect(
       )
     })
 
-    // Start event processing loop
     yield* Effect.repeat(processEvents, Schedule.forever).pipe(Effect.fork)
 
     return {
       publish: (event) => Queue.offer(eventQueue, event),
       subscribe: (eventType, handler) =>
         Effect.sync(() => {
-          if (!subscribers.has(eventType)) {
-            subscribers.set(eventType, new Set())
-          }
+          if (!subscribers.has(eventType)) subscribers.set(eventType, new Set())
           subscribers.get(eventType)!.add(handler as any)
         }),
     }
@@ -803,8 +592,6 @@ export const InMemoryEventBusLive = Layer.effect(
 ```
 
 ### 6.3 Event Flow Example
-
-A complete flow showing how a monster kill ripples across modules via events:
 
 ```
 Player kills monster
@@ -844,17 +631,12 @@ The EventBus implementation is swappable without changing any module code:
 | **Phase 2** | Redis Streams | Multi-server, at-least-once delivery |
 | **Phase 3+** | NATS / Kafka | Unlimited scale, event sourcing ready |
 
-Since all modules depend on the `EventBus` interface (not the implementation), swapping is a single `Layer` change in `index.ts`:
+Swapping is a single `Layer` change in `index.ts`:
 
 ```typescript
-// Phase 0-1
-const EventBusLayer = InMemoryEventBusLive
-
-// Phase 2 - just swap the layer
-const EventBusLayer = RedisStreamsEventBusLive
-
-// Phase 3+ - swap again
-const EventBusLayer = NatsEventBusLive
+const EventBusLayer = InMemoryEventBusLive   // Phase 0-1
+const EventBusLayer = RedisStreamsEventBusLive // Phase 2
+const EventBusLayer = NatsEventBusLive        // Phase 3+
 ```
 
 ---
@@ -867,8 +649,6 @@ The **Gateway** is the entry point to the server. It handles external connection
 
 ```typescript
 // gateway/websocket/server.ts
-import { Context, Effect, Layer, Queue } from "effect"
-
 interface WebSocketData {
   readonly playerId: PlayerId
   readonly sessionToken: string
@@ -879,10 +659,8 @@ interface WebSocketData {
 export class WebSocketGateway extends Context.Tag("WebSocketGateway")<
   WebSocketGateway,
   {
-    readonly broadcastToZone: (zoneId: ZoneId, type: string, data: unknown) =>
-      Effect.Effect<void>
-    readonly sendToPlayer: (playerId: PlayerId, message: unknown) =>
-      Effect.Effect<void>
+    readonly broadcastToZone: (zoneId: ZoneId, type: string, data: unknown) => Effect.Effect<void>
+    readonly sendToPlayer: (playerId: PlayerId, message: unknown) => Effect.Effect<void>
     readonly broadcast: (type: string, data: unknown) => Effect.Effect<void>
   }
 >() {}
@@ -891,7 +669,6 @@ export const WebSocketGatewayLive = Layer.effect(
   WebSocketGateway,
   Effect.gen(function* () {
     const messageRouter = yield* MessageRouter
-    const identityModule = yield* IdentityPort
     const connections = new Map<string, ServerWebSocket<WebSocketData>>()
 
     const websocketHandlers = {
@@ -900,13 +677,9 @@ export const WebSocketGatewayLive = Layer.effect(
         ws.subscribe(`zone:${ws.data.zoneId}`)
         ws.subscribe(`player:${ws.data.playerId}`)
       },
-
       message(ws: ServerWebSocket<WebSocketData>, message: string | Buffer) {
-        Effect.runPromise(
-          messageRouter.route(ws.data.playerId, message)
-        )
+        Effect.runPromise(messageRouter.route(ws.data.playerId, message))
       },
-
       close(ws: ServerWebSocket<WebSocketData>) {
         connections.delete(ws.data.playerId)
         ws.unsubscribe(`zone:${ws.data.zoneId}`)
@@ -932,60 +705,24 @@ The message router dispatches incoming client messages to the correct module han
 
 ```typescript
 // gateway/websocket/message-router.ts
-import { Effect, Match } from "effect"
-import type { PlayerId } from "@/shared/kernel/types"
-import type { ClientMessage } from "@/shared/kernel/messages"
-
 export const routeMessage = (msg: ClientMessage, playerId: PlayerId) =>
   Match.type<ClientMessage>().pipe(
-    // World module handles movement
     Match.tag("movement", (m) => worldModule.handleMovement(playerId, m)),
-
-    // Combat module handles skill activation/cancellation
     Match.tag("skill_activate", (m) => combatModule.handleSkillActivate(playerId, m)),
     Match.tag("skill_cancel", (m) => combatModule.handleSkillCancel(playerId, m)),
-
-    // Social module handles chat
     Match.tag("chat", (m) => socialModule.handleChat(playerId, m)),
-
-    // Economy module handles trading
     Match.tag("trade_request", (m) => economyModule.handleTradeRequest(playerId, m)),
     Match.tag("trade_accept", (m) => economyModule.handleTradeAccept(playerId, m)),
-
-    // Inventory module handles item operations
     Match.tag("item_use", (m) => inventoryModule.handleItemUse(playerId, m)),
     Match.tag("item_equip", (m) => inventoryModule.handleItemEquip(playerId, m)),
-
-    // Heartbeat handled directly by gateway
     Match.tag("heartbeat", (m) => handleHeartbeat(playerId, m)),
-
     Match.exhaustive
   )(msg)
 ```
 
 ### 7.3 Binary Protocol for Position Updates
 
-High-frequency position updates use a binary protocol to minimize bandwidth:
-
-```typescript
-// gateway/websocket/binary-protocol.ts
-
-// Position update: 43 bytes vs ~200 bytes JSON
-// Format: [type:1][playerId:16][x:4][y:4][z:4][floorId:2][zoneId:8][tick:4]
-const encodePositionUpdate = (update: PositionUpdate): ArrayBuffer => {
-  const buffer = new ArrayBuffer(43)
-  const view = new DataView(buffer)
-
-  view.setUint8(0, MessageType.POSITION_UPDATE)
-  // ... encode fields as binary
-  return buffer
-}
-
-const decodePositionUpdate = (buffer: ArrayBuffer): PositionUpdate => {
-  const view = new DataView(buffer)
-  // ... decode binary fields
-}
-```
+High-frequency position updates use a binary protocol to minimize bandwidth. Format: `[type:1][playerId:16][x:4][y:4][z:4][floorId:2][zoneId:8][tick:4]` = **43 bytes** vs ~200 bytes JSON.
 
 ---
 
@@ -995,7 +732,6 @@ const decodePositionUpdate = (buffer: ArrayBuffer): PositionUpdate => {
 
 ```typescript
 // shared/kernel/messages.ts
-
 type ClientMessage =
   | { _tag: "movement"; direction: Direction; timestamp: number }
   | { _tag: "skill_activate"; skillId: string; targetId?: string; timestamp: number }
@@ -1038,8 +774,6 @@ The game loop runs in the **gateway** layer at a fixed 60Hz tick rate. Each tick
 
 ```typescript
 // gateway/game-loop/game-loop.ts
-import { Context, Effect, Layer, Schedule, Ref } from "effect"
-
 interface GameState {
   readonly tick: number
   readonly entities: Map<string, Entity>
@@ -1055,70 +789,34 @@ export class GameLoopService extends Context.Tag("GameLoopService")<
   }
 >() {}
 
-const TICK_RATE = 60 // 60 Hz
+const TICK_RATE = 60
 const TICK_INTERVAL = 1000 / TICK_RATE // ~16.67ms
 
 export const GameLoopLive = Layer.effect(
   GameLoopService,
   Effect.gen(function* () {
-    const stateRef = yield* Ref.make<GameState>({
-      tick: 0,
-      entities: new Map(),
-      pendingInputs: new Map(),
-    })
-
-    let running = false
-    let tickFiber: Fiber.Fiber<void, never>
+    const stateRef = yield* Ref.make<GameState>({ tick: 0, entities: new Map(), pendingInputs: new Map() })
 
     const gameTick = Effect.gen(function* () {
       const state = yield* Ref.get(stateRef)
       const newTick = state.tick + 1
 
-      // 1. Process all pending inputs
       yield* processInputs(state.pendingInputs)
-
-      // 2. Update movement (→ world module)
       yield* worldModule.updateMovement(state.entities)
-
-      // 3. Process combat (→ combat module)
       yield* combatModule.processCombatTick(state.entities)
-
-      // 4. Update monster AI (→ monster module)
       yield* monsterModule.updateAI()
-
-      // 5. Handle collisions
       yield* handleCollisions(state.entities)
-
-      // 6. Validate state (anti-cheat)
       yield* validateGameState(state.entities)
-
-      // 7. Broadcast delta updates to clients
       yield* broadcastUpdates(state.entities, newTick)
-
-      // 8. Update tick counter
       yield* Ref.update(stateRef, (s) => ({ ...s, tick: newTick }))
     })
 
-    const start = Effect.gen(function* () {
-      if (running) return
-      running = true
-      tickFiber = yield* Effect.repeat(
-        gameTick,
-        Schedule.spaced(`${TICK_INTERVAL} millis`)
-      ).pipe(Effect.fork)
-      yield* Effect.logInfo(`Game loop started at ${TICK_RATE} Hz`)
-    })
-
-    const stop = Effect.gen(function* () {
-      if (!running) return
-      running = false
-      yield* Fiber.interrupt(tickFiber)
-      yield* Effect.logInfo("Game loop stopped")
-    })
-
     return {
-      start,
-      stop,
+      start: Effect.gen(function* () {
+        yield* Effect.repeat(gameTick, Schedule.spaced(`${TICK_INTERVAL} millis`)).pipe(Effect.fork)
+        yield* Effect.logInfo(`Game loop started at ${TICK_RATE} Hz`)
+      }),
+      stop: Effect.logInfo("Game loop stopped"),
       getTick: Ref.get(stateRef).pipe(Effect.map((s) => s.tick)),
     }
   })
@@ -1148,27 +846,20 @@ export const GameLoopLive = Layer.effect(
 
 ### 9.3 Input Processing Pipeline
 
+Each input goes through: structural validation → rate limit check → route to module → suspicion scoring.
+
 ```typescript
-// gateway/game-loop/tick-pipeline.ts
 const processInputs = (pendingInputs: Map<string, PlayerInput[]>) =>
   Effect.gen(function* () {
     for (const [playerId, inputs] of pendingInputs) {
       for (const input of inputs) {
-        // Step 1: Structural validation
         const structureValid = yield* validateInputStructure(input)
-        if (!structureValid.valid) {
-          yield* logInvalidInput(playerId, input, structureValid.reason)
-          continue
-        }
+        if (!structureValid.valid) { yield* logInvalidInput(playerId, input, structureValid.reason); continue }
 
-        // Step 2: Rate limit check
         const rateValid = yield* checkInputRate(playerId, input.type)
-        if (!rateValid) continue // Silently drop
+        if (!rateValid) continue
 
-        // Step 3: Route to appropriate module via message router
         yield* routeMessage(input, playerId)
-
-        // Step 4: Log suspicious patterns
         yield* checkSuspicionScore(playerId, input)
       }
     }
@@ -1221,51 +912,17 @@ Each module owns its own state. The state hierarchy determines where data lives 
 
 ### 10.2 State Synchronization
 
+State updates use delta compression, grouped by zone. Each tick, the gateway broadcasts only changed entities to zone subscribers via `wsGateway.broadcastToZone()`.
+
 ```typescript
-// State sync with delta compression (in gateway layer)
 interface EntityState {
-  id: string
-  position: Position
-  velocity: Velocity
-  hp: number
-  mp: number
-  animationState: string
-  lastUpdate: number
+  id: string; position: Position; velocity: Velocity
+  hp: number; mp: number; animationState: string; lastUpdate: number
 }
 
 interface StateUpdate {
-  tick: number
-  timestamp: number
-  updates: EntityState[]
-  removed: string[]
+  tick: number; timestamp: number; updates: EntityState[]; removed: string[]
 }
-
-const broadcastUpdates = (entities: Map<string, EntityState>, tick: number) =>
-  Effect.gen(function* () {
-    const wsGateway = yield* WebSocketGateway
-
-    // Group entities by zone
-    const entitiesByZone = new Map<string, EntityState[]>()
-
-    for (const entity of entities.values()) {
-      const zoneId = entity.position.zoneId
-      if (!entitiesByZone.has(zoneId)) {
-        entitiesByZone.set(zoneId, [])
-      }
-      entitiesByZone.get(zoneId)!.push(entity)
-    }
-
-    // Broadcast to each zone
-    for (const [zoneId, zoneEntities] of entitiesByZone) {
-      const update: StateUpdate = {
-        tick,
-        timestamp: Date.now(),
-        updates: zoneEntities,
-        removed: [],
-      }
-      yield* wsGateway.broadcastToZone(zoneId, "state_update", update)
-    }
-  })
 ```
 
 ---
@@ -1301,119 +958,53 @@ Zone management is owned by the **world module**. Each zone is an independent pu
 
 ### 11.2 Zone Server Assignment
 
+Zone-to-server mapping uses consistent hashing. Rebalancing triggers when `playerCount > ZONE_MAX_PLAYERS`, migrating the zone to the least-loaded server.
+
 ```typescript
-// modules/world/application/zone-manager.ts
 interface ZoneAssignment {
-  zoneId: ZoneId
-  serverId: string
-  playerCount: number
-  lastRebalance: number
+  zoneId: ZoneId; serverId: string; playerCount: number; lastRebalance: number
 }
 
-// Zone-to-server mapping using consistent hashing
-const assignZoneToServer = (zoneId: ZoneId, servers: string[]): string => {
-  const hash = hashFunction(zoneId)
-  const serverIndex = hash % servers.length
-  return servers[serverIndex]
-}
-
-// Rebalance when server overloaded
-const rebalanceZones = (assignments: ZoneAssignment[]) =>
-  Effect.gen(function* () {
-    for (const assignment of assignments) {
-      if (assignment.playerCount > ZONE_MAX_PLAYERS) {
-        const newServer = findLeastLoadedServer()
-        yield* migrateZone(assignment.zoneId, newServer)
-      }
-    }
-  })
+const assignZoneToServer = (zoneId: ZoneId, servers: string[]): string =>
+  servers[hashFunction(zoneId) % servers.length]
 ```
 
 ---
 
 ## 12. Client Architecture
 
-The client follows the same **Clean Architecture** principles as the server. Dependencies point inward: Adapters → Application → Ports → Domain. The UI framework (React), renderer (PixiJS), and network (WebSocket) are all **adapters** — they can be swapped without touching business logic.
+The client follows the same **Clean Architecture** principles as the server. Dependencies point inward: Adapters → Application → Ports → Domain. React, PixiJS, and WebSocket are all **adapters** — swappable without touching business logic.
 
 ### 12.1 Client Project Structure
 
 ```
 packages/client/src/
 ├── domain/                           # Pure TypeScript - ZERO dependencies
-│   ├── entities/                     # Client-side entity representations
-│   │   ├── player.ts                # LocalPlayer, RemotePlayer
-│   │   ├── monster.ts               # MonsterEntity (render state)
-│   │   ├── item.ts                  # ItemDefinition, InventorySlot
-│   │   └── skill.ts                 # SkillDefinition, SkillSlot
-│   ├── value-objects/
-│   │   ├── position.ts              # Position, Velocity, Direction
-│   │   ├── stats.ts                 # HP, MP, StatBlock
-│   │   └── chat-message.ts          # ChatChannel, ChatEntry
-│   └── errors.ts                    # Client domain errors
+│   ├── entities/                     # LocalPlayer, RemotePlayer, MonsterEntity, Item, Skill
+│   ├── value-objects/                # Position, Velocity, Direction, HP, MP, StatBlock, ChatEntry
+│   └── errors.ts
 │
-├── ports/                            # Interfaces (what the app needs)
-│   ├── inbound/                     # Use case interfaces (called by adapters)
-│   │   ├── game.port.ts             # startGame, stopGame, processInput
-│   │   ├── combat.port.ts           # activateSkill, cancelSkill
-│   │   ├── inventory.port.ts        # equipItem, useItem, moveItem
-│   │   ├── social.port.ts           # sendChat, inviteToParty
-│   │   └── auth.port.ts             # login, register, logout
-│   └── outbound/                    # Infrastructure interfaces (implemented by adapters)
-│       ├── network.port.ts          # connect, send, onMessage, disconnect
-│       ├── renderer.port.ts         # renderEntity, removeEntity, updateCamera
-│       ├── audio.port.ts            # playSound, playMusic, stopMusic
-│       └── storage.port.ts          # saveSettings, loadSettings
+├── ports/
+│   ├── inbound/                     # game.port, combat.port, inventory.port, social.port, auth.port
+│   └── outbound/                    # network.port, renderer.port, audio.port, storage.port
 │
-├── application/                      # Use cases + state management
-│   ├── use-cases/
-│   │   ├── process-input.ts         # Keyboard/mouse → game action
-│   │   ├── handle-server-message.ts # ServerMessage → state update
-│   │   ├── prediction.ts           # Client-side prediction + reconciliation
-│   │   ├── activate-skill.ts       # Validate cooldown, send to server
-│   │   ├── manage-inventory.ts     # Equip, use, move items locally
-│   │   └── send-chat.ts            # Validate + dispatch chat message
-│   └── stores/                      # Zustand stores (application state)
-│       ├── game.store.ts            # tick, entities, currentZone
-│       ├── player.store.ts          # localPlayer, stats, skills, inventory
-│       ├── ui.store.ts              # menus, tooltips, modals
-│       └── network.store.ts         # connectionStatus, latency, pendingInputs
+├── application/
+│   ├── use-cases/                   # process-input, handle-server-message, prediction,
+│   │                                # activate-skill, manage-inventory, send-chat
+│   └── stores/                      # Zustand: game.store, player.store, ui.store, network.store
 │
-├── adapters/                         # Concrete implementations
-│   ├── inbound/                     # Input adapters (things that trigger use cases)
-│   │   ├── keyboard.adapter.ts     # WASD, hotkeys → processInput use case
-│   │   ├── mouse.adapter.ts        # Click, drag → target selection, UI interaction
-│   │   └── touch.adapter.ts        # Mobile touch controls
-│   ├── outbound/                    # Infrastructure adapters
-│   │   ├── websocket.adapter.ts    # WebSocket connection, reconnect, heartbeat
-│   │   ├── pixi-renderer.adapter.ts # PixiJS sprite rendering, camera, particles
-│   │   ├── audio.adapter.ts        # Web Audio API for sound effects/music
-│   │   └── local-storage.adapter.ts # Browser localStorage for settings
-│   └── ui/                          # React UI components (presentation adapters)
-│       ├── App.tsx
-│       ├── GameCanvas.tsx           # PixiJS mount point
-│       ├── hud/
-│       │   ├── HpMpBar.tsx
-│       │   ├── SkillBar.tsx
-│       │   └── Minimap.tsx
-│       ├── panels/
-│       │   ├── InventoryPanel.tsx
-│       │   ├── CharacterPanel.tsx
-│       │   ├── QuestLog.tsx
-│       │   └── SettingsPanel.tsx
-│       ├── social/
-│       │   ├── ChatWindow.tsx
-│       │   ├── PartyFrame.tsx
-│       │   └── GuildPanel.tsx
-│       ├── auth/
-│       │   ├── LoginPage.tsx
-│       │   ├── RegisterPage.tsx
-│       │   └── CharacterCreate.tsx
-│       └── shared/
-│           ├── Tooltip.tsx
-│           ├── Modal.tsx
-│           └── ItemIcon.tsx
+├── adapters/
+│   ├── inbound/                     # keyboard.adapter, mouse.adapter, touch.adapter
+│   ├── outbound/                    # websocket.adapter, pixi-renderer.adapter, audio.adapter, local-storage.adapter
+│   └── ui/                          # React components
+│       ├── App.tsx, GameCanvas.tsx
+│       ├── hud/                     # HpMpBar, SkillBar, Minimap
+│       ├── panels/                  # InventoryPanel, CharacterPanel, QuestLog, SettingsPanel
+│       ├── social/                  # ChatWindow, PartyFrame, GuildPanel
+│       ├── auth/                    # LoginPage, RegisterPage, CharacterCreate
+│       └── shared/                  # Tooltip, Modal, ItemIcon
 │
-└── index.tsx                         # App entry point, wire adapters
+└── index.tsx
 ```
 
 ### 12.2 Clean Architecture Layers (Client)
@@ -1453,69 +1044,25 @@ packages/client/src/
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### 12.3 Client Domain Layer
-
-Pure TypeScript entities that mirror server state. No React, no PixiJS, no WebSocket — just data and logic.
+### 12.3 Client Domain & Ports
 
 ```typescript
 // domain/entities/player.ts
-import type { Position, Velocity } from "../value-objects/position"
-import type { StatBlock } from "../value-objects/stats"
-
 export interface LocalPlayer {
-  readonly id: string
-  readonly name: string
-  readonly level: number
-  readonly position: Position
-  readonly velocity: Velocity
-  readonly hp: number
-  readonly maxHp: number
-  readonly mp: number
-  readonly maxMp: number
-  readonly stats: StatBlock
-  readonly animationState: string
+  readonly id: string; readonly name: string; readonly level: number
+  readonly position: Position; readonly velocity: Velocity
+  readonly hp: number; readonly maxHp: number
+  readonly mp: number; readonly maxMp: number
+  readonly stats: StatBlock; readonly animationState: string
 }
 
 export interface RemotePlayer {
-  readonly id: string
-  readonly name: string
-  readonly level: number
-  readonly position: Position
-  readonly velocity: Velocity
-  readonly hp: number
-  readonly maxHp: number
-  readonly animationState: string
-  readonly guildTag?: string
+  readonly id: string; readonly name: string; readonly level: number
+  readonly position: Position; readonly velocity: Velocity
+  readonly hp: number; readonly maxHp: number
+  readonly animationState: string; readonly guildTag?: string
 }
 
-// domain/value-objects/position.ts
-export interface Position {
-  readonly x: number
-  readonly y: number
-  readonly z: number
-  readonly floorId: number
-  readonly zoneId: string
-}
-
-export interface Velocity {
-  readonly vx: number
-  readonly vy: number
-}
-
-export const lerp = (a: Position, b: Position, t: number): Position => ({
-  x: a.x + (b.x - a.x) * t,
-  y: a.y + (b.y - a.y) * t,
-  z: a.z + (b.z - a.z) * t,
-  floorId: b.floorId,
-  zoneId: b.zoneId,
-})
-```
-
-### 12.4 Client Ports
-
-Interfaces that define what the application layer needs from the outside world. Adapters implement these.
-
-```typescript
 // ports/outbound/network.port.ts
 export interface NetworkPort {
   connect(url: string, token: string): Promise<void>
@@ -1538,23 +1085,12 @@ export interface RendererPort {
   showDamageNumber(position: Position, amount: number, isCrit: boolean): void
   playSkillEffect(skillId: string, origin: Position, targets: Position[]): void
 }
-
-// ports/inbound/game.port.ts
-export interface GamePort {
-  processInput(input: PlayerInput): void
-  handleServerMessage(message: ServerMessage): void
-  startGameLoop(): void
-  stopGameLoop(): void
-}
 ```
 
-### 12.5 Client Application Layer (Use Cases + Stores)
-
-Use cases orchestrate domain logic. Zustand stores hold application state.
+### 12.4 Client-Side Prediction
 
 ```typescript
 // application/use-cases/prediction.ts
-// Client-side prediction with server reconciliation (pure logic, no framework deps)
 export class ClientPrediction {
   private inputSequence = 0
   private pendingInputs: PendingInput[] = []
@@ -1562,48 +1098,33 @@ export class ClientPrediction {
   processInput(input: PlayerInput, localPlayer: LocalPlayer): PredictionResult {
     const seq = this.inputSequence++
     input.sequence = seq
-
-    // Apply prediction using domain logic
     const predictedPosition = applyMovement(localPlayer.position, input)
-
     this.pendingInputs.push({ sequence: seq, input, predictedPosition })
-
     return { predictedPosition, sequenceNumber: seq }
   }
 
   reconcile(serverState: EntityState): ReconciliationResult {
-    // Remove acknowledged inputs
-    this.pendingInputs = this.pendingInputs.filter(
-      (p) => p.sequence > serverState.lastProcessedSeq
-    )
-
-    // Check for misprediction
-    const currentPredicted = this.getCurrentPredictedPosition()
-    const delta = distance(currentPredicted, serverState.position)
+    this.pendingInputs = this.pendingInputs.filter((p) => p.sequence > serverState.lastProcessedSeq)
+    const delta = distance(this.getCurrentPredictedPosition(), serverState.position)
 
     if (delta > RECONCILIATION_THRESHOLD) {
-      // Re-apply pending inputs from server state
       let corrected = serverState.position
-      for (const pending of this.pendingInputs) {
-        corrected = applyMovement(corrected, pending.input)
-      }
+      for (const pending of this.pendingInputs) corrected = applyMovement(corrected, pending.input)
       return { needsCorrection: true, correctedPosition: corrected }
     }
-
     return { needsCorrection: false }
   }
 }
+```
 
+### 12.5 Zustand Store Pattern
+
+```typescript
 // application/stores/player.store.ts
-import { create } from "zustand"
-import type { LocalPlayer } from "../../domain/entities/player"
-
 interface PlayerStore {
   localPlayer: LocalPlayer | null
   inventory: InventorySlot[]
   skillSlots: SkillSlot[]
-
-  // Actions (called by use cases)
   setPlayer: (player: LocalPlayer) => void
   updatePosition: (position: Position) => void
   updateHp: (hp: number) => void
@@ -1611,146 +1132,21 @@ interface PlayerStore {
 }
 
 export const usePlayerStore = create<PlayerStore>((set) => ({
-  localPlayer: null,
-  inventory: [],
-  skillSlots: [],
-
+  localPlayer: null, inventory: [], skillSlots: [],
   setPlayer: (player) => set({ localPlayer: player }),
   updatePosition: (position) =>
-    set((state) => ({
-      localPlayer: state.localPlayer
-        ? { ...state.localPlayer, position }
-        : null,
-    })),
+    set((state) => ({ localPlayer: state.localPlayer ? { ...state.localPlayer, position } : null })),
   updateHp: (hp) =>
-    set((state) => ({
-      localPlayer: state.localPlayer
-        ? { ...state.localPlayer, hp }
-        : null,
-    })),
+    set((state) => ({ localPlayer: state.localPlayer ? { ...state.localPlayer, hp } : null })),
   setInventory: (items) => set({ inventory: items }),
 }))
-```
-
-### 12.6 Client Adapters
-
-Concrete implementations of ports. These are the ONLY places that touch React, PixiJS, or WebSocket APIs.
-
-```typescript
-// adapters/outbound/websocket.adapter.ts
-import type { NetworkPort } from "../../ports/outbound/network.port"
-
-export class WebSocketAdapter implements NetworkPort {
-  private ws: WebSocket | null = null
-  private messageHandler: ((msg: ServerMessage) => void) | null = null
-  private heartbeatInterval: number | null = null
-  latency = 0
-  isConnected = false
-
-  async connect(url: string, token: string): Promise<void> {
-    this.ws = new WebSocket(`${url}?token=${token}`)
-
-    return new Promise((resolve, reject) => {
-      this.ws!.onopen = () => {
-        this.isConnected = true
-        this.startHeartbeat()
-        resolve()
-      }
-      this.ws!.onmessage = (event) => {
-        const msg = JSON.parse(event.data) as ServerMessage
-        if (msg.type === "heartbeat_ack") {
-          this.latency = Date.now() - msg.serverTime
-        } else {
-          this.messageHandler?.(msg)
-        }
-      }
-      this.ws!.onerror = () => reject(new Error("WebSocket connection failed"))
-    })
-  }
-
-  send(message: ClientMessage): void {
-    this.ws?.send(JSON.stringify(message))
-  }
-
-  onMessage(handler: (msg: ServerMessage) => void): void {
-    this.messageHandler = handler
-  }
-
-  // ...
-}
-
-// adapters/outbound/pixi-renderer.adapter.ts
-import { Application, Sprite, Container } from "pixi.js"
-import type { RendererPort } from "../../ports/outbound/renderer.port"
-
-export class PixiRendererAdapter implements RendererPort {
-  private app: Application | null = null
-  private entities = new Map<string, Sprite>()
-  private camera = new Container()
-
-  init(container: HTMLElement): void {
-    this.app = new Application()
-    this.app.init({ resizeTo: container }).then(() => {
-      container.appendChild(this.app!.canvas)
-      this.app!.stage.addChild(this.camera)
-    })
-  }
-
-  addEntity(id: string, config: SpriteConfig): void {
-    const sprite = Sprite.from(config.texture)
-    sprite.anchor.set(0.5, 1)
-    this.entities.set(id, sprite)
-    this.camera.addChild(sprite)
-  }
-
-  updateEntity(id: string, position: Position, animation: string): void {
-    const sprite = this.entities.get(id)
-    if (sprite) {
-      sprite.x = position.x
-      sprite.y = position.y
-    }
-  }
-
-  updateCamera(target: Position): void {
-    this.camera.x = -target.x + (this.app?.screen.width ?? 0) / 2
-    this.camera.y = -target.y + (this.app?.screen.height ?? 0) / 2
-  }
-
-  // ...
-}
-
-// adapters/ui/hud/SkillBar.tsx
-// React components are presentation adapters — they read from stores and call use cases
-import { usePlayerStore } from "../../../application/stores/player.store"
-import { useGameActions } from "../../../application/use-cases/activate-skill"
-
-export function SkillBar() {
-  const skillSlots = usePlayerStore((s) => s.skillSlots)
-  const { activateSkill } = useGameActions()
-
-  return (
-    <div className="flex gap-1 absolute bottom-4 left-1/2 -translate-x-1/2">
-      {skillSlots.map((slot, i) => (
-        <button
-          key={slot.skillId}
-          onClick={() => activateSkill(slot.skillId)}
-          className="w-12 h-12 border border-white/30 bg-black/60 rounded"
-        >
-          <img src={slot.iconUrl} alt={slot.name} />
-          <span className="text-xs text-white">{i + 1}</span>
-        </button>
-      ))}
-    </div>
-  )
-}
-```
 ```
 
 ---
 
 ## 13. Caching Strategy
 
-Each module accesses caching through the shared `CacheService` via its outbound ports. The caching strategy follows a three-tier approach.
+Each module accesses caching through the shared `CacheService` via its outbound ports. Cache invalidation is event-driven — modules react to domain events to invalidate stale entries.
 
 ### 13.1 Cache Layers
 
@@ -1788,103 +1184,36 @@ Each module accesses caching through the shared `CacheService` via its outbound 
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### 13.2 Cache Invalidation via Events
-
-Modules invalidate caches by reacting to domain events, keeping cache logic decoupled:
-
-```typescript
-// modules/economy/events/subscriptions.ts
-// When a trade completes, invalidate both players' cached data
-eventBus.subscribe("TradeCompleted", (event) =>
-  Effect.gen(function* () {
-    const cache = yield* CacheService
-
-    // Invalidate both players' inventory caches
-    yield* cache.invalidate(`player:${event.playerA}`)
-    yield* cache.invalidate(`player:${event.playerB}`)
-
-    // Invalidate economy-specific caches
-    yield* cache.invalidate(`trade:${event.tradeId}`)
-  })
-)
-```
-
 ---
 
 ## 14. Logging & Observability
 
 ### 14.1 Structured Logging
 
+Effect-TS built-in logging with console (dev) and JSON (prod) outputs. All log entries include `service`, `version`, `playerId`, and `action` annotations.
+
 ```typescript
-// shared/infrastructure/config/logger.ts
-import { Effect, Logger, LogLevel } from "effect"
-
 const GameLogger = Layer.mergeAll(
-  // Console logging for development
-  Logger.consoleLogger.pipe(
-    Logger.withMinimumLogLevel(LogLevel.Debug)
-  ),
-
-  // JSON logging for production
+  Logger.consoleLogger.pipe(Logger.withMinimumLogLevel(LogLevel.Debug)),
   Logger.jsonLogger.pipe(
     Logger.withMinimumLogLevel(LogLevel.Info),
     Logger.withLogAnnotation("service", "game-server"),
-    Logger.withLogAnnotation("version", "2.0.0")
   )
 )
-
-// Usage in any module
-const processPlayerAction = (playerId: PlayerId, action: PlayerAction) =>
-  Effect.gen(function* () {
-    yield* Effect.logInfo("Processing player action", {
-      playerId,
-      action: action.type,
-      timestamp: Date.now(),
-    })
-
-    // ... process action
-
-    yield* Effect.logDebug("Action processed", {
-      playerId,
-      action: action.type,
-      duration: Date.now() - action.timestamp,
-    })
-  })
 ```
 
 ### 14.2 Metrics Collection
 
-```typescript
-// Metrics collected per module, aggregated at infrastructure level
-import { Effect, Metric } from "effect"
+Key metrics collected via Effect `Metric` module:
 
-// Gateway metrics
-const playerCountGauge = Metric.gauge("game_players_online")
-const tickDurationHistogram = Metric.histogram("game_tick_duration_millis", {
-  boundaries: [1, 5, 10, 16, 20, 30, 50, 100],
-})
-const messagesPerSecond = Metric.counter("game_messages_total")
-
-// Combat module metrics
-const combatEventsCounter = Metric.counter("game_combat_events_total")
-
-// Economy module metrics
-const tradesCounter = Metric.counter("game_trades_total")
-const colTransferredCounter = Metric.counter("game_col_transferred_total")
-
-// Record metrics in game loop
-const gameTick = Effect.gen(function* () {
-  const startTime = Date.now()
-
-  // ... game logic ...
-
-  const duration = Date.now() - startTime
-  yield* Metric.update(tickDurationHistogram, duration)
-
-  const playerCount = yield* getPlayerCount()
-  yield* Metric.set(playerCountGauge, playerCount)
-})
-```
+| Metric | Type | Description |
+|--------|------|-------------|
+| `game_players_online` | Gauge | Currently connected players |
+| `game_tick_duration_millis` | Histogram | Per-tick processing time (buckets: 1,5,10,16,20,30,50,100ms) |
+| `game_messages_total` | Counter | Messages processed per second |
+| `game_combat_events_total` | Counter | Combat events (skills, damage) |
+| `game_trades_total` | Counter | Completed trades |
+| `game_col_transferred_total` | Counter | Total Col transferred |
 
 ---
 
@@ -1948,36 +1277,17 @@ import { WebSocketGatewayLive } from "@/gateway/websocket/server"
 import { GameLoopLive } from "@/gateway/game-loop/game-loop"
 import { HttpRoutesLive } from "@/gateway/http/routes"
 
-// Layer 1: Infrastructure (no dependencies)
-const InfrastructureLayer = Layer.mergeAll(
-  DatabaseLive,
-  CacheLive,
-  InMemoryEventBusLive,
-  ConfigLive
-)
+const InfrastructureLayer = Layer.mergeAll(DatabaseLive, CacheLive, InMemoryEventBusLive, ConfigLive)
 
-// Layer 2: Modules (depend on infrastructure)
 const ModuleLayer = Layer.mergeAll(
-  IdentityModule,
-  PlayerModule,
-  CombatModule,
-  MonsterModule,
-  InventoryModule,
-  EconomyModule,
-  SocialModule,
-  WorldModule,
-  QuestModule,
-  AnalyticsModule
+  IdentityModule, PlayerModule, CombatModule, MonsterModule, InventoryModule,
+  EconomyModule, SocialModule, WorldModule, QuestModule, AnalyticsModule
 ).pipe(Layer.provide(InfrastructureLayer))
 
-// Layer 3: Gateway (depends on modules)
 const GatewayLayer = Layer.mergeAll(
-  WebSocketGatewayLive,
-  GameLoopLive,
-  HttpRoutesLive
+  WebSocketGatewayLive, GameLoopLive, HttpRoutesLive
 ).pipe(Layer.provide(ModuleLayer))
 
-// Launch the application
 Layer.launch(GatewayLayer).pipe(BunRuntime.runMain)
 ```
 
