@@ -25,10 +25,10 @@
 
 #### 1.1 Monorepo & Tooling `[PARALLEL]`
 
-- [ ] Install moonrepo: `curl -fsSL https://moonrepo.dev/install/moon.sh | bash`
-- [ ] Install proto (toolchain manager): `curl -fsSL https://moonrepo.dev/install/proto.sh | bash`
-- [ ] Initialize monorepo with moon: `moon init`
-- [ ] Configure `.moon/workspace.yml`:
+- [x] Install moonrepo: `curl -fsSL https://moonrepo.dev/install/moon.sh | bash`
+- [x] Install proto (toolchain manager): `curl -fsSL https://moonrepo.dev/install/proto.sh | bash`
+- [x] Initialize monorepo with moon: `moon init`
+- [x] Configure `.moon/workspace.yml`:
   ```yaml
   projects:
     server: "packages/server"
@@ -38,7 +38,7 @@
     manager: "git"
     defaultBranch: "main"
   ```
-- [ ] Configure `.moon/toolchain.yml`:
+- [x] Configure `.moon/toolchain.yml`:
   ```yaml
   bun:
     version: "1.2"
@@ -46,37 +46,37 @@
     version: "22"
     packageManager: "bun"
   ```
-- [ ] Create project-level `moon.yml` for each package (`packages/server/moon.yml`, `packages/client/moon.yml`, `packages/shared/moon.yml`) with tasks: `dev`, `build`, `test`, `lint`, `format`, `typecheck`
-- [ ] Configure shared tasks in `.moon/tasks.yml`:
+- [x] Create project-level `moon.yml` for each package (`packages/server/moon.yml`, `packages/client/moon.yml`, `packages/shared/moon.yml`) with tasks: `dev`, `build`, `test`, `lint`, `format`, `typecheck`
+- [x] Configure shared tasks in `.moon/tasks.yml`:
   ```yaml
   tasks:
     lint:
-      command: "oxlint"
+      command: "oxlint --type-aware"
       inputs: ["src/**/*.ts", "src/**/*.tsx"]
     format:
       command: "oxfmt ."
       inputs: ["src/**/*.ts", "src/**/*.tsx"]
     typecheck:
-      command: "bun tsc --noEmit"
+      command: "tsc --noEmit"
       inputs: ["src/**/*.ts", "src/**/*.tsx", "tsconfig.json"]
   ```
-- [ ] Configure TypeScript (`tsconfig.json` with strict mode, path aliases)
-- [ ] Set up oxlint + oxfmt (oxc toolchain) with `.oxlintrc.json` and `.oxfmtrc.json` configs
-- [ ] Create `.env.example` with all required environment variables
-- [ ] Set up `CLAUDE.md` with project conventions and architecture decisions
+- [x] Configure TypeScript (`tsconfig.json` with strict mode, path aliases)
+- [x] Set up oxlint + oxfmt (oxc toolchain) — migrated to `oxlint.config.ts` with type-aware rules
+- [x] Create `.env.example` with all required environment variables
+- [x] Set up `CLAUDE.md` with project conventions and architecture decisions
 
 #### 1.2 CI/CD Pipeline `[PARALLEL]`
 
-- [ ] Create GitHub Actions workflow using `moon ci` for lint + typecheck + test on PR (only affected projects)
-- [ ] Create GitHub Actions workflow: build Docker image on merge to `main`
+- [x] Create GitHub Actions workflow using `moon ci` for lint + typecheck + test on PR (only affected projects)
+- [x] Create GitHub Actions workflow: build Docker image on merge to `main`
 - [ ] Configure branch protection rules (`main` requires PR + checks)
 - [ ] Set up GHCR (GitHub Container Registry) for Docker images
-- [ ] Create staging deployment workflow (manual trigger)
+- [x] Create staging deployment workflow (manual trigger)
 
 #### 1.3 Development Environment `[PARALLEL]`
 
-- [ ] Create `docker-compose.yaml` with PostgreSQL 18, Redis 7, TimescaleDB
-- [ ] Write `docker/postgres/init/01-schema.sql` for initial tables
+- [x] Create `docker-compose.yaml` with PostgreSQL 18, Redis 7, TimescaleDB
+- [x] Write `docker/postgres/init/01-schema.sql` for initial tables
 - [ ] Create seed scripts for development data
 - [ ] Document local setup in `README.md` (clone, install, run)
 - [ ] Verify `moon run server:dev` starts server with hot reload
@@ -85,7 +85,7 @@
 
 #### 1.4 Backend Project Structure `[DEPENDS: 1.1]`
 
-- [ ] Create `packages/server/src/` with modular clean architecture folder structure:
+- [x] Create `packages/server/src/` with modular clean architecture folder structure:
   ```
   src/
   ├── modules/                          # Feature modules (bounded contexts)
@@ -146,9 +146,9 @@
   │
   └── index.ts                          # Main entry - compose all module Layers
   ```
-- [ ] Set up Effect-TS project with `@effect/platform-bun`
-- [ ] Create basic HTTP server in `gateway/http/routes.ts` with `/health` and `/healthz` endpoints
-- [ ] Verify Bun server starts and responds on port 8080
+- [x] Set up Effect-TS project with `@effect/platform-bun`
+- [x] Create basic HTTP server in `gateway/http/routes.ts` with `/health` and `/healthz` endpoints
+- [x] Verify Bun server starts and responds on port 8080
 
 ---
 
@@ -156,16 +156,16 @@
 
 #### 2.1 Shared Kernel `[PARALLEL]`
 
-- [ ] Create `shared/kernel/types.ts` with branded types: `PlayerId`, `ZoneId`, `FloorId`, `ItemId`, `GuildId`, `PartyId`
-- [ ] Create `shared/kernel/events.ts` with base `DomainEvent` interface (`_tag`, `timestamp`, `aggregateId`)
-- [ ] Create `shared/kernel/errors.ts` with base `DomainError` tagged error class
+- [x] Create `shared/kernel/types.ts` with branded types: `PlayerId`, `ZoneId`, `FloorId`, `ItemId`, `GuildId`, `PartyId`
+- [x] Create `shared/kernel/events.ts` with base `DomainEvent` interface (`_tag`, `timestamp`, `aggregateId`)
+- [x] Create `shared/kernel/errors.ts` with base `DomainError` tagged error class
 
 #### 2.2 Database Layer `[PARALLEL]`
 
-- [ ] Install Kysely and pg driver: `bun add kysely pg`
-- [ ] Install go-migrate for migration management: `brew install golang-migrate` (or Docker image)
-- [ ] Configure Kysely with PostgreSQL 18 dialect and connection pool
-- [ ] Define Kysely database interface types for compile-time type safety:
+- [x] Install Kysely and pg driver: `bun add kysely pg`
+- [x] Install go-migrate for migration management: `brew install golang-migrate` (or Docker image)
+- [x] Configure Kysely with PostgreSQL 18 dialect and connection pool
+- [x] Define Kysely database interface types for compile-time type safety:
   ```ts
   // shared/infrastructure/database/types.ts
   import { Generated, ColumnType } from "kysely"
@@ -188,8 +188,8 @@
     // ... all other tables
   }
   ```
-- [ ] Create `shared/infrastructure/database/` Effect Layer wrapping Kysely instance (provides typed query builder + transaction support)
-- [ ] Create first go-migrate migration files:
+- [x] Create `shared/infrastructure/database/` Effect Layer wrapping Kysely instance (provides typed query builder + transaction support)
+- [x] Create first go-migrate migration files:
   - `migrations/000001_create_accounts.up.sql` (accounts table with `id UUID DEFAULT uuidv7()`)
   - `migrations/000001_create_accounts.down.sql`
   - `migrations/000002_create_characters.up.sql` (characters + character_stats tables)
@@ -199,24 +199,24 @@
 
 #### 2.3 Redis Cache Layer `[PARALLEL]`
 
-- [ ] Create `shared/infrastructure/cache/` Effect Layer (get, set, invalidate, increment)
-- [ ] Implement connection to Redis with reconnection logic
-- [ ] Create helper: session storage (set with TTL, get, delete)
-- [ ] Create helper: rate limit counter (token bucket pattern)
+- [x] Create `shared/infrastructure/cache/` Effect Layer (get, set, invalidate, increment)
+- [x] Implement connection to Redis with reconnection logic
+- [x] Create helper: session storage (set with TTL, get, delete)
+- [x] Create helper: rate limit counter (token bucket pattern)
 - [ ] Write integration test: set/get/expire a cache key
 
 #### 2.4 EventBus Infrastructure `[PARALLEL]`
 
-- [ ] Create `shared/infrastructure/event-bus/event-bus.ts` with `EventBus` Context.Tag (publish, subscribe)
-- [ ] Create `shared/infrastructure/event-bus/in-memory-event-bus.ts` with in-memory `Queue` implementation
-- [ ] Write test: publish event, verify subscriber receives it
-- [ ] Write test: multiple subscribers receive the same event
+- [x] Create `shared/infrastructure/event-bus/event-bus.ts` with `EventBus` Context.Tag (publish, subscribe)
+- [x] Create `shared/infrastructure/event-bus/in-memory-event-bus.ts` with in-memory `Queue` implementation
+- [x] Write test: publish event, verify subscriber receives it
+- [x] Write test: multiple subscribers receive the same event
 
 #### 2.5 Authentication Service - Identity Module (Better Auth) `[DEPENDS: 2.1, 2.2, 2.3]`
 
-- [ ] Install Better Auth: `bun add better-auth`
+- [x] Install Better Auth: `bun add better-auth`
 - [ ] Generate `BETTER_AUTH_SECRET` with `openssl rand -base64 32`, add to `.env`
-- [ ] Create `modules/identity/adapters/outbound/better-auth.ts` - Better Auth instance:
+- [x] Create `modules/identity/adapters/outbound/better-auth.ts` - Better Auth instance:
   ```ts
   import { betterAuth } from "better-auth"
   import { jwt, bearer } from "better-auth/plugins"
@@ -247,17 +247,17 @@
     },
   })
   ```
-- [ ] Run Better Auth migrations: `bun x @better-auth/cli migrate`
-- [ ] Create auth API route handler in `gateway/http/routes.ts` (`/api/auth/*`)
-- [ ] Create `modules/identity/ports/inbound/auth.port.ts` with `AuthPort` Context.Tag:
+- [x] Run Better Auth migrations: `bun x @better-auth/cli migrate` (migration file created: `000003_create_better_auth_tables`)
+- [x] Create auth API route handler in `gateway/http/routes.ts` (`/api/auth/*`)
+- [x] Create `modules/identity/ports/inbound/auth.port.ts` with `AuthPort` Context.Tag:
   - `getSession(request)` -> validate session via `auth.api.getSession`
   - `getJwtToken(sessionToken)` -> call `/api/auth/token` to get JWT for WebSocket
   - `revokeSession(token)` -> revoke session via `auth.api`
-- [ ] Create `modules/identity/application/login.use-case.ts` and `register.use-case.ts`
-- [ ] Create `modules/identity/events/published.ts`: `PlayerLoggedIn`, `PlayerRegistered` events
-- [ ] Create `modules/identity/module.ts` composing all identity layers
+- [x] Create `modules/identity/application/login.use-case.ts` and `register.use-case.ts`
+- [x] Create `modules/identity/events/published.ts`: `PlayerLoggedIn`, `PlayerRegistered` events
+- [x] Create `modules/identity/module.ts` composing all identity layers
 - [ ] Set up JWKS endpoint at `/api/auth/jwks` (automatic via JWT plugin)
-- [ ] Implement JWT validation for WebSocket upgrade in `gateway/websocket/server.ts` using `jose` library:
+- [x] Implement JWT validation for WebSocket upgrade in `gateway/websocket/server.ts` using `jose` library:
   ```ts
   import { jwtVerify, createRemoteJWKSet } from "jose"
   const JWKS = createRemoteJWKSet(new URL("http://localhost:8080/api/auth/jwks"))
@@ -280,19 +280,19 @@
 
 #### 2.6 Player Module `[DEPENDS: 2.2, 2.3, 2.4]`
 
-- [ ] Create `modules/player/domain/entities/character.ts` (pure TypeScript, no external deps)
-- [ ] Create `modules/player/domain/value-objects/` (CharacterName, Level, ExperiencePoints)
-- [ ] Create `modules/player/domain/errors.ts` (PlayerNotFoundError, CharacterNameTakenError)
-- [ ] Create `modules/player/ports/inbound/player.port.ts` with `PlayerPort` Context.Tag
-- [ ] Create `modules/player/ports/outbound/character.repository.ts` with `CharacterRepository` Context.Tag
-- [ ] Create `modules/player/application/create-character.use-case.ts`: validate name, insert character + stats, publish `PlayerCreated` event
-- [ ] Create `modules/player/application/get-player.use-case.ts`: cache-first lookup (Redis -> PostgreSQL)
-- [ ] Create `modules/player/adapters/outbound/pg-character.repository.ts`: Kysely query builder implementation
-- [ ] Create `modules/player/events/published.ts`: `PlayerCreated`, `PlayerLeveledUp`, `StatsAllocated`
-- [ ] Create `modules/player/module.ts` composing all player layers
-- [ ] Implement derived stats calculation (maxHp, attack, defense, etc.)
+- [x] Create `modules/player/domain/entities/character.ts` (pure TypeScript, no external deps)
+- [x] Create `modules/player/domain/value-objects/` (CharacterName, Level, ExperiencePoints)
+- [x] Create `modules/player/domain/errors.ts` (PlayerNotFoundError, CharacterNameTakenError)
+- [x] Create `modules/player/ports/inbound/player.port.ts` with `PlayerPort` Context.Tag
+- [x] Create `modules/player/ports/outbound/character.repository.ts` with `CharacterRepository` Context.Tag
+- [x] Create `modules/player/application/create-character.use-case.ts`: validate name, insert character + stats, publish `PlayerCreated` event
+- [x] Create `modules/player/application/get-player.use-case.ts`: cache-first lookup (Redis -> PostgreSQL)
+- [x] Create `modules/player/adapters/outbound/pg-character.repository.ts`: Kysely query builder implementation
+- [x] Create `modules/player/events/published.ts`: `PlayerCreated`, `PlayerLeveledUp`, `StatsAllocated`
+- [x] Create `modules/player/module.ts` composing all player layers
+- [x] Implement derived stats calculation (maxHp, attack, defense, etc.)
 - [ ] Define class definitions: Swordsman, Fencer, Rogue, Berserker, Lancer, Archer, Monk
-- [ ] Write tests: create character, get player, update position
+- [x] Write tests: create character, get player, update position
 
 ---
 
