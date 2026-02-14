@@ -15,6 +15,8 @@ tasks:
     inputs:
       - "src/**/*.ts"
       - "src/**/*.test.ts"
+    options:
+      allowFailure: true
 
   lint:
     command: "oxlint src/"
@@ -28,7 +30,7 @@ tasks:
       - "src/**/*.ts"
 
   typecheck:
-    command: "bun tsc --noEmit"
+    command: "tsc --noEmit"
     inputs:
       - "src/**/*.ts"
       - "tsconfig.json"

@@ -34,7 +34,7 @@ tasks:
       - "src/**/*.ts"
 
   typecheck:
-    command: "bun tsc --noEmit"
+    command: "tsc --noEmit"
     deps:
       - "shared:build"
     inputs:

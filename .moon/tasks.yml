@@ -13,7 +13,7 @@ tasks:
       - "src/**/*.tsx"
 
   typecheck:
-    command: "bun tsc --noEmit"
+    command: "tsc --noEmit"
     inputs:
       - "src/**/*.ts"
       - "src/**/*.tsx"

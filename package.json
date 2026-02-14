@@ -16,6 +16,7 @@
     "typecheck": "moon run :typecheck"
   },
   "devDependencies": {
+    "oxfmt": "^0.32.0",
     "oxlint": "^1.47.0",
     "oxlint-tsgolint": "^0.12.2",
     "tsdown": "^0.20.3",
