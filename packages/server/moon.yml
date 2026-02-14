@@ -1,0 +1,36 @@
+language: "javascript"
+type: "application"
+
+tasks:
+  dev:
+    command: "bun --watch src/index.ts"
+    local: true
+
+  build:
+    command: "bun build src/index.ts --outdir dist --target bun"
+    inputs:
+      - "src/**/*.ts"
+    outputs:
+      - "dist"
+
+  test:
+    command: "bun test"
+    inputs:
+      - "src/**/*.ts"
+      - "src/**/*.test.ts"
+
+  lint:
+    command: "oxlint src/"
+    inputs:
+      - "src/**/*.ts"
+
+  format:
+    command: "oxfmt src/"
+    inputs:
+      - "src/**/*.ts"
+
+  typecheck:
+    command: "bun tsc --noEmit"
+    inputs:
+      - "src/**/*.ts"
+      - "tsconfig.json"

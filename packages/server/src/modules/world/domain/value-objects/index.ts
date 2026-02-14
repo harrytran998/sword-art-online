@@ -1,0 +1,2 @@
+// World value objects
+export {}
