@@ -1,3 +1,1 @@
-// Player domain entities
-// TODO: Implement entities for Sprint X
-export {}
+export { Character } from "./character.js"

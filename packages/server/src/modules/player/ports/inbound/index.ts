@@ -1,3 +1,2 @@
-// Player inbound ports (use case interfaces)
-// TODO: Define use case interfaces
-export {}
+export { PlayerPort } from "./player.port.js"
+export type { CreateCharacterParams, StatAllocation } from "./player.port.js"

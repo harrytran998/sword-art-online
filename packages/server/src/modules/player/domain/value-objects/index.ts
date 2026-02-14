@@ -1,3 +1,5 @@
-// Player value objects
-// TODO: Implement value objects for Sprint X
-export {}
+export { CharacterName } from "./character-name.js"
+export { Level } from "./level.js"
+export { experienceNeededForLevel } from "./experience.js"
+export { getStartingStats, isValidStat } from "./stats.js"
+export type { CharacterStats } from "./stats.js"
