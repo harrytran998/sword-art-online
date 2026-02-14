@@ -1,0 +1,44 @@
+language: "javascript"
+type: "application"
+
+tasks:
+  dev:
+    command: "vite"
+    local: true
+
+  build:
+    command: "vite build"
+    inputs:
+      - "src/**/*.ts"
+      - "src/**/*.tsx"
+      - "index.html"
+      - "vite.config.ts"
+    outputs:
+      - "dist"
+
+  test:
+    command: "bun test"
+    inputs:
+      - "src/**/*.ts"
+      - "src/**/*.tsx"
+      - "src/**/*.test.ts"
+      - "src/**/*.test.tsx"
+
+  lint:
+    command: "oxlint src/"
+    inputs:
+      - "src/**/*.ts"
+      - "src/**/*.tsx"
+
+  format:
+    command: "oxfmt src/"
+    inputs:
+      - "src/**/*.ts"
+      - "src/**/*.tsx"
+
+  typecheck:
+    command: "bun tsc --noEmit"
+    inputs:
+      - "src/**/*.ts"
+      - "src/**/*.tsx"
+      - "tsconfig.json"
