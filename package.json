@@ -1,0 +1,21 @@
+{
+  "name": "sword-art-online",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sword Art Online - Browser-based MMORPG inspired by Sword Art Online",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "moon run :dev",
+    "build": "moon run :build",
+    "test": "moon run :test",
+    "lint": "moon run :lint",
+    "format": "moon run :format",
+    "typecheck": "moon run :typecheck"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "oxlint": "^0.16.0"
+  }
+}
