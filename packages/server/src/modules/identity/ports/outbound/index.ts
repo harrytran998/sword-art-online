@@ -1,3 +1,1 @@
-// Identity outbound ports (repository interfaces)
-// TODO: Define repository interfaces
-export {}
+export { AccountRepository } from "./account.repository.js"

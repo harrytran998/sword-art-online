@@ -1,3 +1,1 @@
-// Identity inbound ports (use case interfaces)
-// TODO: Define use case interfaces
-export {}
+export { AuthPort } from "./auth.port.js"
