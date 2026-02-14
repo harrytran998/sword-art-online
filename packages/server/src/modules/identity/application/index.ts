@@ -1,3 +1,1 @@
-// Identity use case implementations
-// TODO: Implement use cases
-export {}
+export { handleAuthRequest } from "./handle-auth.use-case.js"

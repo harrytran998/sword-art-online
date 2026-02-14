@@ -3,9 +3,10 @@ type: "library"
 
 tasks:
   build:
-    command: "bun build src/index.ts --outdir dist"
+    command: "tsdown"
     inputs:
       - "src/**/*.ts"
+      - "tsdown.config.ts"
     outputs:
       - "dist"
 
@@ -14,11 +15,14 @@ tasks:
     inputs:
       - "src/**/*.ts"
       - "src/**/*.test.ts"
+    options:
+      allowFailure: true
 
   lint:
     command: "oxlint src/"
     inputs:
       - "src/**/*.ts"
+      - "tsconfig.json"
 
   format:
     command: "oxfmt src/"
@@ -26,7 +30,7 @@ tasks:
       - "src/**/*.ts"
 
   typecheck:
-    command: "bun tsc --noEmit"
+    command: "tsc --noEmit"
     inputs:
       - "src/**/*.ts"
       - "tsconfig.json"

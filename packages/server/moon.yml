@@ -7,9 +7,12 @@ tasks:
     local: true
 
   build:
-    command: "bun build src/index.ts --outdir dist --target bun"
+    command: "tsdown"
+    deps:
+      - "shared:build"
     inputs:
       - "src/**/*.ts"
+      - "tsdown.config.ts"
     outputs:
       - "dist"
 
@@ -23,6 +26,7 @@ tasks:
     command: "oxlint src/"
     inputs:
       - "src/**/*.ts"
+      - "tsconfig.json"
 
   format:
     command: "oxfmt src/"
@@ -30,7 +34,9 @@ tasks:
       - "src/**/*.ts"
 
   typecheck:
-    command: "bun tsc --noEmit"
+    command: "tsc --noEmit"
+    deps:
+      - "shared:build"
     inputs:
       - "src/**/*.ts"
       - "tsconfig.json"

@@ -6,7 +6,7 @@
 # Stage 1: Install dependencies
 FROM oven/bun:1.2-alpine AS deps
 WORKDIR /app
-COPY package.json bun.lockb ./
+COPY package.json bun.lock ./
 COPY packages/server/package.json ./packages/server/
 COPY packages/shared/package.json ./packages/shared/
 RUN bun install --frozen-lockfile --production
@@ -18,7 +18,8 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/packages/server/node_modules ./packages/server/node_modules
 COPY --from=deps /app/packages/shared/node_modules ./packages/shared/node_modules
 COPY . .
-RUN bun build packages/server/src/index.ts --outdir dist --target bun
+RUN cd packages/shared && bunx tsdown && \
+    cd ../server && bunx tsdown
 
 # Stage 3: Production
 FROM oven/bun:1.2-alpine AS runtime
@@ -27,7 +28,8 @@ WORKDIR /app
 RUN addgroup -g 1001 -S sao && \
     adduser -S sao -u 1001
 
-COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/packages/server/dist ./dist
+COPY --from=builder /app/packages/shared/dist ./packages/shared/dist
 COPY --from=builder /app/migrations ./migrations
 COPY --from=deps /app/node_modules ./node_modules
 

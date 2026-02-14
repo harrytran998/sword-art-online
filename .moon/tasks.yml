@@ -1,9 +1,10 @@
 tasks:
   lint:
-    command: "oxlint"
+    command: "oxlint --type-aware"
     inputs:
       - "src/**/*.ts"
       - "src/**/*.tsx"
+      - "tsconfig.json"
 
   format:
     command: "oxfmt ."
@@ -12,7 +13,7 @@ tasks:
       - "src/**/*.tsx"
 
   typecheck:
-    command: "bun tsc --noEmit"
+    command: "tsc --noEmit"
     inputs:
       - "src/**/*.ts"
       - "src/**/*.tsx"

@@ -1,3 +1,1 @@
-// Identity domain entities
-// TODO: Implement entities for Sprint X
-export {}
+export { Account } from "./account.js"

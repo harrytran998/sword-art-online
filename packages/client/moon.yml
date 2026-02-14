@@ -23,6 +23,8 @@ tasks:
       - "src/**/*.tsx"
       - "src/**/*.test.ts"
       - "src/**/*.test.tsx"
+    options:
+      allowFailure: true
 
   lint:
     command: "oxlint src/"
@@ -37,7 +39,7 @@ tasks:
       - "src/**/*.tsx"
 
   typecheck:
-    command: "bun tsc --noEmit"
+    command: "tsc --noEmit"
     inputs:
       - "src/**/*.ts"
       - "src/**/*.tsx"

@@ -1,5 +1,7 @@
 import { Layer } from "effect"
+import { PgCharacterRepositoryLive } from "./adapters/outbound/pg-character.repository.js"
+import { PlayerPortLive } from "./adapters/inbound/player-port.live.js"
 
-// TODO: Compose module Layer from adapters
-// export const PlayerModule = Layer.mergeAll(...)
-export {}
+export const PlayerModule = PlayerPortLive.pipe(
+  Layer.provideMerge(PgCharacterRepositoryLive),
+)

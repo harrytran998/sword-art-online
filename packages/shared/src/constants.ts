@@ -34,7 +34,7 @@ export const CRITICAL_HIT_BASE_CHANCE = 0.05
 // Party
 export const MAX_PARTY_SIZE = 6
 export const MAX_RAID_PARTIES = 8
-export const MAX_RAID_SIZE = MAX_PARTY_SIZE * MAX_RAID_PARTIES // 48
+export const MAX_RAID_SIZE: number = MAX_PARTY_SIZE * MAX_RAID_PARTIES // 48
 
 // Economy
 export const STARTING_COL = 0

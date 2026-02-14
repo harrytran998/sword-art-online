@@ -1,12 +1,18 @@
 {
-  "name": "@sword-art-online/shared",
+  "name": "@sao/shared",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
+  "main": "dist/index.mjs",
+  "types": "dist/index.d.mts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.mts"
+    }
+  },
   "scripts": {
-    "build": "bun build src/index.ts --outdir dist",
+    "build": "tsdown",
     "test": "bun test"
   },
   "dependencies": {

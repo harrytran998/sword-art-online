@@ -1,4 +1,4 @@
-import { Context, Effect, Layer, Queue, Ref } from "effect"
+import { Context, Effect, Layer, Ref } from "effect"
 import type { DomainEvent } from "../../kernel/events.js"
 
 type EventHandler = (event: DomainEvent) => Effect.Effect<void>

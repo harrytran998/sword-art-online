@@ -11,3 +11,11 @@ export class InvalidStatsError extends Data.TaggedError("InvalidStatsError")<{
 export class CharacterNameTakenError extends Data.TaggedError("CharacterNameTakenError")<{
   readonly name: string
 }> {}
+
+export class InvalidCharacterNameError extends Data.TaggedError("InvalidCharacterNameError")<{
+  readonly name: string
+}> {}
+
+export class InvalidClassIdError extends Data.TaggedError("InvalidClassIdError")<{
+  readonly classId: number
+}> {}

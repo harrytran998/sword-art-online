@@ -1,3 +1,2 @@
-// Identity outbound adapters (DB/cache implementations)
-// TODO: Implement repository adapters
-export {}
+export { BetterAuthService, BetterAuthServiceLive } from "./better-auth.js"
+export { PgAccountRepositoryLive } from "./pg-account.repository.js"
