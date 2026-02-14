@@ -1,0 +1,19 @@
+tasks:
+  lint:
+    command: "oxlint"
+    inputs:
+      - "src/**/*.ts"
+      - "src/**/*.tsx"
+
+  format:
+    command: "oxfmt ."
+    inputs:
+      - "src/**/*.ts"
+      - "src/**/*.tsx"
+
+  typecheck:
+    command: "bun tsc --noEmit"
+    inputs:
+      - "src/**/*.ts"
+      - "src/**/*.tsx"
+      - "tsconfig.json"
