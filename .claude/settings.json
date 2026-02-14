@@ -1,50 +1,23 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "permissions": {
-    "allow": [
-      "Read",
-      "Glob",
-      "Grep",
-      "Edit",
-      "Write",
-      "Bash(moon run *)",
-      "Bash(bun test *)",
-      "Bash(bun tsc --noEmit *)",
-      "Bash(bun tsc --noEmit)",
-      "Bash(oxlint .)",
-      "Bash(oxlint *)",
-      "Bash(oxfmt *)",
-      "Bash(go-migrate *)",
-      "Bash(docker compose *)",
-      "Bash(git status *)",
-      "Bash(git status)",
-      "Bash(git diff *)",
-      "Bash(git diff)",
-      "Bash(git log *)",
-      "Bash(git branch *)",
-      "Bash(gh pr *)",
-      "Bash(gh issue *)",
-      "Bash(gh pr create:*)",
-      "Bash(git add *)",
-      "Bash(git commit *)",
-      "Bash(git commit:*)",
-      "Bash(git push *)",
-      "Bash(git checkout *)",
-      "Bash(docker *)"
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./secrets/**)",
+      "Bash(chmod 777 *)",
+      "Bash(dd *)",
+      "Bash(git push --force *)",
+      "Bash(git reset --force *)"
     ],
     "ask": [
-      "Bash(git push --force *)",
-      "Bash(git reset --hard *)",
-      "Bash(sudo *)",
-      "Bash(curl *)"
-    ],
-    "deny": [
       "Bash(rm -rf *)",
-      "Read(.env)",
-      "Read(.env.*)",
-      "Read(**/secrets/**)"
-    ]
+      "Bash(curl *)",
+      "Bash(sudo *)"
+    ],
+    "defaultMode": "bypassPermissions"
   },
+  "model": "opus",
   "hooks": {
     "PreToolUse": [
       {
