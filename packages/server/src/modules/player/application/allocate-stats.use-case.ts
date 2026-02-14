@@ -17,6 +17,23 @@ export const allocateStats = (id: PlayerId, allocation: StatAllocation) =>
       return yield* Effect.fail(new PlayerNotFoundError({ id }))
     }
 
+    const allocationValues = [
+      allocation.str,
+      allocation.agi,
+      allocation.vit,
+      allocation.dex,
+      allocation.int,
+      allocation.lck,
+    ]
+
+    if (allocationValues.some((v) => v < 0 || !Number.isInteger(v))) {
+      return yield* Effect.fail(
+        new InvalidStatsError({
+          message: "Allocation values must be non-negative integers",
+        }),
+      )
+    }
+
     const totalAllocated =
       allocation.str +
       allocation.agi +

@@ -1,6 +1,7 @@
 import { Context, Effect, Layer } from "effect"
 import { betterAuth } from "better-auth"
 import pg from "pg"
+import { AppConfig } from "../../../../shared/infrastructure/config/index.js"
 
 export class BetterAuthService extends Context.Tag("BetterAuthService")<
   BetterAuthService,
@@ -11,7 +12,9 @@ export class BetterAuthService extends Context.Tag("BetterAuthService")<
 
 export const BetterAuthServiceLive = Layer.effect(
   BetterAuthService,
-  Effect.sync(() => {
+  Effect.gen(function* () {
+    const config = yield* AppConfig
+
     const pool = new pg.Pool({
       connectionString: process.env.DATABASE_URL,
       min: 2,
@@ -21,7 +24,7 @@ export const BetterAuthServiceLive = Layer.effect(
     const auth = betterAuth({
       database: pool,
       secret: process.env.BETTER_AUTH_SECRET,
-      baseURL: `http://${process.env.HOST ?? "0.0.0.0"}:${process.env.PORT ?? 8080}`,
+      baseURL: `http://${config.host}:${config.port}`,
       emailAndPassword: {
         enabled: true,
         minPasswordLength: 8,

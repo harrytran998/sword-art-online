@@ -4,6 +4,8 @@ import type { PlayerId, AccountId } from "../../../../shared/kernel/types.js"
 import type {
   PlayerNotFoundError,
   CharacterNameTakenError,
+  InvalidCharacterNameError,
+  InvalidClassIdError,
   InvalidStatsError,
 } from "../../domain/errors.js"
 
@@ -27,7 +29,7 @@ export class PlayerPort extends Context.Tag("PlayerPort")<
   {
     readonly createCharacter: (
       params: CreateCharacterParams,
-    ) => Effect.Effect<Character, CharacterNameTakenError>
+    ) => Effect.Effect<Character, CharacterNameTakenError | InvalidCharacterNameError | InvalidClassIdError>
     readonly getPlayer: (
       id: PlayerId,
     ) => Effect.Effect<Character, PlayerNotFoundError>

@@ -2,7 +2,11 @@ import { Effect } from "effect"
 import { Character } from "../domain/entities/character.js"
 import { CharacterName } from "../domain/value-objects/character-name.js"
 import { getStartingStats } from "../domain/value-objects/stats.js"
-import { CharacterNameTakenError } from "../domain/errors.js"
+import {
+  CharacterNameTakenError,
+  InvalidCharacterNameError,
+  InvalidClassIdError,
+} from "../domain/errors.js"
 import { CharacterRepository } from "../ports/outbound/character.repository.js"
 import { EventBus } from "../../../shared/infrastructure/event-bus/index.js"
 import { createEvent } from "../../../shared/kernel/events.js"
@@ -17,7 +21,13 @@ export const createCharacter = (params: CreateCharacterParams) =>
     const validName = CharacterName.create(params.name)
     if (!validName) {
       return yield* Effect.fail(
-        new CharacterNameTakenError({ name: params.name }),
+        new InvalidCharacterNameError({ name: params.name }),
+      )
+    }
+
+    if (params.classId < 1 || params.classId > 3) {
+      return yield* Effect.fail(
+        new InvalidClassIdError({ classId: params.classId }),
       )
     }
 
