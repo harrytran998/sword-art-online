@@ -83,6 +83,14 @@ export interface BetterAuthVerificationTable {
   updated_at: Date | null
 }
 
+export interface JwksTable {
+  id: string
+  publicKey: string
+  privateKey: string
+  createdAt: Generated<Date>
+  expiresAt: Date | null
+}
+
 export interface Database {
   "sao.accounts": AccountTable
   "sao.characters": CharacterTable
@@ -91,4 +99,5 @@ export interface Database {
   "sao.session": BetterAuthSessionTable
   "sao.account": BetterAuthAccountTable
   "sao.verification": BetterAuthVerificationTable
+  "sao.jwks": JwksTable
 }

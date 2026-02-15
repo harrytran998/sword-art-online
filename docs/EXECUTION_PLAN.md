@@ -69,19 +69,19 @@
 
 - [x] Create GitHub Actions workflow using `moon ci` for lint + typecheck + test on PR (only affected projects)
 - [x] Create GitHub Actions workflow: build Docker image on merge to `main`
-- [ ] Configure branch protection rules (`main` requires PR + checks)
-- [ ] Set up GHCR (GitHub Container Registry) for Docker images
+- [x] Configure branch protection rules (`main` requires PR + checks)
+- [x] Set up GHCR (GitHub Container Registry) for Docker images
 - [x] Create staging deployment workflow (manual trigger)
 
 #### 1.3 Development Environment `[PARALLEL]`
 
 - [x] Create `docker-compose.yaml` with PostgreSQL 18, Redis 7, TimescaleDB
 - [x] Write `docker/postgres/init/01-schema.sql` for initial tables
-- [ ] Create seed scripts for development data
-- [ ] Document local setup in `README.md` (clone, install, run)
-- [ ] Verify `moon run server:dev` starts server with hot reload
-- [ ] Verify `moon run client:dev` starts client with Vite HMR
-- [ ] Verify `moon run :dev` starts all projects in development mode
+- [x] Create seed scripts for development data
+- [x] Document local setup in `README.md` (clone, install, run)
+- [x] Verify `moon run server:dev` starts server with hot reload
+- [x] Verify `moon run client:dev` starts client with Vite HMR
+- [x] Verify `moon run :dev` starts all projects in development mode
 
 #### 1.4 Backend Project Structure `[DEPENDS: 1.1]`
 
@@ -215,7 +215,7 @@
 #### 2.5 Authentication Service - Identity Module (Better Auth) `[DEPENDS: 2.1, 2.2, 2.3]`
 
 - [x] Install Better Auth: `bun add better-auth`
-- [ ] Generate `BETTER_AUTH_SECRET` with `openssl rand -base64 32`, add to `.env`
+- [x] Generate `BETTER_AUTH_SECRET` with `openssl rand -base64 32`, add to `.env`
 - [x] Create `modules/identity/adapters/outbound/better-auth.ts` - Better Auth instance:
   ```ts
   import { betterAuth } from "better-auth"

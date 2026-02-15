@@ -1,4 +1,5 @@
 import { Effect } from "effect"
+import { isValidClassId } from "@sao/shared"
 import { Character } from "../domain/entities/character.js"
 import { CharacterName } from "../domain/value-objects/character-name.js"
 import { getStartingStats } from "../domain/value-objects/stats.js"
@@ -25,7 +26,7 @@ export const createCharacter = (params: CreateCharacterParams) =>
       )
     }
 
-    if (params.classId < 1 || params.classId > 3) {
+    if (!isValidClassId(params.classId)) {
       return yield* Effect.fail(
         new InvalidClassIdError({ classId: params.classId }),
       )

@@ -18,6 +18,8 @@ tasks:
 
   test:
     command: "bun test"
+    deps:
+      - "shared:build"
     inputs:
       - "src/**/*.ts"
       - "src/**/*.test.ts"
