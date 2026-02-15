@@ -3,14 +3,14 @@
 # Multi-stage build for production
 # ============================================================
 
-# Stage 1: Install dependencies
+# Stage 1: Install ALL dependencies (including devDeps for build)
 FROM oven/bun:1.2-alpine AS deps
 WORKDIR /app
 COPY package.json bun.lock bunfig.toml ./
 COPY packages/server/package.json ./packages/server/
 COPY packages/shared/package.json ./packages/shared/
 COPY packages/client/package.json ./packages/client/
-RUN bun install --frozen-lockfile --production
+RUN bun install --frozen-lockfile
 
 # Stage 2: Build
 FROM oven/bun:1.2-alpine AS builder
@@ -20,7 +20,16 @@ COPY . .
 RUN cd packages/shared && bunx tsdown && \
     cd ../server && bunx tsdown
 
-# Stage 3: Production
+# Stage 3: Production dependencies only
+FROM oven/bun:1.2-alpine AS prod-deps
+WORKDIR /app
+COPY package.json bun.lock bunfig.toml ./
+COPY packages/server/package.json ./packages/server/
+COPY packages/shared/package.json ./packages/shared/
+COPY packages/client/package.json ./packages/client/
+RUN bun install --frozen-lockfile --production
+
+# Stage 4: Runtime
 FROM oven/bun:1.2-alpine AS runtime
 WORKDIR /app
 
@@ -30,7 +39,7 @@ RUN addgroup -g 1001 -S sao && \
 COPY --from=builder /app/packages/server/dist ./dist
 COPY --from=builder /app/packages/shared/dist ./packages/shared/dist
 COPY --from=builder /app/migrations ./migrations
-COPY --from=deps /app/node_modules ./node_modules
+COPY --from=prod-deps /app/node_modules ./node_modules
 
 USER sao
 
