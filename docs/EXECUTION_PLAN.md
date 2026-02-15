@@ -194,8 +194,8 @@
   - `migrations/000001_create_accounts.down.sql`
   - `migrations/000002_create_characters.up.sql` (characters + character_stats tables)
   - `migrations/000002_create_characters.down.sql`
-- [ ] Run first migration: `migrate -path ./migrations -database "postgresql://..." up`
-- [ ] Write integration test: insert/query an account using Kysely
+- [x] Run first migration: `migrate -path ./migrations -database "postgresql://..." up`
+- [x] Write integration test: insert/query an account using Kysely
 
 #### 2.3 Redis Cache Layer `[PARALLEL]`
 
@@ -203,7 +203,7 @@
 - [x] Implement connection to Redis with reconnection logic
 - [x] Create helper: session storage (set with TTL, get, delete)
 - [x] Create helper: rate limit counter (token bucket pattern)
-- [ ] Write integration test: set/get/expire a cache key
+- [x] Write integration test: set/get/expire a cache key
 
 #### 2.4 EventBus Infrastructure `[PARALLEL]`
 
@@ -256,7 +256,7 @@
 - [x] Create `modules/identity/application/login.use-case.ts` and `register.use-case.ts`
 - [x] Create `modules/identity/events/published.ts`: `PlayerLoggedIn`, `PlayerRegistered` events
 - [x] Create `modules/identity/module.ts` composing all identity layers
-- [ ] Set up JWKS endpoint at `/api/auth/jwks` (automatic via JWT plugin)
+- [x] Set up JWKS endpoint at `/api/auth/jwks` (automatic via JWT plugin)
 - [x] Implement JWT validation for WebSocket upgrade in `gateway/websocket/server.ts` using `jose` library:
   ```ts
   import { jwtVerify, createRemoteJWKSet } from "jose"
@@ -266,7 +266,7 @@
     audience: "sword-art-game",
   })
   ```
-- [ ] Create client auth setup (`packages/client/src/auth.ts`):
+- [x] Create client auth setup (`packages/client/src/adapters/auth/auth-client.ts`):
   ```ts
   import { createAuthClient } from "better-auth/react"
   import { jwtClient, bearerClient } from "better-auth/client/plugins"
@@ -275,8 +275,8 @@
     plugins: [jwtClient(), bearerClient()],
   })
   ```
-- [ ] Implement login flow: `authClient.signIn.email()` -> get JWT -> connect WebSocket with `?token={jwt}`
-- [ ] Write tests: register, login, get JWT, validate JWT, revoke session
+- [x] Implement login flow: `authClient.signIn.email()` -> get JWT -> connect WebSocket with `?token={jwt}`
+- [x] Write tests: register, login, get JWT, validate JWT, revoke session
 
 #### 2.6 Player Module `[DEPENDS: 2.2, 2.3, 2.4]`
 
@@ -291,7 +291,7 @@
 - [x] Create `modules/player/events/published.ts`: `PlayerCreated`, `PlayerLeveledUp`, `StatsAllocated`
 - [x] Create `modules/player/module.ts` composing all player layers
 - [x] Implement derived stats calculation (maxHp, attack, defense, etc.)
-- [ ] Define class definitions: Swordsman, Fencer, Rogue, Berserker, Lancer, Archer, Monk
+- [x] Define class definitions: Swordsman, Fencer, Rogue, Berserker, Lancer, Archer, Monk
 - [x] Write tests: create character, get player, update position
 
 ---
