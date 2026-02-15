@@ -86,9 +86,9 @@ const setupServer = async () => {
   return gateway
 }
 
-afterAll(() => {
+afterAll(async () => {
   if (gateway) {
-    gateway.server.stop()
+    await gateway.server.stop()
   }
 })
 

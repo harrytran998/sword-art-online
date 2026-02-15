@@ -1,7 +1,6 @@
 import type { ZoneId, FloorId } from "../../../../shared/kernel/types.js"
 import type { Position } from "../value-objects/position.js"
-import type { ZoneBounds } from "../value-objects/zone-bounds.js"
-import { contains } from "../value-objects/zone-bounds.js"
+import { type ZoneBounds, contains } from "../value-objects/zone-bounds.js"
 
 export type ZoneType = "town" | "field" | "dungeon" | "labyrinth" | "boss"
 

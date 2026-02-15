@@ -33,7 +33,7 @@ export const GameLoopServiceLive = Layer.effect(
             const deltaMs = now - lastTickTime
             lastTickTime = now
 
-            Effect.runPromise(
+            void Effect.runPromise(
               Effect.gen(function* () {
                 const start = performance.now()
 

@@ -172,7 +172,7 @@ export const WebSocketGatewayLive = Layer.effect(
           ws.subscribe(`player:${ws.data.playerId}`)
 
           // Set player zone in world module
-          Effect.runPromise(
+          void Effect.runPromise(
             Effect.gen(function* () {
               const world = yield* WorldPort
               yield* world.setPlayerZone(ws.data.playerId, ws.data.zoneId)
@@ -317,7 +317,7 @@ export const WebSocketGatewayLive = Layer.effect(
           )
 
           // Remove player from world + publish event
-          Effect.runPromise(
+          void Effect.runPromise(
             Effect.gen(function* () {
               const world = yield* WorldPort
               yield* world.removePlayer(ws.data.playerId)
