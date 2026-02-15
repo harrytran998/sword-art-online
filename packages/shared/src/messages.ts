@@ -122,6 +122,16 @@ export interface PlayerLeftMessage {
   readonly playerId: string
 }
 
+export interface PlayerMovedMessage {
+  readonly _tag: "player_moved"
+  readonly playerId: string
+  readonly x: number
+  readonly y: number
+  readonly z: number
+  readonly rotation: number
+  readonly timestamp: number
+}
+
 export type ServerMessage =
   | StateUpdateMessage
   | DamageMessage
@@ -131,3 +141,4 @@ export type ServerMessage =
   | ConnectionReadyMessage
   | PlayerJoinedMessage
   | PlayerLeftMessage
+  | PlayerMovedMessage
