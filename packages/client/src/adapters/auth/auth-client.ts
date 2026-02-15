@@ -12,7 +12,7 @@ export const fetchJwtToken = async (): Promise<string | null> => {
       credentials: "include",
     })
     if (!response.ok) return null
-    const data = await response.json()
+    const data: { token?: string } = await response.json()
     return data.token ?? null
   } catch {
     return null

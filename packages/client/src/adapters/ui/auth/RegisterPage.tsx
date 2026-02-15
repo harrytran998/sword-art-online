@@ -65,7 +65,7 @@ export const RegisterPage = ({
         </p>
 
         <form
-          onSubmit={handleSubmit}
+          onSubmit={(e) => void handleSubmit(e)}
           className="rounded-lg border border-sao-blue/20 bg-sao-panel p-6"
         >
           <h2 className="mb-6 text-center text-xl font-semibold text-gray-200">

@@ -33,7 +33,7 @@ export const App = () => {
       setLoading(false)
     }
 
-    checkSession()
+    void checkSession()
   }, [setUser, setToken, setLoading])
 
   if (isLoading) {

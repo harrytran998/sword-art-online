@@ -118,7 +118,9 @@ describe("Auth integration", () => {
   })
 
   it("should get a JWT token using session", async () => {
-    const result = await (auth.api as any).getToken({
+    type JwtApi = { getToken: (opts: { headers: Headers }) => Promise<{ token: string }> }
+    const jwtApi = auth.api as unknown as JwtApi
+    const result = await jwtApi.getToken({
       headers: new Headers({
         authorization: `Bearer ${sessionToken}`,
       }),
@@ -129,11 +131,11 @@ describe("Auth integration", () => {
     jwtToken = result.token
   })
 
-  it("should have valid JWT payload with correct iss, aud, sub", async () => {
+  it("should have valid JWT payload with correct iss, aud, sub", () => {
     const parts = jwtToken.split(".")
     expect(parts.length).toBe(3)
 
-    const payload = JSON.parse(atob(parts[1]!))
+    const payload = JSON.parse(atob(parts[1]!)) as { iss: string; aud: string; sub: string; exp: number }
     expect(payload.iss).toBe("sword-art-online")
     expect(payload.aud).toBe("sword-art-game")
     expect(payload.sub).toBe(userId)

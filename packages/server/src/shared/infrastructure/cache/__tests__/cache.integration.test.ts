@@ -24,7 +24,7 @@ afterEach(async () => {
   }
 })
 
-afterAll(async () => {
+afterAll(() => {
   redis.disconnect()
 })
 
