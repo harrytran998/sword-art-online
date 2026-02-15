@@ -52,6 +52,7 @@ export const WebSocketGatewayLive = Layer.effect(
     >()
 
     const connections = new Map<string, ServerWebSocket<WebSocketData>>()
+    const playerMessageQueue = new Map<string, Promise<void>>()
 
     const customRoutes = new Map<
       string,
@@ -160,6 +161,12 @@ export const WebSocketGatewayLive = Layer.effect(
       fetch: (req, server) => routeRequest(req, server),
       websocket: {
         open(ws) {
+          // Close existing connection to prevent orphaned sockets
+          const existing = connections.get(ws.data.playerId)
+          if (existing) {
+            existing.close(1000, "Superseded by new connection")
+          }
+
           connections.set(ws.data.playerId, ws)
           ws.subscribe(`zone:${ws.data.zoneId}`)
           ws.subscribe(`player:${ws.data.playerId}`)
@@ -198,97 +205,105 @@ export const WebSocketGatewayLive = Layer.effect(
         message(ws, raw) {
           ws.data.lastHeartbeat = Date.now()
 
-          Effect.runPromise(
-            Effect.gen(function* () {
-              // 1. Validate input structure
-              const validated = yield* validateInput(raw)
-              if ("code" in validated && "message" in validated) {
-                // This won't happen because validateInput returns Effect
-                return
-              }
+          const playerId = ws.data.playerId
+          const processMessage = () =>
+            Effect.runPromise(
+              Effect.gen(function* () {
+                // 1. Validate input structure
+                const validated = yield* validateInput(raw)
+                if ("code" in validated && "message" in validated) {
+                  // This won't happen because validateInput returns Effect
+                  return
+                }
 
-              // 2. Check rate limit
-              const allowed = yield* checkMessageRateLimit(
-                ws.data.playerId,
-                validated._tag,
-              )
-              if (!allowed) {
-                yield* logSecurityEvent({
-                  type: SecurityEventType.RATE_LIMITED,
-                  playerId: ws.data.playerId,
-                  severity: "warning",
-                  data: { tag: validated._tag },
-                })
-                sendError(ws, ErrorCodes.RATE_LIMITED, "Rate limit exceeded")
-                return
-              }
+                // 2. Check rate limit
+                const allowed = yield* checkMessageRateLimit(
+                  playerId,
+                  validated._tag,
+                )
+                if (!allowed) {
+                  yield* logSecurityEvent({
+                    type: SecurityEventType.RATE_LIMITED,
+                    playerId,
+                    severity: "warning",
+                    data: { tag: validated._tag },
+                  })
+                  sendError(ws, ErrorCodes.RATE_LIMITED, "Rate limit exceeded")
+                  return
+                }
 
-              // 3. Decode through schema
-              const decoded = yield* decodeClientMessage(validated).pipe(
+                // 3. Decode through schema
+                const decoded = yield* decodeClientMessage(validated).pipe(
+                  Effect.catchAll((err) => {
+                    sendError(
+                      ws,
+                      ErrorCodes.INVALID_MESSAGE,
+                      `Invalid message format: ${err}`,
+                    )
+                    return Effect.fail(err)
+                  }),
+                )
+
+                // 4. Route message
+                const result = yield* routeMessage(
+                  decoded,
+                  playerId,
+                ).pipe(
+                  Effect.catchAll((err) => {
+                    const error =
+                      err &&
+                      typeof err === "object" &&
+                      "_tag" in err
+                        ? (err as { _tag: string })
+                        : null
+                    if (error?._tag === "InvalidPositionError") {
+                      sendError(
+                        ws,
+                        ErrorCodes.INVALID_POSITION,
+                        "Invalid position",
+                      )
+                    } else {
+                      sendError(
+                        ws,
+                        ErrorCodes.INTERNAL_ERROR,
+                        "Internal error",
+                      )
+                    }
+                    return Effect.void
+                  }),
+                )
+
+                // 5. If heartbeat_ack, send response directly
+                if (
+                  result &&
+                  typeof result === "object" &&
+                  "_tag" in result &&
+                  (result as { _tag: string })._tag === "heartbeat_ack"
+                ) {
+                  ws.send(JSON.stringify(result))
+                }
+              }).pipe(
+                Effect.provide(ctx),
                 Effect.catchAll((err) => {
                   sendError(
                     ws,
-                    ErrorCodes.INVALID_MESSAGE,
-                    `Invalid message format: ${err}`,
+                    ErrorCodes.INTERNAL_ERROR,
+                    "Message processing failed",
                   )
-                  return Effect.fail(err)
+                  return Effect.logError(`WS message error: ${err}`)
                 }),
-              )
+              ),
+            )
 
-              // 4. Route message
-              const result = yield* routeMessage(
-                decoded,
-                ws.data.playerId,
-              ).pipe(
-                Effect.catchAll((err) => {
-                  const error =
-                    err &&
-                    typeof err === "object" &&
-                    "_tag" in err
-                      ? (err as { _tag: string })
-                      : null
-                  if (error?._tag === "InvalidPositionError") {
-                    sendError(
-                      ws,
-                      ErrorCodes.INVALID_POSITION,
-                      "Invalid position",
-                    )
-                  } else {
-                    sendError(
-                      ws,
-                      ErrorCodes.INTERNAL_ERROR,
-                      "Internal error",
-                    )
-                  }
-                  return Effect.void
-                }),
-              )
-
-              // 5. If heartbeat_ack, send response directly
-              if (
-                result &&
-                typeof result === "object" &&
-                "_tag" in result &&
-                (result as { _tag: string })._tag === "heartbeat_ack"
-              ) {
-                ws.send(JSON.stringify(result))
-              }
-            }).pipe(
-              Effect.provide(ctx),
-              Effect.catchAll((err) => {
-                sendError(
-                  ws,
-                  ErrorCodes.INTERNAL_ERROR,
-                  "Message processing failed",
-                )
-                return Effect.logError(`WS message error: ${err}`)
-              }),
-            ),
-          )
+          // Serialize message processing per player to prevent TOCTOU races
+          const prev = playerMessageQueue.get(playerId) ?? Promise.resolve()
+          const next = prev.then(processMessage, processMessage)
+          playerMessageQueue.set(playerId, next)
         },
 
         close(ws) {
           connections.delete(ws.data.playerId)
+          playerMessageQueue.delete(ws.data.playerId)
           ws.unsubscribe(`zone:${ws.data.zoneId}`)
           ws.unsubscribe(`player:${ws.data.playerId}`)
 
