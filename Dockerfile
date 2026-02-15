@@ -6,7 +6,7 @@
 # Stage 1: Install dependencies
 FROM oven/bun:1.2-alpine AS deps
 WORKDIR /app
-COPY package.json bun.lock ./
+COPY package.json bun.lock bunfig.toml ./
 COPY packages/server/package.json ./packages/server/
 COPY packages/shared/package.json ./packages/shared/
 COPY packages/client/package.json ./packages/client/
@@ -16,8 +16,6 @@ RUN bun install --frozen-lockfile --production
 FROM oven/bun:1.2-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/packages/server/node_modules ./packages/server/node_modules
-COPY --from=deps /app/packages/shared/node_modules ./packages/shared/node_modules
 COPY . .
 RUN cd packages/shared && bunx tsdown && \
     cd ../server && bunx tsdown
