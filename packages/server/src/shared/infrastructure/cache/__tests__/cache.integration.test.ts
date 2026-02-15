@@ -1,9 +1,8 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "bun:test"
 import Redis from "ioredis"
 
-const REDIS_URL = "redis://localhost:6379"
+const REDIS_URL = process.env.REDIS_URL ?? "redis://localhost:6379"
 const PREFIX = `test:cache:${Date.now()}:`
-const isCI = !!process.env.CI
 
 let redis: Redis
 
@@ -15,22 +14,21 @@ const key = (name: string) => {
 }
 
 beforeAll(() => {
-  if (isCI) return
   redis = new Redis(REDIS_URL)
 })
 
 afterEach(async () => {
-  if (isCI || keys.length === 0) return
-  await redis.del(...keys)
-  keys.length = 0
+  if (keys.length > 0) {
+    await redis.del(...keys)
+    keys.length = 0
+  }
 })
 
 afterAll(() => {
-  if (isCI) return
   redis.disconnect()
 })
 
-describe.skipIf(isCI)("Cache integration", () => {
+describe("Cache integration", () => {
   it("should set and get a value", async () => {
     const k = key("set-get")
     await redis.set(k, "hello")

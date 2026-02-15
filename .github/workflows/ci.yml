@@ -22,7 +22,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: sao_test
+          POSTGRES_DB: sao
         ports:
           - 5432:5432
         options: >-
@@ -47,6 +47,25 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup database schema and extensions
+        run: |
+          psql -c "CREATE EXTENSION IF NOT EXISTS pgcrypto;"
+          psql -c "CREATE SCHEMA IF NOT EXISTS sao;"
+          psql -c "ALTER DATABASE sao SET search_path TO sao, public;"
+        env:
+          PGHOST: localhost
+          PGPORT: "5432"
+          PGUSER: postgres
+          PGPASSWORD: postgres
+          PGDATABASE: sao
+
+      - name: Run database migrations
+        run: |
+          curl -fsSL https://github.com/golang-migrate/migrate/releases/download/v4.18.1/migrate.linux-amd64.tar.gz | tar xz
+          ./migrate -path ./migrations -database "postgresql://postgres:postgres@localhost:5432/sao?sslmode=disable" up
+        env:
+          PGHOST: localhost
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
@@ -63,5 +82,5 @@ jobs:
       - name: Run CI (affected projects only)
         run: moon ci
         env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/sao_test
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/sao
           REDIS_URL: redis://localhost:6379

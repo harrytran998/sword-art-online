@@ -4,12 +4,12 @@ import { jwt } from "better-auth/plugins/jwt"
 import { bearer } from "better-auth/plugins/bearer"
 import pg from "pg"
 
-const CONNECTION_STRING = "postgresql://postgres:postgres@localhost:5432/sao"
+const CONNECTION_STRING =
+  process.env.DATABASE_URL ?? "postgresql://postgres:postgres@localhost:5432/sao"
 const TEST_SECRET = "test-secret-for-integration-tests"
 const TEST_EMAIL = `auth-test-${Date.now()}@integration.test`
 const TEST_PASSWORD = "TestPassword123!"
 const TEST_NAME = `TestUser${Date.now()}`
-const isCI = !!process.env.CI
 
 let pool: pg.Pool
 let auth: ReturnType<typeof betterAuth>
@@ -18,7 +18,6 @@ let jwtToken: string
 let userId: string
 
 beforeAll(() => {
-  if (isCI) return
   pool = new pg.Pool({ connectionString: CONNECTION_STRING, max: 2 })
 
   auth = betterAuth({
@@ -82,7 +81,6 @@ beforeAll(() => {
 })
 
 afterAll(async () => {
-  if (isCI) return
   if (userId) {
     await pool.query("DELETE FROM sao.session WHERE user_id = $1", [userId])
     await pool.query("DELETE FROM sao.account WHERE user_id = $1", [userId])
@@ -91,7 +89,7 @@ afterAll(async () => {
   await pool.end()
 })
 
-describe.skipIf(isCI)("Auth integration", () => {
+describe("Auth integration", () => {
   it("should register a new user", async () => {
     const result = await auth.api.signUpEmail({
       body: {

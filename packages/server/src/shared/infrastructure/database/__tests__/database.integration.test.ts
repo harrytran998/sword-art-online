@@ -3,24 +3,22 @@ import { Kysely, PostgresDialect } from "kysely"
 import pg from "pg"
 import type { Database } from "../types.js"
 
-const CONNECTION_STRING = "postgresql://postgres:postgres@localhost:5432/sao"
-const isCI = !!process.env.CI
+const CONNECTION_STRING =
+  process.env.DATABASE_URL ?? "postgresql://postgres:postgres@localhost:5432/sao"
 
 let db: Kysely<Database>
 let pool: pg.Pool
 
 beforeAll(() => {
-  if (isCI) return
   pool = new pg.Pool({ connectionString: CONNECTION_STRING, max: 2 })
   db = new Kysely<Database>({ dialect: new PostgresDialect({ pool }) })
 })
 
 afterAll(async () => {
-  if (isCI) return
   await db.destroy()
 })
 
-describe.skipIf(isCI)("Database integration", () => {
+describe("Database integration", () => {
   const testEmail = `test-${Date.now()}@integration.test`
   const testUsername = `testuser-${Date.now()}`
 
