@@ -1,36 +1,70 @@
-import { Context, Effect, Layer } from "effect"
+import { Context, Effect, Layer, Ref } from "effect"
+import { TICK_RATE } from "@sao/shared"
+import { GameState } from "./game-state.js"
+import { processTick } from "./tick-pipeline.js"
 
 export class GameLoopService extends Context.Tag("GameLoopService")<
   GameLoopService,
   {
     readonly start: () => Effect.Effect<void>
     readonly stop: () => Effect.Effect<void>
+    readonly getTick: () => Effect.Effect<number>
   }
 >() {}
 
 export const GameLoopServiceLive = Layer.effect(
   GameLoopService,
-  Effect.sync(() => {
-    let intervalId: ReturnType<typeof setInterval> | null = null
+  Effect.gen(function* () {
+    const gameState = yield* GameState
+    const ctx = yield* Effect.context<GameState>()
+    const intervalRef = yield* Ref.make<ReturnType<typeof setInterval> | null>(null)
+
+    const tickRate = TICK_RATE
+    const tickMs = Math.floor(1000 / tickRate)
+    let lastTickTime = 0
 
     return {
       start: () =>
-        Effect.sync(() => {
-          const tickRate = Number(process.env.GAME_TICK_RATE ?? 60)
-          const tickMs = Math.floor(1000 / tickRate)
+        Effect.gen(function* () {
+          lastTickTime = Date.now()
 
-          intervalId = setInterval(() => {
-            // TODO: Implement tick pipeline in Sprint 3
+          const intervalId = setInterval(() => {
+            const now = Date.now()
+            const deltaMs = now - lastTickTime
+            lastTickTime = now
+
+            Effect.runPromise(
+              Effect.gen(function* () {
+                const start = performance.now()
+
+                yield* processTick(deltaMs)
+                yield* Ref.update(gameState.tickRef, (n) => n + 1)
+
+                const elapsed = performance.now() - start
+                if (elapsed > tickMs) {
+                  yield* Effect.logWarning(
+                    `Tick took ${elapsed.toFixed(1)}ms (budget: ${tickMs}ms)`,
+                  )
+                }
+              }).pipe(Effect.provide(ctx)),
+            )
           }, tickMs)
+
+          yield* Ref.set(intervalRef, intervalId)
+          yield* Effect.logInfo(`Game loop started at ${tickRate}Hz (${tickMs}ms per tick)`)
         }),
 
       stop: () =>
-        Effect.sync(() => {
+        Effect.gen(function* () {
+          const intervalId = yield* Ref.get(intervalRef)
           if (intervalId) {
             clearInterval(intervalId)
-            intervalId = null
+            yield* Ref.set(intervalRef, null)
           }
+          yield* Effect.logInfo("Game loop stopped")
         }),
+
+      getTick: () => gameState.getTick(),
     }
   }),
 )
