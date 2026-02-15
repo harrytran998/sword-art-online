@@ -9,6 +9,7 @@ WORKDIR /app
 COPY package.json bun.lock ./
 COPY packages/server/package.json ./packages/server/
 COPY packages/shared/package.json ./packages/shared/
+COPY packages/client/package.json ./packages/client/
 RUN bun install --frozen-lockfile --production
 
 # Stage 2: Build
