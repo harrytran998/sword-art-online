@@ -73,22 +73,28 @@ const makeMockEventBus = () => {
   }
 }
 
+const runCreateCharacter = async (name: string, classId: number) => {
+  const { layer: repoLayer, saved } = makeMockRepo()
+  const { layer: busLayer, events } = makeMockEventBus()
+  const testLayer = Layer.mergeAll(repoLayer, busLayer)
+
+  const character = await Effect.runPromise(
+    Effect.provide(
+      createCharacter({
+        accountId: "acc-1" as AccountId,
+        name,
+        classId,
+      }),
+      testLayer,
+    ),
+  )
+
+  return { character, saved, events }
+}
+
 describe("createCharacter", () => {
   it("should create character with valid name", async () => {
-    const { layer: repoLayer, saved } = makeMockRepo()
-    const { layer: busLayer, events } = makeMockEventBus()
-    const testLayer = Layer.mergeAll(repoLayer, busLayer)
-
-    const character = await Effect.runPromise(
-      Effect.provide(
-        createCharacter({
-          accountId: "acc-1" as AccountId,
-          name: "Kirito",
-          classId: 1,
-        }),
-        testLayer,
-      ),
-    )
+    const { character, saved, events } = await runCreateCharacter("Kirito", 1)
 
     expect(character.name).toBe("Kirito")
     expect(character.level).toBe(1)
@@ -119,25 +125,118 @@ describe("createCharacter", () => {
     expect(result._tag).toBe("Failure")
   })
 
-  it("should assign correct starting stats per class", async () => {
-    const { layer: repoLayer, saved } = makeMockRepo()
+  it("should assign correct stats for class 1 (Swordsman)", async () => {
+    const { saved } = await runCreateCharacter("Kirito", 1)
+    const stats = saved.stats[0]?.stats
+    expect(stats?.str).toBe(10)
+    expect(stats?.agi).toBe(5)
+    expect(stats?.vit).toBe(8)
+    expect(stats?.dex).toBe(5)
+    expect(stats?.int).toBe(3)
+    expect(stats?.lck).toBe(3)
+  })
+
+  it("should assign correct stats for class 2 (Fencer)", async () => {
+    const { saved } = await runCreateCharacter("Asuna", 2)
+    const stats = saved.stats[0]?.stats
+    expect(stats?.str).toBe(5)
+    expect(stats?.agi).toBe(10)
+    expect(stats?.vit).toBe(5)
+    expect(stats?.dex).toBe(8)
+    expect(stats?.int).toBe(3)
+    expect(stats?.lck).toBe(3)
+  })
+
+  it("should assign correct stats for class 3 (Rogue)", async () => {
+    const { saved } = await runCreateCharacter("Argo", 3)
+    const stats = saved.stats[0]?.stats
+    expect(stats?.str).toBe(4)
+    expect(stats?.agi).toBe(8)
+    expect(stats?.vit).toBe(4)
+    expect(stats?.dex).toBe(7)
+    expect(stats?.int).toBe(3)
+    expect(stats?.lck).toBe(8)
+  })
+
+  it("should assign correct stats for class 4 (Berserker)", async () => {
+    const { saved } = await runCreateCharacter("Agil", 4)
+    const stats = saved.stats[0]?.stats
+    expect(stats?.str).toBe(12)
+    expect(stats?.agi).toBe(3)
+    expect(stats?.vit).toBe(10)
+    expect(stats?.dex).toBe(4)
+    expect(stats?.int).toBe(2)
+    expect(stats?.lck).toBe(3)
+  })
+
+  it("should assign correct stats for class 5 (Lancer)", async () => {
+    const { saved } = await runCreateCharacter("Diabel", 5)
+    const stats = saved.stats[0]?.stats
+    expect(stats?.str).toBe(8)
+    expect(stats?.agi).toBe(5)
+    expect(stats?.vit).toBe(7)
+    expect(stats?.dex).toBe(7)
+    expect(stats?.int).toBe(3)
+    expect(stats?.lck).toBe(4)
+  })
+
+  it("should assign correct stats for class 6 (Archer)", async () => {
+    const { saved } = await runCreateCharacter("Sinon", 6)
+    const stats = saved.stats[0]?.stats
+    expect(stats?.str).toBe(4)
+    expect(stats?.agi).toBe(7)
+    expect(stats?.vit).toBe(4)
+    expect(stats?.dex).toBe(10)
+    expect(stats?.int).toBe(5)
+    expect(stats?.lck).toBe(4)
+  })
+
+  it("should assign correct stats for class 7 (Monk)", async () => {
+    const { saved } = await runCreateCharacter("Heathcliff", 7)
+    const stats = saved.stats[0]?.stats
+    expect(stats?.str).toBe(7)
+    expect(stats?.agi).toBe(6)
+    expect(stats?.vit).toBe(6)
+    expect(stats?.dex).toBe(5)
+    expect(stats?.int).toBe(7)
+    expect(stats?.lck).toBe(3)
+  })
+
+  it("should fail with InvalidClassIdError for classId 8", async () => {
+    const { layer: repoLayer } = makeMockRepo()
     const { layer: busLayer } = makeMockEventBus()
     const testLayer = Layer.mergeAll(repoLayer, busLayer)
 
-    await Effect.runPromise(
+    const result = await Effect.runPromiseExit(
       Effect.provide(
         createCharacter({
           accountId: "acc-1" as AccountId,
-          name: "Asuna",
-          classId: 2,
+          name: "Invalid",
+          classId: 8,
         }),
         testLayer,
       ),
     )
 
-    const stats = saved.stats[0]?.stats
-    expect(stats?.str).toBe(5)
-    expect(stats?.agi).toBe(10)
-    expect(stats?.dex).toBe(8)
+    expect(result._tag).toBe("Failure")
+  })
+
+  it("should fail with InvalidClassIdError for classId 0", async () => {
+    const { layer: repoLayer } = makeMockRepo()
+    const { layer: busLayer } = makeMockEventBus()
+    const testLayer = Layer.mergeAll(repoLayer, busLayer)
+
+    const result = await Effect.runPromiseExit(
+      Effect.provide(
+        createCharacter({
+          accountId: "acc-1" as AccountId,
+          name: "Invalid",
+          classId: 0,
+        }),
+        testLayer,
+      ),
+    )
+
+    expect(result._tag).toBe("Failure")
   })
 })
