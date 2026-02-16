@@ -91,6 +91,35 @@ export interface JwksTable {
   expiresAt: Date | null
 }
 
+export interface FloorDefinitionTable {
+  id: number
+  name: string
+  description: string
+  level_requirement: number
+  is_unlocked: boolean
+  created_at: Generated<Date>
+  updated_at: Generated<Date>
+}
+
+export interface ZoneDefinitionTable {
+  id: string
+  floor_id: number
+  name: string
+  description: string
+  zone_type: "town" | "field" | "forest" | "labyrinth" | "boss"
+  is_safe_zone: boolean
+  min_x: number
+  min_z: number
+  max_x: number
+  max_z: number
+  spawn_x: number
+  spawn_y: number
+  spawn_z: number
+  max_players: number
+  created_at: Generated<Date>
+  updated_at: Generated<Date>
+}
+
 export interface Database {
   "sao.accounts": AccountTable
   "sao.characters": CharacterTable
@@ -100,4 +129,6 @@ export interface Database {
   "sao.account": BetterAuthAccountTable
   "sao.verification": BetterAuthVerificationTable
   "sao.jwks": JwksTable
+  "sao.floor_definitions": FloorDefinitionTable
+  "sao.zone_definitions": ZoneDefinitionTable
 }
