@@ -16,7 +16,7 @@
     "test": "bun test"
   },
   "dependencies": {
-    "effect": "^3.12.0"
+    "effect": "^3.19.17"
   },
   "devDependencies": {
     "typescript": "^5.7.0"
