@@ -1,5 +1,4 @@
-import type { Position } from "@domain/entities/position"
-import { distanceBetween, createPosition } from "@domain/entities/position"
+import { type Position, distanceBetween, createPosition } from "@domain/entities/position"
 
 interface PendingInput {
   readonly sequence: number

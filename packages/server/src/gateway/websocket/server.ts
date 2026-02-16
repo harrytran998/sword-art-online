@@ -70,9 +70,7 @@ export const WebSocketGatewayLive = Layer.effect(
     let jwks: ReturnType<typeof createRemoteJWKSet> | null = null
 
     const getJwks = () => {
-      if (!jwks) {
-        jwks = createRemoteJWKSet(jwksUrl)
-      }
+      jwks ??= createRemoteJWKSet(jwksUrl)
       return jwks
     }
 
@@ -243,7 +241,7 @@ export const WebSocketGatewayLive = Layer.effect(
                     sendError(
                       ws,
                       ErrorCodes.INVALID_MESSAGE,
-                      `Invalid message format: ${err}`,
+                      `Invalid message format: ${String(err)}`,
                     )
                     return Effect.fail(err)
                   }),
@@ -329,7 +327,7 @@ export const WebSocketGatewayLive = Layer.effect(
                     ErrorCodes.INTERNAL_ERROR,
                     "Message processing failed",
                   )
-                  return Effect.logError(`WS message error: ${err}`)
+                  return Effect.logError(`WS message error: ${String(err)}`)
                 }),
               ),
             )

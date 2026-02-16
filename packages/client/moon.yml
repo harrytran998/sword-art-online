@@ -8,6 +8,8 @@ tasks:
 
   build:
     command: "vite build"
+    deps:
+      - "shared:build"
     inputs:
       - "src/**/*.ts"
       - "src/**/*.tsx"

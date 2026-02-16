@@ -26,8 +26,7 @@ export const handleServerMessage = (data: unknown) => {
     case "player_joined": {
       const game = useGameStore.getState()
       // Don't add ourselves
-      const currentChar = game.currentCharacter
-      if (currentChar && msg.playerId === currentChar.id) break
+      if (msg.playerId === game.currentCharacter?.id) break
 
       game.addOtherPlayer({
         id: msg.playerId,
@@ -85,7 +84,7 @@ export const handleServerMessage = (data: unknown) => {
     case "state_update": {
       const game = useGameStore.getState()
       for (const player of msg.players) {
-        if (game.currentCharacter && player.id === game.currentCharacter.id) {
+        if (player.id === game.currentCharacter?.id) {
           // Server reconciliation: update own position
           game.setCurrentPosition(
             createPosition(player.x, player.y, player.z, player.rotation),
