@@ -13,7 +13,7 @@ export interface CharacterStats {
   readonly unallocatedPoints: number
 }
 
-export const isValidStat = (value: number): boolean =>
+export const isValidCharacterStat = (value: number): boolean =>
   Number.isInteger(value) && value >= MIN_STAT && value <= MAX_STAT
 
 export const getStartingStats = (classId: number): CharacterStats => {

@@ -1,10 +1,10 @@
 import { Effect } from "effect"
-import { CharacterRepository } from "../ports/outbound/character.repository.js"
-import { PlayerNotFoundError } from "../domain/errors.js"
-import { CacheService } from "../../../shared/infrastructure/cache/index.js"
-import { Character } from "../domain/entities/character.js"
-import type { PlayerId, AccountId } from "../../../shared/kernel/types.js"
-import type { CharacterStats } from "../domain/value-objects/stats.js"
+import { CharacterRepository } from "../ports/outbound/character.repository"
+import { PlayerNotFoundError } from "../domain/errors"
+import { CacheService } from "../../../shared/infrastructure/cache/index"
+import { Character } from "../domain/entities/character"
+import type { PlayerId, AccountId } from "../../../shared/kernel/types"
+import type { CharacterStats } from "../domain/value-objects/stats"
 
 const PLAYER_CACHE_TTL = 300
 

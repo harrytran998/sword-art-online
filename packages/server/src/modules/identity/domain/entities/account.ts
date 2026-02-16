@@ -1,4 +1,4 @@
-import type { AccountId } from "../../../../shared/kernel/types.js"
+import type { AccountId } from "../../../../shared/kernel/types"
 
 interface AccountProps {
   readonly id: AccountId

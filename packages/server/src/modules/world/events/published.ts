@@ -1,29 +1,33 @@
-import type { DomainEvent } from "../../../shared/kernel/events.js"
+import { Schema } from "effect"
 
-export interface PlayerEnteredZone extends DomainEvent {
-  readonly _tag: "PlayerEnteredZone"
-  readonly playerId: string
-  readonly zoneId: string
-}
+export class PlayerEnteredZone extends Schema.TaggedClass<PlayerEnteredZone>()("PlayerEnteredZone", {
+  timestamp: Schema.DateFromSelf,
+  aggregateId: Schema.String,
+  playerId: Schema.String,
+  zoneId: Schema.String,
+}) {}
 
-export interface PlayerLeftZone extends DomainEvent {
-  readonly _tag: "PlayerLeftZone"
-  readonly playerId: string
-  readonly zoneId: string
-}
+export class PlayerLeftZone extends Schema.TaggedClass<PlayerLeftZone>()("PlayerLeftZone", {
+  timestamp: Schema.DateFromSelf,
+  aggregateId: Schema.String,
+  playerId: Schema.String,
+  zoneId: Schema.String,
+}) {}
 
-export interface PlayerMoved extends DomainEvent {
-  readonly _tag: "PlayerMoved"
-  readonly playerId: string
-  readonly zoneId: string
-  readonly x: number
-  readonly y: number
-  readonly z: number
-  readonly rotation: number
-}
+export class PlayerMoved extends Schema.TaggedClass<PlayerMoved>()("PlayerMoved", {
+  timestamp: Schema.DateFromSelf,
+  aggregateId: Schema.String,
+  playerId: Schema.String,
+  zoneId: Schema.String,
+  x: Schema.Number,
+  y: Schema.Number,
+  z: Schema.Number,
+  rotation: Schema.Number,
+}) {}
 
-export interface FloorUnlocked extends DomainEvent {
-  readonly _tag: "FloorUnlocked"
-  readonly floorId: number
-  readonly unlockedBy: string
-}
+export class FloorUnlocked extends Schema.TaggedClass<FloorUnlocked>()("FloorUnlocked", {
+  timestamp: Schema.DateFromSelf,
+  aggregateId: Schema.String,
+  floorId: Schema.Number,
+  unlockedBy: Schema.String,
+}) {}

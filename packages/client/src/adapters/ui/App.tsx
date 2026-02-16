@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react"
-import { authClient, fetchJwtToken } from "@adapters/auth/auth-client.js"
-import { useAuthStore } from "@application/stores/auth.store.js"
-import { useGameStore } from "@application/stores/game.store.js"
-import { LoginPage } from "./auth/LoginPage.js"
-import { RegisterPage } from "./auth/RegisterPage.js"
+import { authClient, fetchJwtToken } from "@adapters/auth/auth-client"
+import { useAuthStore } from "@application/stores/auth.store"
+import { useGameStore } from "@application/stores/game.store"
+import { LoginPage } from "./auth/LoginPage"
+import { RegisterPage } from "./auth/RegisterPage"
 
 type AuthView = "login" | "register"
 

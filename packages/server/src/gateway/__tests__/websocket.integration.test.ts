@@ -1,11 +1,11 @@
 import { describe, expect, it, afterAll } from "bun:test"
 import { Effect, Layer } from "effect"
-import { WebSocketGateway, WebSocketGatewayLive } from "../websocket/server.js"
-import { SuspicionTrackerLive } from "../security/suspicion-tracker.js"
-import { WorldModule } from "../../modules/world/index.js"
-import { InMemoryEventBusLive } from "../../shared/infrastructure/event-bus/index.js"
-import { AppConfig } from "../../shared/infrastructure/config/index.js"
-import { CacheService } from "../../shared/infrastructure/cache/index.js"
+import { WebSocketGateway, WebSocketGatewayLive } from "../websocket/server"
+import { SuspicionTrackerLive } from "../security/suspicion-tracker"
+import { WorldModule } from "../../modules/world/index"
+import { InMemoryEventBusLive } from "../../shared/infrastructure/event-bus/index"
+import { AppConfig } from "../../shared/infrastructure/config/index"
+import { CacheService } from "../../shared/infrastructure/cache/index"
 
 /**
  * Integration test for WebSocket server.

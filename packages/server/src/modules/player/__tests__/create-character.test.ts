@@ -1,12 +1,12 @@
 import { describe, expect, it } from "bun:test"
 import { Effect, Layer } from "effect"
-import { createCharacter } from "../application/create-character.use-case.js"
-import { CharacterRepository } from "../ports/outbound/character.repository.js"
-import { EventBus } from "../../../shared/infrastructure/event-bus/index.js"
-import { Character } from "../domain/entities/character.js"
-import type { CharacterStats } from "../domain/value-objects/stats.js"
-import type { PlayerId, AccountId } from "../../../shared/kernel/types.js"
-import type { DomainEvent } from "../../../shared/kernel/events.js"
+import { createCharacter } from "../application/create-character.use-case"
+import { CharacterRepository } from "../ports/outbound/character.repository"
+import { EventBus } from "../../../shared/infrastructure/event-bus/index"
+import { Character } from "../domain/entities/character"
+import type { CharacterStats } from "../domain/value-objects/stats"
+import type { PlayerId, AccountId } from "../../../shared/kernel/types"
+import type { DomainEvent } from "../../../shared/kernel/events"
 
 const makeTestCharacter = (name: string): Character =>
   Character.create({

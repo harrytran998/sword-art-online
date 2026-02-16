@@ -1,8 +1,8 @@
 import { describe, expect, it } from "bun:test"
 import { Effect, Layer } from "effect"
-import { decodeClientMessage, routeMessage } from "../websocket/message-router.js"
-import { WorldPort } from "../../modules/world/ports/inbound/world.port.js"
-import type { PlayerId } from "../../shared/kernel/types.js"
+import { decodeClientMessage, routeMessage } from "../websocket/message-router"
+import { WorldPort } from "../../modules/world/ports/inbound/world.port"
+import type { PlayerId } from "../../shared/kernel/types"
 
 const TEST_PLAYER = "player-1" as PlayerId
 

@@ -1,7 +1,7 @@
 import { Effect } from "effect"
-import { AuthPort } from "../ports/inbound/auth.port.js"
-import { EventBus } from "../../../shared/infrastructure/event-bus/index.js"
-import { createEvent } from "../../../shared/kernel/events.js"
+import { AuthPort } from "../ports/inbound/auth.port"
+import { EventBus } from "../../../shared/infrastructure/event-bus/index"
+import { PlayerRegistered, PlayerLoggedIn } from "../events/published"
 
 export const handleAuthRequest = (request: Request) =>
   Effect.gen(function* () {
@@ -21,13 +21,18 @@ export const handleAuthRequest = (request: Request) =>
 
       if (session) {
         if (isSignUp) {
-          yield* eventBus.publish(
-            createEvent("PlayerRegistered", session.userId),
-          )
+          yield* eventBus.publish(new PlayerRegistered({
+            timestamp: new Date(),
+            aggregateId: session.userId,
+            accountId: session.userId,
+            email: session.email,
+          }))
         } else {
-          yield* eventBus.publish(
-            createEvent("PlayerLoggedIn", session.userId),
-          )
+          yield* eventBus.publish(new PlayerLoggedIn({
+            timestamp: new Date(),
+            aggregateId: session.userId,
+            playerId: session.userId,
+          }))
         }
       }
     }

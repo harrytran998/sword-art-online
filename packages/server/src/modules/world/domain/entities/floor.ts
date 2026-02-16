@@ -1,4 +1,4 @@
-import type { FloorId } from "../../../../shared/kernel/types.js"
+import type { FloorId } from "../../../../shared/kernel/types"
 
 interface FloorProps {
   readonly id: FloorId

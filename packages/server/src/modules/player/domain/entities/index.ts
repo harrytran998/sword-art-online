@@ -1,1 +1,1 @@
-export { Character } from "./character.js"
+export { Character } from "./character"

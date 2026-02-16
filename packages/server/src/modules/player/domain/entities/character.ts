@@ -1,5 +1,5 @@
-import type { PlayerId, AccountId } from "../../../../shared/kernel/types.js"
-import type { CharacterStats } from "../value-objects/stats.js"
+import type { PlayerId, AccountId } from "../../../../shared/kernel/types"
+import type { CharacterStats } from "../value-objects/stats"
 
 interface CharacterProps {
   readonly id: PlayerId

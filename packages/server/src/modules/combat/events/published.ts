@@ -1,20 +1,23 @@
-import type { DomainEvent } from "../../../shared/kernel/events.js"
+import { Schema } from "effect"
 
-export interface SkillExecuted extends DomainEvent {
-  readonly _tag: "SkillExecuted"
-  readonly playerId: string
-  readonly skillId: string
-}
+export class SkillExecuted extends Schema.TaggedClass<SkillExecuted>()("SkillExecuted", {
+  timestamp: Schema.DateFromSelf,
+  aggregateId: Schema.String,
+  playerId: Schema.String,
+  skillId: Schema.String,
+}) {}
 
-export interface DamageDealt extends DomainEvent {
-  readonly _tag: "DamageDealt"
-  readonly attackerId: string
-  readonly targetId: string
-  readonly damage: number
-}
+export class DamageDealt extends Schema.TaggedClass<DamageDealt>()("DamageDealt", {
+  timestamp: Schema.DateFromSelf,
+  aggregateId: Schema.String,
+  attackerId: Schema.String,
+  targetId: Schema.String,
+  damage: Schema.Number,
+}) {}
 
-export interface PlayerDefeated extends DomainEvent {
-  readonly _tag: "PlayerDefeated"
-  readonly playerId: string
-  readonly defeatedBy: string
-}
+export class PlayerDefeated extends Schema.TaggedClass<PlayerDefeated>()("PlayerDefeated", {
+  timestamp: Schema.DateFromSelf,
+  aggregateId: Schema.String,
+  playerId: Schema.String,
+  defeatedBy: Schema.String,
+}) {}

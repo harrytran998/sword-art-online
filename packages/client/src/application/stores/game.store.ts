@@ -1,6 +1,6 @@
 import { create } from "zustand"
-import type { Character } from "@domain/entities/character.js"
-import type { Position } from "@domain/entities/position.js"
+import type { Character } from "@domain/entities/character"
+import type { Position } from "@domain/entities/position"
 
 export type ConnectionStatus = "disconnected" | "connecting" | "connected" | "error"
 

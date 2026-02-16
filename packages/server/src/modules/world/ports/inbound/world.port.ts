@@ -1,7 +1,7 @@
 import { Context, Effect } from "effect"
-import type { PlayerId, ZoneId } from "../../../../shared/kernel/types.js"
-import type { Position } from "../../domain/value-objects/position.js"
-import type { InvalidPositionError, ZoneNotFoundError } from "../../domain/errors.js"
+import type { PlayerId, ZoneId } from "../../../../shared/kernel/types"
+import type { Position } from "../../domain/value-objects/position"
+import type { InvalidPositionError, ZoneNotFoundError } from "../../domain/errors"
 
 export class WorldPort extends Context.Tag("WorldPort")<
   WorldPort,

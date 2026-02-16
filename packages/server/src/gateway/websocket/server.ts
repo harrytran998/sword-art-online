@@ -2,17 +2,18 @@ import { Context, Effect, Layer } from "effect"
 import type { ServerWebSocket } from "bun"
 import { createRemoteJWKSet, jwtVerify } from "jose"
 import { HEARTBEAT_TIMEOUT_MS } from "@sao/shared"
-import { AppConfig } from "../../shared/infrastructure/config/index.js"
-import { WorldPort } from "../../modules/world/ports/inbound/world.port.js"
-import { EventBus } from "../../shared/infrastructure/event-bus/index.js"
-import { CacheService } from "../../shared/infrastructure/cache/index.js"
-import { handleRequest } from "../http/routes.js"
-import { validateInput } from "../security/input-validator.js"
-import { checkMessageRateLimit } from "../security/rate-limiter-config.js"
-import { ErrorCodes } from "../security/error-codes.js"
-import { logSecurityEvent, SecurityEventType } from "../security/security-logger.js"
-import { decodeClientMessage, routeMessage } from "./message-router.js"
-import type { PlayerId, ZoneId } from "../../shared/kernel/types.js"
+import { AppConfig } from "../../shared/infrastructure/config/index"
+import { WorldPort } from "../../modules/world/ports/inbound/world.port"
+import { EventBus } from "../../shared/infrastructure/event-bus/index"
+import { CacheService } from "../../shared/infrastructure/cache/index"
+import { handleRequest } from "../http/routes"
+import { validateInput } from "../security/input-validator"
+import { checkMessageRateLimit } from "../security/rate-limiter-config"
+import { ErrorCodes } from "../security/error-codes"
+import { logSecurityEvent, SecurityEventType } from "../security/security-logger"
+import { decodeClientMessage, routeMessage } from "./message-router"
+import { PlayerLeftZone } from "../../modules/world/events/published"
+import type { PlayerId, ZoneId } from "../../shared/kernel/types"
 
 interface WebSocketData {
   readonly playerId: PlayerId
@@ -323,13 +324,12 @@ export const WebSocketGatewayLive = Layer.effect(
               yield* world.removePlayer(ws.data.playerId)
 
               const eventBus = yield* EventBus
-              yield* eventBus.publish({
-                _tag: "PlayerLeftZone",
+              yield* eventBus.publish(new PlayerLeftZone({
                 timestamp: new Date(),
                 aggregateId: ws.data.playerId,
                 playerId: ws.data.playerId,
                 zoneId: ws.data.zoneId,
-              } as unknown as import("../../shared/kernel/events.js").DomainEvent)
+              }))
             }).pipe(Effect.provide(ctx)),
           )
         },

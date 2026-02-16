@@ -1,24 +1,36 @@
 import { describe, expect, it } from "bun:test"
 import { Effect, Ref } from "effect"
-import { EventBus, InMemoryEventBusLive } from "../index.js"
-import type { DomainEvent } from "../../../kernel/events.js"
+import { EventBus, InMemoryEventBusLive } from "../index"
+import type { DomainEvent } from "../../../kernel/events"
 
 const runWithEventBus = <A, E>(
   effect: Effect.Effect<A, E, EventBus>,
 ): Promise<A> => Effect.runPromise(Effect.provide(effect, InMemoryEventBusLive))
+
+interface TestEvent extends DomainEvent {
+  readonly _tag: "TestEvent"
+}
+
+interface EventA extends DomainEvent {
+  readonly _tag: "EventA"
+}
+
+interface EventB extends DomainEvent {
+  readonly _tag: "EventB"
+}
 
 describe("InMemoryEventBus", () => {
   it("should deliver event to subscriber", async () => {
     const result = await runWithEventBus(
       Effect.gen(function* () {
         const bus = yield* EventBus
-        const received = yield* Ref.make<DomainEvent[]>([])
+        const received = yield* Ref.make<TestEvent[]>([])
 
-        yield* bus.subscribe("TestEvent", (event) =>
+        yield* bus.subscribe<TestEvent>("TestEvent", (event) =>
           Ref.update(received, (events) => [...events, event]),
         )
 
-        yield* bus.publish({
+        yield* bus.publish<TestEvent>({
           _tag: "TestEvent",
           timestamp: new Date(),
           aggregateId: "123",
@@ -40,14 +52,14 @@ describe("InMemoryEventBus", () => {
         const countA = yield* Ref.make(0)
         const countB = yield* Ref.make(0)
 
-        yield* bus.subscribe("TestEvent", () =>
+        yield* bus.subscribe<TestEvent>("TestEvent", () =>
           Ref.update(countA, (n) => n + 1),
         )
-        yield* bus.subscribe("TestEvent", () =>
+        yield* bus.subscribe<TestEvent>("TestEvent", () =>
           Ref.update(countB, (n) => n + 1),
         )
 
-        yield* bus.publish({
+        yield* bus.publish<TestEvent>({
           _tag: "TestEvent",
           timestamp: new Date(),
           aggregateId: "456",
@@ -69,11 +81,11 @@ describe("InMemoryEventBus", () => {
         const bus = yield* EventBus
         const count = yield* Ref.make(0)
 
-        yield* bus.subscribe("EventA", () =>
+        yield* bus.subscribe<EventA>("EventA", () =>
           Ref.update(count, (n) => n + 1),
         )
 
-        yield* bus.publish({
+        yield* bus.publish<EventB>({
           _tag: "EventB",
           timestamp: new Date(),
           aggregateId: "789",

@@ -1,1 +1,1 @@
-export { handleAuthRequest } from "./handle-auth.use-case.js"
+export { handleAuthRequest } from "./handle-auth.use-case"

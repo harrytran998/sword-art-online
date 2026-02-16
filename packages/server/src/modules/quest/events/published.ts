@@ -1,20 +1,23 @@
-import type { DomainEvent } from "../../../shared/kernel/events.js"
+import { Schema } from "effect"
 
-export interface QuestAccepted extends DomainEvent {
-  readonly _tag: "QuestAccepted"
-  readonly questId: string
-  readonly playerId: string
-}
+export class QuestAccepted extends Schema.TaggedClass<QuestAccepted>()("QuestAccepted", {
+  timestamp: Schema.DateFromSelf,
+  aggregateId: Schema.String,
+  questId: Schema.String,
+  playerId: Schema.String,
+}) {}
 
-export interface QuestCompleted extends DomainEvent {
-  readonly _tag: "QuestCompleted"
-  readonly questId: string
-  readonly playerId: string
-}
+export class QuestCompleted extends Schema.TaggedClass<QuestCompleted>()("QuestCompleted", {
+  timestamp: Schema.DateFromSelf,
+  aggregateId: Schema.String,
+  questId: Schema.String,
+  playerId: Schema.String,
+}) {}
 
-export interface ObjectiveUpdated extends DomainEvent {
-  readonly _tag: "ObjectiveUpdated"
-  readonly questId: string
-  readonly objectiveId: string
-  readonly progress: number
-}
+export class ObjectiveUpdated extends Schema.TaggedClass<ObjectiveUpdated>()("ObjectiveUpdated", {
+  timestamp: Schema.DateFromSelf,
+  aggregateId: Schema.String,
+  questId: Schema.String,
+  objectiveId: Schema.String,
+  progress: Schema.Number,
+}) {}

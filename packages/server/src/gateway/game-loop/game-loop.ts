@@ -1,7 +1,7 @@
 import { Context, Effect, Layer, Ref } from "effect"
 import { TICK_RATE } from "@sao/shared"
-import { GameState } from "./game-state.js"
-import { processTick } from "./tick-pipeline.js"
+import { GameState } from "./game-state"
+import { processTick } from "./tick-pipeline"
 
 export class GameLoopService extends Context.Tag("GameLoopService")<
   GameLoopService,

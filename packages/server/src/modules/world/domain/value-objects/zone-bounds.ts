@@ -7,7 +7,7 @@ export interface ZoneBounds {
   readonly maxZ: number
 }
 
-export const contains = (bounds: ZoneBounds, x: number, y: number, z: number): boolean =>
+export const zoneBoundsContains = (bounds: ZoneBounds, x: number, y: number, z: number): boolean =>
   x >= bounds.minX &&
   x <= bounds.maxX &&
   y >= bounds.minY &&
@@ -15,7 +15,7 @@ export const contains = (bounds: ZoneBounds, x: number, y: number, z: number): b
   z >= bounds.minZ &&
   z <= bounds.maxZ
 
-export const clamp = (
+export const clampToZoneBounds = (
   bounds: ZoneBounds,
   x: number,
   y: number,

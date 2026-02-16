@@ -1,6 +1,6 @@
 import { useState } from "react"
-import { authClient, fetchJwtToken } from "@adapters/auth/auth-client.js"
-import { useAuthStore } from "@application/stores/auth.store.js"
+import { authClient, fetchJwtToken } from "@adapters/auth/auth-client"
+import { useAuthStore } from "@application/stores/auth.store"
 
 export const RegisterPage = ({
   onSwitchToLogin,

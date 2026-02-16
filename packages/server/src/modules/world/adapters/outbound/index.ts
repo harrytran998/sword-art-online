@@ -1,1 +1,1 @@
-export { InMemoryZoneStateLive } from "./in-memory-zone-state.js"
+export { InMemoryZoneStateLive } from "./in-memory-zone-state"

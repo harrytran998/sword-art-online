@@ -1,3 +1,3 @@
-export { useAuthStore } from "./auth.store.js"
-export { useGameStore } from "./game.store.js"
-export type { ConnectionStatus } from "./game.store.js"
+export { useAuthStore } from "./auth.store"
+export { useGameStore } from "./game.store"
+export type { ConnectionStatus } from "./game.store"

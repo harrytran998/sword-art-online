@@ -1,2 +1,2 @@
-export * from "./inbound/index.js"
-export * from "./outbound/index.js"
+export * from "./inbound/index"
+export * from "./outbound/index"

@@ -1,4 +1,4 @@
-import type { NetworkPort } from "@ports/network.port.js"
+import type { NetworkPort } from "@ports/network.port"
 
 export const createWebSocketAdapter = (): NetworkPort => {
   let ws: WebSocket | null = null

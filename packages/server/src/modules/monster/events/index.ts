@@ -1,2 +1,2 @@
-export * from "./published.js"
-export * from "./subscriptions.js"
+export * from "./published"
+export * from "./subscriptions"

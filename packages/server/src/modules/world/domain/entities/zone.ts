@@ -1,6 +1,6 @@
-import type { ZoneId, FloorId } from "../../../../shared/kernel/types.js"
-import type { Position } from "../value-objects/position.js"
-import { type ZoneBounds, contains } from "../value-objects/zone-bounds.js"
+import type { ZoneId, FloorId } from "../../../../shared/kernel/types"
+import type { Position } from "../value-objects/position"
+import { type ZoneBounds, zoneBoundsContains } from "../value-objects/zone-bounds"
 
 export type ZoneType = "town" | "field" | "dungeon" | "labyrinth" | "boss"
 
@@ -47,7 +47,7 @@ export class Zone {
     return this.props.safeZone
   }
 
-  containsPosition(x: number, y: number, z: number): boolean {
-    return contains(this.props.bounds, x, y, z)
+  zoneBoundsContainsPosition(x: number, y: number, z: number): boolean {
+    return zoneBoundsContains(this.props.bounds, x, y, z)
   }
 }

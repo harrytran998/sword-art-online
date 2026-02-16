@@ -1,1 +1,1 @@
-export { AccountRepository } from "./account.repository.js"
+export { AccountRepository } from "./account.repository"

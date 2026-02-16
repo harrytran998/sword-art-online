@@ -1,7 +1,7 @@
 import { describe, expect, it } from "bun:test"
 import { Effect, Layer } from "effect"
-import { checkMessageRateLimit } from "../security/rate-limiter-config.js"
-import { CacheService } from "../../shared/infrastructure/cache/index.js"
+import { checkMessageRateLimit } from "../security/rate-limiter-config"
+import { CacheService } from "../../shared/infrastructure/cache/index"
 
 const makeInMemoryCacheLayer = () => {
   const store = new Map<string, { value: string; expiresAt: number | null }>()

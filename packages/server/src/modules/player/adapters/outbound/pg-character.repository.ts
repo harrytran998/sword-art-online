@@ -1,9 +1,9 @@
 import { Effect, Layer } from "effect"
-import { CharacterRepository } from "../../ports/outbound/character.repository.js"
-import { DatabaseService } from "../../../../shared/infrastructure/database/index.js"
-import { Character } from "../../domain/entities/character.js"
-import type { CharacterStats } from "../../domain/value-objects/stats.js"
-import type { PlayerId, AccountId } from "../../../../shared/kernel/types.js"
+import { CharacterRepository } from "../../ports/outbound/character.repository"
+import { DatabaseService } from "../../../../shared/infrastructure/database/index"
+import { Character } from "../../domain/entities/character"
+import type { CharacterStats } from "../../domain/value-objects/stats"
+import type { PlayerId, AccountId } from "../../../../shared/kernel/types"
 
 interface CharacterRow {
   id: string

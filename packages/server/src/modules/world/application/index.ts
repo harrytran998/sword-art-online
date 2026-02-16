@@ -1,1 +1,1 @@
-export { validateMovement } from "./validate-movement.use-case.js"
+export { validateMovement } from "./validate-movement.use-case"

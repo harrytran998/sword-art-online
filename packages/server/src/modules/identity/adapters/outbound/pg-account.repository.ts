@@ -1,8 +1,8 @@
 import { Effect, Layer } from "effect"
-import { AccountRepository } from "../../ports/outbound/account.repository.js"
-import { DatabaseService } from "../../../../shared/infrastructure/database/index.js"
-import { Account } from "../../domain/entities/account.js"
-import type { AccountId } from "../../../../shared/kernel/types.js"
+import { AccountRepository } from "../../ports/outbound/account.repository"
+import { DatabaseService } from "../../../../shared/infrastructure/database/index"
+import { Account } from "../../domain/entities/account"
+import type { AccountId } from "../../../../shared/kernel/types"
 
 export const PgAccountRepositoryLive = Layer.effect(
   AccountRepository,

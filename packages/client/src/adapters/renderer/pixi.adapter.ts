@@ -1,4 +1,4 @@
-import type { RendererPort } from "@ports/renderer.port.js"
+import type { RendererPort } from "@ports/renderer.port"
 
 /**
  * PixiJS rendering adapter.

@@ -26,6 +26,7 @@
 - Use branded types from `shared/kernel/types.ts` (PlayerId, ZoneId, etc.)
 - Migrations: plain SQL in `migrations/` via go-migrate
 - Tests: colocated `__tests__/` folders within each module
+- Use Type[] syntax instead of Array<Type> for consistency
 
 ## Important
 - Server-authoritative: NEVER trust client input

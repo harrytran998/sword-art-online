@@ -1,2 +1,2 @@
-export { LoginPage } from "./LoginPage.js"
-export { RegisterPage } from "./RegisterPage.js"
+export { LoginPage } from "./LoginPage"
+export { RegisterPage } from "./RegisterPage"

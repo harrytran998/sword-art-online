@@ -1,2 +1,2 @@
-export { BetterAuthService, BetterAuthServiceLive } from "./better-auth.js"
-export { PgAccountRepositoryLive } from "./pg-account.repository.js"
+export { BetterAuthService, BetterAuthServiceLive } from "./better-auth"
+export { PgAccountRepositoryLive } from "./pg-account.repository"

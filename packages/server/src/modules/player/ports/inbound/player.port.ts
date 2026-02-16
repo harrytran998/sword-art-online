@@ -1,13 +1,13 @@
 import { Context, Effect } from "effect"
-import type { Character } from "../../domain/entities/character.js"
-import type { PlayerId, AccountId } from "../../../../shared/kernel/types.js"
+import type { Character } from "../../domain/entities/character"
+import type { PlayerId, AccountId } from "../../../../shared/kernel/types"
 import type {
   PlayerNotFoundError,
   CharacterNameTakenError,
   InvalidCharacterNameError,
   InvalidClassIdError,
   InvalidStatsError,
-} from "../../domain/errors.js"
+} from "../../domain/errors"
 
 export interface CreateCharacterParams {
   readonly accountId: AccountId

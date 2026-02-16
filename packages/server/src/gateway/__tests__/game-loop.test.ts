@@ -1,7 +1,7 @@
 import { describe, expect, it } from "bun:test"
 import { Effect, Layer } from "effect"
-import { GameLoopService, GameLoopServiceLive } from "../game-loop/game-loop.js"
-import { GameStateLive } from "../game-loop/game-state.js"
+import { GameLoopService, GameLoopServiceLive } from "../game-loop/game-loop"
+import { GameStateLive } from "../game-loop/game-state"
 
 const TestGameLoopLayer = GameLoopServiceLive.pipe(
   Layer.provide(GameStateLive),

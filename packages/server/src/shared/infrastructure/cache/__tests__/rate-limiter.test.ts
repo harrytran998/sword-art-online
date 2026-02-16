@@ -1,7 +1,7 @@
 import { describe, expect, it } from "bun:test"
 import { Effect, Layer } from "effect"
-import { checkRateLimit } from "../rate-limiter.js"
-import { CacheService } from "../index.js"
+import { checkRateLimit } from "../rate-limiter"
+import { CacheService } from "../index"
 
 interface CacheEntry {
   value: string

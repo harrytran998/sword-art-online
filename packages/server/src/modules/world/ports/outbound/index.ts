@@ -1,1 +1,1 @@
-export { ZoneStateRepository, type PlayerZoneState } from "./zone-state.repository.js"
+export { ZoneStateRepository, type PlayerZoneState } from "./zone-state.repository"

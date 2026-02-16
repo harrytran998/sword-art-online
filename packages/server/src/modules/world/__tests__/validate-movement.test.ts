@@ -1,11 +1,11 @@
 import { describe, expect, it } from "bun:test"
 import { Effect, Layer } from "effect"
-import { validateMovement } from "../application/validate-movement.use-case.js"
-import { ZoneStateRepository, type PlayerZoneState } from "../ports/outbound/zone-state.repository.js"
-import { EventBus } from "../../../shared/infrastructure/event-bus/index.js"
-import { SuspicionTracker } from "../../../gateway/security/suspicion-tracker.js"
-import type { PlayerId, ZoneId } from "../../../shared/kernel/types.js"
-import type { DomainEvent } from "../../../shared/kernel/events.js"
+import { validateMovement } from "../application/validate-movement.use-case"
+import { ZoneStateRepository, type PlayerZoneState } from "../ports/outbound/zone-state.repository"
+import { EventBus } from "../../../shared/infrastructure/event-bus/index"
+import { SuspicionTracker } from "../../../gateway/security/suspicion-tracker"
+import type { PlayerId, ZoneId } from "../../../shared/kernel/types"
+import type { DomainEvent } from "../../../shared/kernel/events"
 
 const TEST_PLAYER = "player-1" as PlayerId
 const TEST_ZONE = "floor_1_town" as ZoneId

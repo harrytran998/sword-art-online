@@ -1,1 +1,1 @@
-export { WorldPort } from "./world.port.js"
+export { WorldPort } from "./world.port"
