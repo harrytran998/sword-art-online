@@ -1,6 +1,7 @@
 import { Effect, Match, Schema } from "effect"
-import type { PlayerId, ZoneId } from "../../shared/kernel/types"
+import type { PlayerId, ZoneId, AccountId } from "../../shared/kernel/types"
 import { WorldPort } from "../../modules/world/ports/inbound/world.port"
+import { PlayerPort } from "../../modules/player/ports/inbound/player.port"
 import { ClientMessageSchema, type ValidatedClientMessage } from "./schemas"
 
 export const decodeClientMessage = (raw: unknown) =>
@@ -9,7 +10,8 @@ export const decodeClientMessage = (raw: unknown) =>
 export const routeMessage = (
   msg: ValidatedClientMessage,
   playerId: PlayerId,
-): Effect.Effect<unknown, unknown, WorldPort> =>
+  accountId: AccountId,
+): Effect.Effect<unknown, unknown, WorldPort | PlayerPort> =>
   Match.value(msg).pipe(
     Match.when({ _tag: "movement" }, (m) =>
       Effect.gen(function* () {
@@ -40,6 +42,28 @@ export const routeMessage = (
         return {
           _tag: "zone_state" as const,
           ...result,
+        }
+      }),
+    ),
+    Match.when({ _tag: "create_character" }, (m) =>
+      Effect.gen(function* () {
+        const player = yield* PlayerPort
+        const character = yield* player.createCharacter({
+          accountId,
+          name: m.name,
+          classId: m.classId,
+        })
+        return {
+          _tag: "character_data" as const,
+          characterId: character.id,
+          name: character.name,
+          level: character.level,
+          experience: character.experience,
+          currentHp: character.currentHp,
+          maxHp: character.maxHp,
+          currentFloor: character.currentFloor,
+          col: character.col,
+          stats: character.stats,
         }
       }),
     ),
