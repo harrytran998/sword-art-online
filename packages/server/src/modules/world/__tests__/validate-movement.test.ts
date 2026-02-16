@@ -3,7 +3,7 @@ import { Effect, Layer } from "effect"
 import { validateMovement } from "../application/validate-movement.use-case"
 import { ZoneStateRepository, type PlayerZoneState } from "../ports/outbound/zone-state.repository"
 import { EventBus } from "../../../shared/infrastructure/event-bus/index"
-import { SuspicionTracker } from "../../../gateway/security/suspicion-tracker"
+import { SuspicionTracker } from "../../../shared/infrastructure/security/suspicion-tracker"
 import type { PlayerId, ZoneId } from "../../../shared/kernel/types"
 import type { DomainEvent } from "../../../shared/kernel/events"
 
