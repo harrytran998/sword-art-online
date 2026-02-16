@@ -1,6 +1,6 @@
 import { Effect } from "effect"
-import { decodePositionUpdate } from "../websocket/binary-protocol.js"
-import { ErrorCodes } from "./error-codes.js"
+import { decodePositionUpdate } from "../websocket/binary-protocol"
+import { ErrorCodes } from "./error-codes"
 
 const KNOWN_TAGS = new Set([
   "movement",

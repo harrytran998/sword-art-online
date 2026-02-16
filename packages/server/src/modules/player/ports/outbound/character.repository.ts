@@ -1,7 +1,7 @@
 import { Context, Effect } from "effect"
-import type { Character } from "../../domain/entities/character.js"
-import type { CharacterStats } from "../../domain/value-objects/stats.js"
-import type { PlayerId, AccountId } from "../../../../shared/kernel/types.js"
+import type { Character } from "../../domain/entities/character"
+import type { CharacterStats } from "../../domain/value-objects/stats"
+import type { PlayerId, AccountId } from "../../../../shared/kernel/types"
 
 export class CharacterRepository extends Context.Tag("CharacterRepository")<
   CharacterRepository,

@@ -1,12 +1,13 @@
 import { Effect } from "effect"
 import { MAX_MOVE_SPEED, SUSPICION_SPEED_HACK_PENALTY, SUSPICION_TELEPORT_PENALTY } from "@sao/shared"
-import type { PlayerId } from "../../../shared/kernel/types.js"
-import { InvalidPositionError } from "../domain/errors.js"
-import { distance } from "../domain/value-objects/position.js"
-import { ZoneStateRepository } from "../ports/outbound/zone-state.repository.js"
-import { EventBus } from "../../../shared/infrastructure/event-bus/index.js"
-import { SuspicionTracker } from "../../../gateway/security/suspicion-tracker.js"
-import { logSecurityEvent, SecurityEventType } from "../../../gateway/security/security-logger.js"
+import type { PlayerId } from "../../../shared/kernel/types"
+import { InvalidPositionError } from "../domain/errors"
+import { positionDistance } from "../domain/value-objects/position"
+import { ZoneStateRepository } from "../ports/outbound/zone-state.repository"
+import { EventBus } from "../../../shared/infrastructure/event-bus/index"
+import { SuspicionTracker } from "../../../gateway/security/suspicion-tracker"
+import { logSecurityEvent, SecurityEventType } from "../../../gateway/security/security-logger"
+import { PlayerMoved } from "../events/published"
 
 const SPEED_TOLERANCE = 1.2
 const TELEPORT_DISTANCE_THRESHOLD = MAX_MOVE_SPEED * 2
@@ -34,7 +35,7 @@ export const validateMovement = (
     }
 
     const requestedPos = { x: msg.x, y: msg.y, z: msg.z }
-    const dist = distance(currentState.position, requestedPos)
+    const dist = positionDistance(currentState.position, requestedPos)
     const now = Date.now()
     const deltaTime = Math.max(
       (now - currentState.lastUpdate) / 1000,
@@ -90,8 +91,7 @@ export const validateMovement = (
     })
 
     // Publish event
-    yield* eventBus.publish({
-      _tag: "PlayerMoved",
+    yield* eventBus.publish(new PlayerMoved({
       timestamp: new Date(),
       aggregateId: playerId,
       playerId,
@@ -100,5 +100,5 @@ export const validateMovement = (
       y: msg.y,
       z: msg.z,
       rotation: msg.rotation,
-    } as unknown as import("../../../shared/kernel/events.js").DomainEvent)
+    }))
   })

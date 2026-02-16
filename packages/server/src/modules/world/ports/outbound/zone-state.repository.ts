@@ -1,6 +1,6 @@
 import { Context, Effect } from "effect"
-import type { PlayerId, ZoneId } from "../../../../shared/kernel/types.js"
-import type { Position } from "../../domain/value-objects/position.js"
+import type { PlayerId, ZoneId } from "../../../../shared/kernel/types"
+import type { Position } from "../../domain/value-objects/position"
 
 export interface PlayerZoneState {
   readonly playerId: PlayerId

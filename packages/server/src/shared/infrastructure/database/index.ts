@@ -2,7 +2,7 @@ import { Context, Effect, Layer } from "effect"
 import { Kysely, PostgresDialect } from "kysely"
 import pg from "pg"
 
-import type { Database } from "./types.js"
+import type { Database } from "./types"
 
 export class DatabaseService extends Context.Tag("DatabaseService")<
   DatabaseService,

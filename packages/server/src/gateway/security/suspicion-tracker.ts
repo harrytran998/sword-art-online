@@ -1,7 +1,7 @@
 import { Context, Effect, Layer } from "effect"
 import { SUSPICION_THRESHOLD } from "@sao/shared"
-import { CacheService } from "../../shared/infrastructure/cache/index.js"
-import { logSecurityEvent, SecurityEventType } from "./security-logger.js"
+import { CacheService } from "../../shared/infrastructure/cache/index"
+import { logSecurityEvent, SecurityEventType } from "./security-logger"
 
 const SUSPICION_TTL_S = 300 // 5 minutes
 

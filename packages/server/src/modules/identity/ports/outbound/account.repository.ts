@@ -1,6 +1,6 @@
 import { Context, Effect } from "effect"
-import type { Account } from "../../domain/entities/account.js"
-import type { AccountId } from "../../../../shared/kernel/types.js"
+import type { Account } from "../../domain/entities/account"
+import type { AccountId } from "../../../../shared/kernel/types"
 
 export class AccountRepository extends Context.Tag("AccountRepository")<
   AccountRepository,

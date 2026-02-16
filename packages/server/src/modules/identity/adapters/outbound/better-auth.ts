@@ -3,7 +3,7 @@ import { betterAuth } from "better-auth"
 import { jwt } from "better-auth/plugins/jwt"
 import { bearer } from "better-auth/plugins/bearer"
 import pg from "pg"
-import { AppConfig } from "../../../../shared/infrastructure/config/index.js"
+import { AppConfig } from "../../../../shared/infrastructure/config/index"
 
 export class BetterAuthService extends Context.Tag("BetterAuthService")<
   BetterAuthService,

@@ -1,18 +1,18 @@
 import { Effect } from "effect"
 import { isValidClassId } from "@sao/shared"
-import { Character } from "../domain/entities/character.js"
-import { CharacterName } from "../domain/value-objects/character-name.js"
-import { getStartingStats } from "../domain/value-objects/stats.js"
+import { Character } from "../domain/entities/character"
+import { CharacterName } from "../domain/value-objects/character-name"
+import { getStartingStats } from "../domain/value-objects/stats"
 import {
   CharacterNameTakenError,
   InvalidCharacterNameError,
   InvalidClassIdError,
-} from "../domain/errors.js"
-import { CharacterRepository } from "../ports/outbound/character.repository.js"
-import { EventBus } from "../../../shared/infrastructure/event-bus/index.js"
-import { createEvent } from "../../../shared/kernel/events.js"
-import type { CreateCharacterParams } from "../ports/inbound/player.port.js"
-import type { PlayerId } from "../../../shared/kernel/types.js"
+} from "../domain/errors"
+import { CharacterRepository } from "../ports/outbound/character.repository"
+import { EventBus } from "../../../shared/infrastructure/event-bus/index"
+import { PlayerCreated } from "../events/published"
+import type { CreateCharacterParams } from "../ports/inbound/player.port"
+import type { PlayerId } from "../../../shared/kernel/types"
 
 export const createCharacter = (params: CreateCharacterParams) =>
   Effect.gen(function* () {
@@ -59,7 +59,12 @@ export const createCharacter = (params: CreateCharacterParams) =>
     yield* repo.save(character)
     yield* repo.saveStats(character.id, stats)
 
-    yield* eventBus.publish(createEvent("PlayerCreated", character.id))
+    yield* eventBus.publish(new PlayerCreated({
+      timestamp: new Date(),
+      aggregateId: character.id,
+      playerId: character.id,
+      name: character.name,
+    }))
 
     return character
   })

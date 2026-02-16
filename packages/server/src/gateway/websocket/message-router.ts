@@ -1,7 +1,7 @@
 import { Effect, Match, Schema } from "effect"
-import type { PlayerId } from "../../shared/kernel/types.js"
-import { WorldPort } from "../../modules/world/ports/inbound/world.port.js"
-import { ClientMessageSchema, type ValidatedClientMessage } from "./schemas.js"
+import type { PlayerId } from "../../shared/kernel/types"
+import { WorldPort } from "../../modules/world/ports/inbound/world.port"
+import { ClientMessageSchema, type ValidatedClientMessage } from "./schemas"
 
 export const decodeClientMessage = (raw: unknown) =>
   Schema.decodeUnknown(ClientMessageSchema)(raw)

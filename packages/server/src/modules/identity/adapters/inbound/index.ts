@@ -1,1 +1,1 @@
-export { AuthHandlerLive } from "./auth.handler.js"
+export { AuthHandlerLive } from "./auth.handler"

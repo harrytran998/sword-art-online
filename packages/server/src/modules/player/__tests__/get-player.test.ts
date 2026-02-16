@@ -1,10 +1,10 @@
 import { describe, expect, it } from "bun:test"
 import { Effect, Layer } from "effect"
-import { getPlayer } from "../application/get-player.use-case.js"
-import { CharacterRepository } from "../ports/outbound/character.repository.js"
-import { CacheService } from "../../../shared/infrastructure/cache/index.js"
-import { Character } from "../domain/entities/character.js"
-import type { PlayerId, AccountId } from "../../../shared/kernel/types.js"
+import { getPlayer } from "../application/get-player.use-case"
+import { CharacterRepository } from "../ports/outbound/character.repository"
+import { CacheService } from "../../../shared/infrastructure/cache/index"
+import { Character } from "../domain/entities/character"
+import type { PlayerId, AccountId } from "../../../shared/kernel/types"
 
 const makeTestCharacter = (): Character =>
   Character.create({

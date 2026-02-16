@@ -1,11 +1,11 @@
 import { Effect, Layer } from "effect"
-import { PlayerPort } from "../../ports/inbound/player.port.js"
-import { CharacterRepository } from "../../ports/outbound/character.repository.js"
-import { createCharacter } from "../../application/create-character.use-case.js"
-import { getPlayer, getPlayerByAccountId } from "../../application/get-player.use-case.js"
-import { allocateStats } from "../../application/allocate-stats.use-case.js"
-import { EventBus } from "../../../../shared/infrastructure/event-bus/index.js"
-import { CacheService } from "../../../../shared/infrastructure/cache/index.js"
+import { PlayerPort } from "../../ports/inbound/player.port"
+import { CharacterRepository } from "../../ports/outbound/character.repository"
+import { createCharacter } from "../../application/create-character.use-case"
+import { getPlayer, getPlayerByAccountId } from "../../application/get-player.use-case"
+import { allocateStats } from "../../application/allocate-stats.use-case"
+import { EventBus } from "../../../../shared/infrastructure/event-bus/index"
+import { CacheService } from "../../../../shared/infrastructure/cache/index"
 
 export const PlayerPortLive = Layer.effect(
   PlayerPort,

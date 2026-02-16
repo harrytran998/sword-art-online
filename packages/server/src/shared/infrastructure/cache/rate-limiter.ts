@@ -1,5 +1,5 @@
 import { Effect } from "effect"
-import { CacheService } from "./index.js"
+import { CacheService } from "./index"
 
 export const checkRateLimit = (
   key: string,

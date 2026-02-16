@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from "bun:test"
 import { Kysely, PostgresDialect } from "kysely"
 import pg from "pg"
-import type { Database } from "../types.js"
+import type { Database } from "../types"
 
 const CONNECTION_STRING =
   process.env.DATABASE_URL ?? "postgresql://postgres:postgres@localhost:5432/sao"

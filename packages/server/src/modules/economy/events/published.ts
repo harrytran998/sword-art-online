@@ -1,22 +1,25 @@
-import type { DomainEvent } from "../../../shared/kernel/events.js"
+import { Schema } from "effect"
 
-export interface TradeCompleted extends DomainEvent {
-  readonly _tag: "TradeCompleted"
-  readonly tradeId: string
-  readonly buyerId: string
-  readonly sellerId: string
-}
+export class TradeCompleted extends Schema.TaggedClass<TradeCompleted>()("TradeCompleted", {
+  timestamp: Schema.DateFromSelf,
+  aggregateId: Schema.String,
+  tradeId: Schema.String,
+  buyerId: Schema.String,
+  sellerId: Schema.String,
+}) {}
 
-export interface AuctionSold extends DomainEvent {
-  readonly _tag: "AuctionSold"
-  readonly auctionId: string
-  readonly itemId: string
-  readonly price: number
-}
+export class AuctionSold extends Schema.TaggedClass<AuctionSold>()("AuctionSold", {
+  timestamp: Schema.DateFromSelf,
+  aggregateId: Schema.String,
+  auctionId: Schema.String,
+  itemId: Schema.String,
+  price: Schema.Number,
+}) {}
 
-export interface ColTransferred extends DomainEvent {
-  readonly _tag: "ColTransferred"
-  readonly fromId: string
-  readonly toId: string
-  readonly amount: number
-}
+export class ColTransferred extends Schema.TaggedClass<ColTransferred>()("ColTransferred", {
+  timestamp: Schema.DateFromSelf,
+  aggregateId: Schema.String,
+  fromId: Schema.String,
+  toId: Schema.String,
+  amount: Schema.Number,
+}) {}

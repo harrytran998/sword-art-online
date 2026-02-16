@@ -9,8 +9,8 @@ import {
   RATE_LIMIT_GLOBAL_MAX,
   RATE_LIMIT_GLOBAL_WINDOW_S,
 } from "@sao/shared"
-import { checkRateLimit } from "../../shared/infrastructure/cache/rate-limiter.js"
-import type { CacheService } from "../../shared/infrastructure/cache/index.js"
+import { checkRateLimit } from "../../shared/infrastructure/cache/rate-limiter"
+import type { CacheService } from "../../shared/infrastructure/cache/index"
 
 interface RateLimitConfig {
   readonly max: number

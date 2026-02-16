@@ -1,20 +1,23 @@
-import type { DomainEvent } from "../../../shared/kernel/events.js"
+import { Schema } from "effect"
 
-export interface PartyCreated extends DomainEvent {
-  readonly _tag: "PartyCreated"
-  readonly partyId: string
-  readonly leaderId: string
-}
+export class PartyCreated extends Schema.TaggedClass<PartyCreated>()("PartyCreated", {
+  timestamp: Schema.DateFromSelf,
+  aggregateId: Schema.String,
+  partyId: Schema.String,
+  leaderId: Schema.String,
+}) {}
 
-export interface GuildCreated extends DomainEvent {
-  readonly _tag: "GuildCreated"
-  readonly guildId: string
-  readonly name: string
-}
+export class GuildCreated extends Schema.TaggedClass<GuildCreated>()("GuildCreated", {
+  timestamp: Schema.DateFromSelf,
+  aggregateId: Schema.String,
+  guildId: Schema.String,
+  name: Schema.String,
+}) {}
 
-export interface ChatSent extends DomainEvent {
-  readonly _tag: "ChatSent"
-  readonly senderId: string
-  readonly channel: string
-  readonly message: string
-}
+export class ChatSent extends Schema.TaggedClass<ChatSent>()("ChatSent", {
+  timestamp: Schema.DateFromSelf,
+  aggregateId: Schema.String,
+  senderId: Schema.String,
+  channel: Schema.String,
+  message: Schema.String,
+}) {}

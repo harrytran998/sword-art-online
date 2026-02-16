@@ -1,3 +1,3 @@
-export * from "./entities/index.js"
-export * from "./value-objects/index.js"
-export * from "./errors.js"
+export * from "./entities/index"
+export * from "./value-objects/index"
+export * from "./errors"

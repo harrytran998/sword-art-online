@@ -1,9 +1,9 @@
 import { Effect, Layer, Ref } from "effect"
-import type { PlayerId, ZoneId } from "../../../../shared/kernel/types.js"
+import type { PlayerId, ZoneId } from "../../../../shared/kernel/types"
 import {
   ZoneStateRepository,
   type PlayerZoneState,
-} from "../../ports/outbound/zone-state.repository.js"
+} from "../../ports/outbound/zone-state.repository"
 
 export const InMemoryZoneStateLive = Layer.effect(
   ZoneStateRepository,

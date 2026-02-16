@@ -1,4 +1,4 @@
-import type { StoragePort } from "@ports/storage.port.js"
+import type { StoragePort } from "@ports/storage.port"
 
 const PREFIX = "sao:"
 

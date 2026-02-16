@@ -1,3 +1,3 @@
-export * from "./classes.js"
-export * from "./constants.js"
-export * from "./messages.js"
+export * from "./classes"
+export * from "./constants"
+export * from "./messages"

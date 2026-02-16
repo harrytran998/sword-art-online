@@ -1,1 +1,1 @@
-export { AuthPort } from "./auth.port.js"
+export { AuthPort } from "./auth.port"

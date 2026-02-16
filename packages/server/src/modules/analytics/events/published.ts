@@ -1,12 +1,14 @@
-import type { DomainEvent } from "../../../shared/kernel/events.js"
+import { Schema } from "effect"
 
-export interface GameEventLogged extends DomainEvent {
-  readonly _tag: "GameEventLogged"
-  readonly eventType: string
-  readonly payload: Record<string, unknown>
-}
+export class GameEventLogged extends Schema.TaggedClass<GameEventLogged>()("GameEventLogged", {
+  timestamp: Schema.DateFromSelf,
+  aggregateId: Schema.String,
+  eventType: Schema.String,
+  payload: Schema.Record({ key: Schema.String, value: Schema.Unknown }),
+}) {}
 
-export interface LeaderboardUpdated extends DomainEvent {
-  readonly _tag: "LeaderboardUpdated"
-  readonly leaderboardId: string
-}
+export class LeaderboardUpdated extends Schema.TaggedClass<LeaderboardUpdated>()("LeaderboardUpdated", {
+  timestamp: Schema.DateFromSelf,
+  aggregateId: Schema.String,
+  leaderboardId: Schema.String,
+}) {}

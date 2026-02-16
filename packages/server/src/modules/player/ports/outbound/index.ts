@@ -1,1 +1,1 @@
-export { CharacterRepository } from "./character.repository.js"
+export { CharacterRepository } from "./character.repository"

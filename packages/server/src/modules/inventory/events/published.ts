@@ -1,21 +1,24 @@
-import type { DomainEvent } from "../../../shared/kernel/events.js"
+import { Schema } from "effect"
 
-export interface ItemPickedUp extends DomainEvent {
-  readonly _tag: "ItemPickedUp"
-  readonly playerId: string
-  readonly itemId: string
-}
+export class ItemPickedUp extends Schema.TaggedClass<ItemPickedUp>()("ItemPickedUp", {
+  timestamp: Schema.DateFromSelf,
+  aggregateId: Schema.String,
+  playerId: Schema.String,
+  itemId: Schema.String,
+}) {}
 
-export interface ItemEquipped extends DomainEvent {
-  readonly _tag: "ItemEquipped"
-  readonly playerId: string
-  readonly itemId: string
-  readonly slot: string
-}
+export class ItemEquipped extends Schema.TaggedClass<ItemEquipped>()("ItemEquipped", {
+  timestamp: Schema.DateFromSelf,
+  aggregateId: Schema.String,
+  playerId: Schema.String,
+  itemId: Schema.String,
+  slot: Schema.String,
+}) {}
 
-export interface ItemEnhanced extends DomainEvent {
-  readonly _tag: "ItemEnhanced"
-  readonly playerId: string
-  readonly itemId: string
-  readonly newLevel: number
-}
+export class ItemEnhanced extends Schema.TaggedClass<ItemEnhanced>()("ItemEnhanced", {
+  timestamp: Schema.DateFromSelf,
+  aggregateId: Schema.String,
+  playerId: Schema.String,
+  itemId: Schema.String,
+  newLevel: Schema.Number,
+}) {}

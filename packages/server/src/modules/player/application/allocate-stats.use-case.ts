@@ -1,11 +1,11 @@
 import { Effect } from "effect"
-import { CharacterRepository } from "../ports/outbound/character.repository.js"
-import { EventBus } from "../../../shared/infrastructure/event-bus/index.js"
-import { PlayerNotFoundError, InvalidStatsError } from "../domain/errors.js"
-import { isValidStat } from "../domain/value-objects/stats.js"
-import { createEvent } from "../../../shared/kernel/events.js"
-import type { PlayerId } from "../../../shared/kernel/types.js"
-import type { StatAllocation } from "../ports/inbound/player.port.js"
+import { CharacterRepository } from "../ports/outbound/character.repository"
+import { EventBus } from "../../../shared/infrastructure/event-bus/index"
+import { PlayerNotFoundError, InvalidStatsError } from "../domain/errors"
+import { isValidCharacterStat } from "../domain/value-objects/stats"
+import { StatsAllocated } from "../events/published"
+import type { PlayerId } from "../../../shared/kernel/types"
+import type { StatAllocation } from "../ports/inbound/player.port"
 
 export const allocateStats = (id: PlayerId, allocation: StatAllocation) =>
   Effect.gen(function* () {
@@ -62,12 +62,12 @@ export const allocateStats = (id: PlayerId, allocation: StatAllocation) =>
     }
 
     const allValid =
-      isValidStat(newStats.str) &&
-      isValidStat(newStats.agi) &&
-      isValidStat(newStats.vit) &&
-      isValidStat(newStats.dex) &&
-      isValidStat(newStats.int) &&
-      isValidStat(newStats.lck)
+      isValidCharacterStat(newStats.str) &&
+      isValidCharacterStat(newStats.agi) &&
+      isValidCharacterStat(newStats.vit) &&
+      isValidCharacterStat(newStats.dex) &&
+      isValidCharacterStat(newStats.int) &&
+      isValidCharacterStat(newStats.lck)
 
     if (!allValid) {
       return yield* Effect.fail(
@@ -79,5 +79,9 @@ export const allocateStats = (id: PlayerId, allocation: StatAllocation) =>
 
     yield* repo.saveStats(character.id, newStats)
 
-    yield* eventBus.publish(createEvent("StatsAllocated", character.id))
+    yield* eventBus.publish(new StatsAllocated({
+      timestamp: new Date(),
+      aggregateId: character.id,
+      playerId: character.id,
+    }))
   })

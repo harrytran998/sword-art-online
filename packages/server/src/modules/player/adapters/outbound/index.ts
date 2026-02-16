@@ -1,1 +1,1 @@
-export { PgCharacterRepositoryLive } from "./pg-character.repository.js"
+export { PgCharacterRepositoryLive } from "./pg-character.repository"

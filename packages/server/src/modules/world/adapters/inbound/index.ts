@@ -1,1 +1,1 @@
-export { WorldPortLive } from "./world-port.live.js"
+export { WorldPortLive } from "./world-port.live"

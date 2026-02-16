@@ -1,6 +1,6 @@
 import { Effect } from "effect"
-import { EventBus } from "../shared/infrastructure/event-bus/index.js"
-import type { PlayerMoved, PlayerLeftZone, PlayerEnteredZone } from "../modules/world/events/published.js"
+import { EventBus } from "../shared/infrastructure/event-bus/index"
+import type { PlayerMoved, PlayerLeftZone, PlayerEnteredZone } from "../modules/world/events/published"
 
 export interface GatewayBroadcaster {
   readonly broadcastToZone: (
@@ -15,32 +15,29 @@ export const registerGatewaySubscriptions = (
   Effect.gen(function* () {
     const eventBus = yield* EventBus
 
-    yield* eventBus.subscribe("PlayerMoved", (event) => {
-      const e = event as unknown as PlayerMoved
-      return broadcaster.broadcastToZone(e.zoneId, {
+    yield* eventBus.subscribe<PlayerMoved>("PlayerMoved", (event) => {
+      return broadcaster.broadcastToZone(event.zoneId, {
         _tag: "player_moved",
-        playerId: e.playerId,
-        x: e.x,
-        y: e.y,
-        z: e.z,
-        rotation: e.rotation,
-        timestamp: e.timestamp.getTime(),
+        playerId: event.playerId,
+        x: event.x,
+        y: event.y,
+        z: event.z,
+        rotation: event.rotation,
+        timestamp: event.timestamp.getTime(),
       })
     })
 
-    yield* eventBus.subscribe("PlayerLeftZone", (event) => {
-      const e = event as unknown as PlayerLeftZone
-      return broadcaster.broadcastToZone(e.zoneId, {
+    yield* eventBus.subscribe<PlayerLeftZone>("PlayerLeftZone", (event) => {
+      return broadcaster.broadcastToZone(event.zoneId, {
         _tag: "player_left",
-        playerId: e.playerId,
+        playerId: event.playerId,
       })
     })
 
-    yield* eventBus.subscribe("PlayerEnteredZone", (event) => {
-      const e = event as unknown as PlayerEnteredZone
-      return broadcaster.broadcastToZone(e.zoneId, {
+    yield* eventBus.subscribe<PlayerEnteredZone>("PlayerEnteredZone", (event) => {
+      return broadcaster.broadcastToZone(event.zoneId, {
         _tag: "player_joined",
-        playerId: e.playerId,
+        playerId: event.playerId,
         name: "",
         level: 1,
       })
