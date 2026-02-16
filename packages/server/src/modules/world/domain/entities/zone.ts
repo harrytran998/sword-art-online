@@ -13,6 +13,7 @@ interface ZoneProps {
   readonly spawnPoint: Position
   readonly pvpEnabled: boolean
   readonly safeZone: boolean
+  readonly maxPlayers: number
 }
 
 export class Zone {
@@ -45,6 +46,9 @@ export class Zone {
   }
   get safeZone(): boolean {
     return this.props.safeZone
+  }
+  get maxPlayers(): number {
+    return this.props.maxPlayers
   }
 
   zoneBoundsContainsPosition(x: number, y: number, z: number): boolean {

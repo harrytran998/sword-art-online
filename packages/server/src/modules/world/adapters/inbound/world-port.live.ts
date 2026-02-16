@@ -1,16 +1,18 @@
 import { Effect, Layer } from "effect"
 import { WorldPort } from "../../ports/inbound/world.port"
 import { ZoneStateRepository } from "../../ports/outbound/zone-state.repository"
+import { ZoneRepository } from "../../ports/outbound/zone.repository"
 import { EventBus } from "../../../../shared/infrastructure/event-bus/index"
-import { SuspicionTracker } from "../../../../gateway/security/suspicion-tracker"
+import { SuspicionTracker } from "../../../../shared/infrastructure/security/suspicion-tracker"
 import { validateMovement } from "../../application/validate-movement.use-case"
+import { changeZone } from "../../application/change-zone.use-case"
 import type { PlayerId, ZoneId } from "../../../../shared/kernel/types"
 
 export const WorldPortLive = Layer.effect(
   WorldPort,
   Effect.gen(function* () {
     const ctx = yield* Effect.context<
-      ZoneStateRepository | EventBus | SuspicionTracker
+      ZoneStateRepository | ZoneRepository | EventBus | SuspicionTracker
     >()
 
     return {
@@ -52,6 +54,9 @@ export const WorldPortLive = Layer.effect(
           const repo = yield* ZoneStateRepository
           yield* repo.removePlayer(playerId)
         }).pipe(Effect.provide(ctx)),
+
+      changeZone: (playerId: PlayerId, targetZoneId: ZoneId) =>
+        changeZone(playerId, targetZoneId).pipe(Effect.provide(ctx)),
     }
   }),
 )
