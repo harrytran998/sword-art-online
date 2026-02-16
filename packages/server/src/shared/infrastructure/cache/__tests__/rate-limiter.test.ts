@@ -61,6 +61,14 @@ const makeInMemoryCache = () => {
         })
         return value
       }),
+    sadd: () => Effect.succeed(1),
+    srem: () => Effect.succeed(1),
+    smembers: () => Effect.succeed([]),
+    scard: () => Effect.succeed(0),
+    hset: () => Effect.void,
+    hgetall: () => Effect.succeed({}),
+    hmset: () => Effect.void,
+    hdel: () => Effect.void,
   })
 }
 
