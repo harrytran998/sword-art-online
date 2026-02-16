@@ -1,3 +1,6 @@
 export { useAuthStore } from "./auth.store"
 export { useGameStore } from "./game.store"
-export type { ConnectionStatus } from "./game.store"
+export type { ConnectionStatus, GamePhase } from "./game.store"
+export { usePlayerStore } from "./player.store"
+export { useUiStore } from "./ui.store"
+export { useNetworkStore } from "./network.store"
