@@ -9,6 +9,7 @@
     "test": "bun test"
   },
   "dependencies": {
+    "@sao/shared": "workspace:*",
     "@effect/platform": "^0.72.0",
     "@effect/platform-bun": "^0.52.0",
     "better-auth": "^1.2.0",

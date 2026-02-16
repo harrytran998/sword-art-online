@@ -10,7 +10,8 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
+    "emitDeclarationOnly": true,
+    "declarationMap": true,
     "jsx": "react-jsx",
     "exactOptionalPropertyTypes": true,
     "noUncheckedIndexedAccess": true,
@@ -29,8 +30,5 @@
     "outDir": "dist"
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],
-  "exclude": ["node_modules", "dist"],
-  "references": [
-    { "path": "../shared" }
-  ]
+  "exclude": ["node_modules", "dist"]
 }
