@@ -305,6 +305,12 @@ export const WebSocketGatewayLive = Layer.effect(
                         ErrorCodes.INVALID_POSITION,
                         "Invalid position",
                       )
+                    } else if (error?._tag === "AccountAlreadyHasCharacterError") {
+                      ws.send(JSON.stringify({
+                        _tag: "character_create_error",
+                        code: "ALREADY_HAS_CHARACTER",
+                        message: "This account already has a character",
+                      }))
                     } else if (error?._tag === "CharacterNameTakenError") {
                       ws.send(JSON.stringify({
                         _tag: "character_create_error",
