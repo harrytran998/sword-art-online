@@ -14,3 +14,7 @@ export class InvalidPositionError extends Data.TaggedError("InvalidPositionError
   readonly z: number
   readonly reason: string
 }> {}
+
+export class ZoneChangeError extends Data.TaggedError("ZoneChangeError")<{
+  readonly reason: string
+}> {}

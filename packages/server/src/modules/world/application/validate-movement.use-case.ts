@@ -5,8 +5,8 @@ import { InvalidPositionError } from "../domain/errors"
 import { positionDistance } from "../domain/value-objects/position"
 import { ZoneStateRepository } from "../ports/outbound/zone-state.repository"
 import { EventBus } from "../../../shared/infrastructure/event-bus/index"
-import { SuspicionTracker } from "../../../gateway/security/suspicion-tracker"
-import { logSecurityEvent, SecurityEventType } from "../../../gateway/security/security-logger"
+import { SuspicionTracker } from "../../../shared/infrastructure/security/suspicion-tracker"
+import { logSecurityEvent, SecurityEventType } from "../../../shared/infrastructure/security/security-logger"
 import { PlayerMoved } from "../events/published"
 
 const SPEED_TOLERANCE = 1.2

@@ -1,3 +1,5 @@
 export type { Character, CharacterStats } from "./character"
 export type { Position } from "./position"
 export { createPosition, distanceBetween } from "./position"
+export type { RemotePlayer } from "./remote-player"
+export type { LocalPlayer } from "./local-player"

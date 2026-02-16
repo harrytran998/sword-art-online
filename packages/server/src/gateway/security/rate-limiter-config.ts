@@ -22,6 +22,7 @@ const TAG_LIMITS: Record<string, RateLimitConfig> = {
   chat: { max: RATE_LIMIT_CHAT_MAX, windowS: RATE_LIMIT_CHAT_WINDOW_S },
   skill_activate: { max: RATE_LIMIT_SKILL_MAX, windowS: RATE_LIMIT_SKILL_WINDOW_S },
   skill_cancel: { max: RATE_LIMIT_SKILL_MAX, windowS: RATE_LIMIT_SKILL_WINDOW_S },
+  zone_change: { max: 5, windowS: 60 },
 }
 
 const DEFAULT_LIMIT: RateLimitConfig = { max: 30, windowS: 1 }

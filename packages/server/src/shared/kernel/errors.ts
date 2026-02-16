@@ -18,3 +18,8 @@ export class ValidationError extends Data.TaggedError("ValidationError")<{
 export class UnauthorizedError extends Data.TaggedError("UnauthorizedError")<{
   readonly message: string
 }> {}
+
+export class DatabaseQueryError extends Data.TaggedError("DatabaseQueryError")<{
+  readonly operation: string
+  readonly cause: unknown
+}> {}
