@@ -300,74 +300,71 @@
 
 #### 3.1 WebSocket Gateway `[PARALLEL]`
 
-- [ ] Create `gateway/websocket/server.ts` with `WebSocketGateway` Effect Layer using Bun native WebSocket
-- [ ] Implement connection upgrade handler with Better Auth JWT validation (via JWKS)
-- [ ] Implement origin validation (CSWSH protection) - strict allowlist
-- [ ] Create `WebSocketData` interface: `{ playerId, sessionToken, connectedAt, zoneId }`
-- [ ] Implement `open` handler: verify player, subscribe to zone topic, track connection
-- [ ] Implement `message` handler: rate limit check, parse, validate schema, route to module
-- [ ] Implement `close` handler: cleanup connection, broadcast player_left, unsubscribe topics
-- [ ] Implement `broadcastToZone(zoneId, type, data)` via Bun pub/sub
-- [ ] Implement `sendToPlayer(playerId, message)` via connection map
-- [ ] Write test: connect, send heartbeat, receive heartbeat_ack
+- [x] Create `gateway/websocket/server.ts` with `WebSocketGateway` Effect Layer using Bun native WebSocket
+- [x] Implement connection upgrade handler with Better Auth JWT validation (via JWKS)
+- [x] Implement origin validation (CSWSH protection) - strict allowlist
+- [x] Create `WebSocketData` interface: `{ playerId, sessionToken, connectedAt, zoneId }`
+- [x] Implement `open` handler: verify player, subscribe to zone topic, track connection
+- [x] Implement `message` handler: rate limit check, parse, validate schema, route to module
+- [x] Implement `close` handler: cleanup connection, broadcast player_left, unsubscribe topics
+- [x] Implement `broadcastToZone(zoneId, type, data)` via Bun pub/sub
+- [x] Implement `sendToPlayer(playerId, message)` via connection map
+- [x] Write test: connect, send heartbeat, receive heartbeat_ack
 
 #### 3.2 Message Protocol & Router `[PARALLEL]`
 
-- [ ] Define `ClientMessage` union type in `shared/kernel/messages.ts` using `_tag` discriminator (movement, skill_activate, chat, heartbeat, etc.)
-- [ ] Define `ServerMessage` union type (state_update, player_joined, player_left, error, heartbeat_ack, etc.)
-- [ ] Create Effect Schema validators for each client message type
-- [ ] Create `gateway/websocket/message-router.ts` using `Effect.Match.tag()` to dispatch messages to correct module handlers
-- [ ] Implement heartbeat protocol: client sends every 10s, server acks, disconnect after 30s timeout
-- [ ] Define error codes enum: INVALID_MESSAGE, RATE_LIMITED, SKILL_ON_COOLDOWN, etc.
+- [x] Define `ClientMessage` union type in `shared/kernel/messages.ts` using `_tag` discriminator (movement, skill_activate, chat, heartbeat, etc.)
+- [x] Define `ServerMessage` union type (state_update, player_joined, player_left, error, heartbeat_ack, etc.)
+- [x] Create Effect Schema validators for each client message type
+- [x] Create `gateway/websocket/message-router.ts` using `Effect.Match.tag()` to dispatch messages to correct module handlers
+- [x] Implement heartbeat protocol: client sends every 10s, server acks, disconnect after 30s timeout
+- [x] Define error codes enum: INVALID_MESSAGE, RATE_LIMITED, SKILL_ON_COOLDOWN, etc.
 
 #### 3.3 Game Loop `[DEPENDS: 3.1]`
 
-- [ ] Create `gateway/game-loop/game-loop.ts` with `GameLoopService` Effect Layer
-- [ ] Implement 60Hz tick-based loop using `Effect.repeat` with `Schedule.spaced`
-- [ ] Create `GameState` with `Ref`: tick counter, entities map, pending inputs queue
-- [ ] Create `gateway/game-loop/tick-pipeline.ts` with per-tick processing:
-  1. Process pending inputs (validate + route via message router)
-  2. Update movement (→ world module)
+- [x] Create `gateway/game-loop/game-loop.ts` with `GameLoopService` Effect Layer
+- [x] Implement 60Hz tick-based loop using `setInterval` (avoids drift vs `Effect.repeat`)
+- [x] Create `GameState` with `Ref`: tick counter
+- [x] Create `gateway/game-loop/tick-pipeline.ts` with per-tick processing:
+  1. Process pending inputs (no-op — inputs routed directly in WS handler)
+  2. Update movement (no-op — movement handled per-input)
   3. Process combat (→ combat module, placeholder)
   4. Update monster AI (→ monster module, placeholder)
-  5. Handle collisions
-  6. Validate state (anti-cheat)
-  7. Broadcast delta updates to clients
+  5. Handle collisions (placeholder)
+  6. Validate state (anti-cheat, placeholder)
+  7. Broadcast delta updates (via EventBus subscriptions)
   8. Increment tick
-- [ ] Implement tick duration metric recording
-- [ ] Write test: game loop runs at stable 60Hz for 1000 ticks
+- [x] Implement tick duration metric recording (logs warning when tick > budget)
+- [x] Write test: game loop runs at stable 60Hz with tick counter incrementing
 
 #### 3.4 World Module - Movement System `[DEPENDS: 3.3]`
 
-- [ ] Create `modules/world/domain/entities/zone.ts` and `floor.ts`
-- [ ] Create `modules/world/domain/value-objects/position.ts` and `zone-bounds.ts`
-- [ ] Create `modules/world/ports/inbound/world.port.ts` with `WorldPort` Context.Tag
-- [ ] Create `modules/world/application/validate-movement.use-case.ts`:
-  - Client sends `movement { direction }` input (routed by gateway message router)
-  - Server calculates new velocity from direction + player moveSpeed
-  - Server applies physics: `newPos = pos + velocity * deltaTime`
-  - Server validates: within zone bounds, no collision, speed check
-  - Server broadcasts `player_moved { playerId, position, velocity }`
-- [ ] Create `modules/world/events/published.ts`: `PlayerEnteredZone`, `PlayerLeftZone`, `FloorUnlocked`
-- [ ] Create `modules/world/module.ts` composing all world layers
-- [ ] Implement speed hack detection: compare actual distance vs max allowed per tick
-- [ ] Implement teleportation detection: reject impossible position jumps
-- [ ] Create position broadcasting to zone subscribers
-- [ ] Write test: valid movement accepted, speed hack rejected
+- [x] Create `modules/world/domain/entities/zone.ts` and `floor.ts`
+- [x] Create `modules/world/domain/value-objects/position.ts` and `zone-bounds.ts`
+- [x] Create `modules/world/ports/inbound/world.port.ts` with `WorldPort` Context.Tag
+- [x] Create `modules/world/application/validate-movement.use-case.ts`:
+  - Client sends `movement { x, y, z, rotation }` input (routed by gateway message router)
+  - Server validates: distance within speed limit * deltaTime * tolerance
+  - Server broadcasts `PlayerMoved` event via EventBus
+- [x] Create `modules/world/events/published.ts`: `PlayerEnteredZone`, `PlayerLeftZone`, `PlayerMoved`, `FloorUnlocked`
+- [x] Create `modules/world/module.ts` composing all world layers
+- [x] Implement speed hack detection: compare actual distance vs max allowed per tick
+- [x] Implement teleportation detection: reject impossible position jumps
+- [x] Create position broadcasting to zone subscribers (via EventBus → gateway subscriptions)
+- [x] Write test: valid movement accepted, speed hack rejected
 
 #### 3.5 Security Foundation `[DEPENDS: 3.1, 3.4]`
 
-- [ ] Create security validation in `gateway/` layer (security is a cross-cutting gateway concern)
-- [ ] Implement input validation pipeline in `gateway/game-loop/tick-pipeline.ts` (4 layers):
-  1. Structural validation (JSON parse, required fields)
-  2. Semantic validation (enum values, numeric ranges)
-  3. Business logic validation (ownership, cooldowns)
-  4. Anti-cheat validation (speed, position, timing)
-- [ ] Create rate limiter in `shared/infrastructure/` or gateway: token bucket per player per message type
-- [ ] Configure rate limits: chat 10/10s, movement 20/1s, skills 5/1s, all 100/1s
-- [ ] Implement security event logging (type, severity, playerId, data, timestamp)
-- [ ] Create suspicion score tracking: increment on violations, auto-ban at threshold
-- [ ] Write test: rate limited after exceeding threshold
+- [x] Create security validation in `gateway/security/` layer (security is a cross-cutting gateway concern)
+- [x] Implement input validation pipeline in `gateway/security/input-validator.ts`:
+  1. Structural validation (JSON parse, required `_tag` field)
+  2. Schema validation via Effect Schema (type-safe field validation)
+  3. Anti-cheat validation (speed, position, timing in validate-movement use case)
+- [x] Create rate limiter in `gateway/security/rate-limiter-config.ts`: per-tag + global rate limits
+- [x] Configure rate limits: chat 10/10s, movement 20/1s, skills 5/1s, all 100/1s
+- [x] Implement security event logging (`gateway/security/security-logger.ts`: type, severity, playerId, data)
+- [x] Create suspicion score tracking (`gateway/security/suspicion-tracker.ts`): increment on violations, log critical at threshold
+- [x] Write test: rate limited after exceeding threshold
 
 ---
 

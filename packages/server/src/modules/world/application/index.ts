@@ -1,2 +1,1 @@
-// World use case implementations
-export {}
+export { validateMovement } from "./validate-movement.use-case.js"

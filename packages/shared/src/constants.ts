@@ -51,3 +51,22 @@ export const TELEPORT_MAX_DISTANCE = 0.5 // Threshold for detecting teleport hac
 export const WS_HEARTBEAT_INTERVAL_MS = 30000
 export const WS_MAX_PAYLOAD_BYTES = 65536
 export const WS_MESSAGE_RATE_LIMIT = 60 // messages per second
+
+// Rate Limits (per player)
+export const RATE_LIMIT_MOVEMENT_MAX = 20
+export const RATE_LIMIT_MOVEMENT_WINDOW_S = 1
+export const RATE_LIMIT_CHAT_MAX = 10
+export const RATE_LIMIT_CHAT_WINDOW_S = 10
+export const RATE_LIMIT_SKILL_MAX = 5
+export const RATE_LIMIT_SKILL_WINDOW_S = 1
+export const RATE_LIMIT_GLOBAL_MAX = 100
+export const RATE_LIMIT_GLOBAL_WINDOW_S = 1
+
+// Heartbeat
+export const HEARTBEAT_CLIENT_INTERVAL_MS = 10000
+export const HEARTBEAT_TIMEOUT_MS = 30000
+
+// Anti-cheat
+export const SUSPICION_THRESHOLD = 100
+export const SUSPICION_SPEED_HACK_PENALTY = 25
+export const SUSPICION_TELEPORT_PENALTY = 50

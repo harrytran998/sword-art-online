@@ -1,2 +1,1 @@
-// World inbound adapters (handlers)
-export {}
+export { WorldPortLive } from "./world-port.live.js"
