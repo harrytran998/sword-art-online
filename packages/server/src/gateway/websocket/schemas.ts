@@ -52,6 +52,14 @@ export const HeartbeatSchema = Schema.Struct({
   timestamp: Schema.Number,
 })
 
+export const ZoneChangeSchema = Schema.Struct({
+  _tag: Schema.Literal("zone_change"),
+  targetZoneId: Schema.String.pipe(
+    Schema.maxLength(64),
+    Schema.pattern(/^[a-z0-9_]+$/),
+  ),
+})
+
 export const ClientMessageSchema = Schema.Union(
   MovementSchema,
   SkillActivateSchema,
@@ -62,6 +70,7 @@ export const ClientMessageSchema = Schema.Union(
   ItemUseSchema,
   ItemEquipSchema,
   HeartbeatSchema,
+  ZoneChangeSchema,
 )
 
 export type ValidatedClientMessage = typeof ClientMessageSchema.Type

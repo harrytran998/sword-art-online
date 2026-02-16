@@ -1,11 +1,14 @@
 import { describe, expect, it, afterAll } from "bun:test"
 import { Effect, Layer } from "effect"
+import { Kysely } from "kysely"
 import { WebSocketGateway, WebSocketGatewayLive } from "../websocket/server"
-import { SuspicionTrackerLive } from "../security/suspicion-tracker"
+import { SuspicionTrackerLive } from "../../shared/infrastructure/security/suspicion-tracker"
 import { WorldModule } from "../../modules/world/index"
 import { InMemoryEventBusLive } from "../../shared/infrastructure/event-bus/index"
 import { AppConfig } from "../../shared/infrastructure/config/index"
 import { CacheService } from "../../shared/infrastructure/cache/index"
+import { DatabaseService } from "../../shared/infrastructure/database/index"
+import type { Database } from "../../shared/infrastructure/database/types"
 
 /**
  * Integration test for WebSocket server.
@@ -53,10 +56,17 @@ const TestConfigLayer = Layer.succeed(AppConfig, {
   jwtAudience: "sword-art-game",
 })
 
+// Stub DatabaseService — PgZoneRepository is included in WorldModule but
+// zone queries are never reached in these HTTP-level tests.
+const TestDatabaseLayer = Layer.succeed(DatabaseService, {
+  kysely: {} as Kysely<Database>,
+})
+
 const InfraLayer = Layer.mergeAll(
   TestCacheLayer,
   InMemoryEventBusLive,
   TestConfigLayer,
+  TestDatabaseLayer,
 )
 
 const SecurityLayer = SuspicionTrackerLive.pipe(Layer.provide(InfraLayer))

@@ -1,5 +1,5 @@
 import { Effect, Match, Schema } from "effect"
-import type { PlayerId } from "../../shared/kernel/types"
+import type { PlayerId, ZoneId } from "../../shared/kernel/types"
 import { WorldPort } from "../../modules/world/ports/inbound/world.port"
 import { ClientMessageSchema, type ValidatedClientMessage } from "./schemas"
 
@@ -28,6 +28,19 @@ export const routeMessage = (
         _tag: "heartbeat_ack" as const,
         serverTime: Date.now(),
         clientTime: m.timestamp,
+      }),
+    ),
+    Match.when({ _tag: "zone_change" }, (m) =>
+      Effect.gen(function* () {
+        const world = yield* WorldPort
+        const result = yield* world.changeZone(
+          playerId,
+          m.targetZoneId as ZoneId,
+        )
+        return {
+          _tag: "zone_state" as const,
+          ...result,
+        }
       }),
     ),
     Match.when({ _tag: "chat" }, () =>

@@ -49,6 +49,11 @@ export interface HeartbeatMessage {
   readonly timestamp: number
 }
 
+export interface ZoneChangeMessage {
+  readonly _tag: "zone_change"
+  readonly targetZoneId: string
+}
+
 export type ClientMessage =
   | MovementMessage
   | SkillActivateMessage
@@ -57,6 +62,7 @@ export type ClientMessage =
   | ItemUseMessage
   | ItemEquipMessage
   | HeartbeatMessage
+  | ZoneChangeMessage
 
 // ============================================================
 // Server → Client messages
@@ -132,6 +138,24 @@ export interface PlayerMovedMessage {
   readonly timestamp: number
 }
 
+export interface ZoneStateMessage {
+  readonly _tag: "zone_state"
+  readonly zoneId: string
+  readonly zoneName: string
+  readonly zoneType: string
+  readonly isSafeZone: boolean
+  readonly spawnX: number
+  readonly spawnY: number
+  readonly spawnZ: number
+  readonly players: readonly {
+    readonly playerId: string
+    readonly x: number
+    readonly y: number
+    readonly z: number
+    readonly rotation: number
+  }[]
+}
+
 export type ServerMessage =
   | StateUpdateMessage
   | DamageMessage
@@ -142,3 +166,4 @@ export type ServerMessage =
   | PlayerJoinedMessage
   | PlayerLeftMessage
   | PlayerMovedMessage
+  | ZoneStateMessage

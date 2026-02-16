@@ -12,6 +12,7 @@ const KNOWN_TAGS = new Set([
   "item_use",
   "item_equip",
   "heartbeat",
+  "zone_change",
 ])
 
 export interface ValidatedMessage {

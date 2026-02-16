@@ -10,7 +10,7 @@ import { handleRequest } from "../http/routes"
 import { validateInput } from "../security/input-validator"
 import { checkMessageRateLimit } from "../security/rate-limiter-config"
 import { ErrorCodes } from "../security/error-codes"
-import { logSecurityEvent, SecurityEventType } from "../security/security-logger"
+import { logSecurityEvent, SecurityEventType } from "../../shared/infrastructure/security/security-logger"
 import { decodeClientMessage, routeMessage } from "./message-router"
 import { PlayerLeftZone } from "../../modules/world/events/published"
 import type { PlayerId, ZoneId } from "../../shared/kernel/types"
@@ -19,7 +19,9 @@ interface WebSocketData {
   readonly playerId: PlayerId
   readonly sessionToken: string
   readonly connectedAt: number
-  readonly zoneId: ZoneId
+  zoneId: ZoneId
+  playerName: string
+  playerLevel: number
   lastHeartbeat: number
 }
 
@@ -132,6 +134,8 @@ export const WebSocketGatewayLive = Layer.effect(
             sessionToken: token,
             connectedAt: Date.now(),
             zoneId: DEFAULT_ZONE,
+            playerName: typeof payload.name === "string" ? payload.name : "",
+            playerLevel: typeof payload.level === "number" ? payload.level : 1,
             lastHeartbeat: Date.now(),
           }
 
@@ -185,8 +189,8 @@ export const WebSocketGatewayLive = Layer.effect(
             JSON.stringify({
               _tag: "connection_ready",
               playerId: ws.data.playerId,
-              name: "",
-              level: 1,
+              name: ws.data.playerName,
+              level: ws.data.playerLevel,
               floor: 1,
             }),
           )
@@ -197,8 +201,8 @@ export const WebSocketGatewayLive = Layer.effect(
             JSON.stringify({
               _tag: "player_joined",
               playerId: ws.data.playerId,
-              name: "",
-              level: 1,
+              name: ws.data.playerName,
+              level: ws.data.playerLevel,
             }),
           )
         },
@@ -274,14 +278,48 @@ export const WebSocketGatewayLive = Layer.effect(
                   }),
                 )
 
-                // 5. If heartbeat_ack, send response directly
+                // 5. Send response to client if applicable
                 if (
                   result &&
                   typeof result === "object" &&
-                  "_tag" in result &&
-                  (result as { _tag: string })._tag === "heartbeat_ack"
+                  "_tag" in result
                 ) {
-                  ws.send(JSON.stringify(result))
+                  const tag = (result as { _tag: string })._tag
+                  if (tag === "heartbeat_ack") {
+                    ws.send(JSON.stringify(result))
+                  } else if (tag === "zone_state") {
+                    // Zone change: switch pub/sub topics
+                    const zoneResult = result as { _tag: string; zoneId: string }
+                    const oldZoneId = ws.data.zoneId
+                    const newZoneId = zoneResult.zoneId as ZoneId
+
+                    ws.unsubscribe(`zone:${oldZoneId}`)
+                    ws.subscribe(`zone:${newZoneId}`)
+                    ws.data.zoneId = newZoneId
+
+                    // Broadcast player_left to old zone
+                    server.publish(
+                      `zone:${oldZoneId}`,
+                      JSON.stringify({
+                        _tag: "player_left",
+                        playerId: ws.data.playerId,
+                      }),
+                    )
+
+                    // Send zone_state to the player
+                    ws.send(JSON.stringify(result))
+
+                    // Broadcast player_joined to new zone
+                    server.publish(
+                      `zone:${newZoneId}`,
+                      JSON.stringify({
+                        _tag: "player_joined",
+                        playerId: ws.data.playerId,
+                        name: ws.data.playerName,
+                        level: ws.data.playerLevel,
+                      }),
+                    )
+                  }
                 }
               }).pipe(
                 Effect.provide(ctx),

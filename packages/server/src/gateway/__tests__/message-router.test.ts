@@ -19,6 +19,16 @@ const makeMockWorldPort = () => {
       getPlayersInZone: () => Effect.succeed([]),
       setPlayerZone: () => Effect.void,
       removePlayer: () => Effect.void,
+      changeZone: () => Effect.succeed({
+        zoneId: "floor_1_town",
+        zoneName: "Town of Beginnings",
+        zoneType: "town",
+        isSafeZone: true,
+        spawnX: 100,
+        spawnY: 0,
+        spawnZ: 100,
+        players: [],
+      }),
     }),
     movements,
   }
