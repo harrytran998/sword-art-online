@@ -6,21 +6,30 @@ interface NetworkState {
   lastHeartbeatReceived: number
   messagesSent: number
   messagesReceived: number
+  isReconnecting: boolean
+  reconnectAttempt: number
 
   setLatency: (latency: number) => void
   recordHeartbeatSent: () => void
   recordHeartbeatReceived: () => void
   incrementSent: () => void
   incrementReceived: () => void
+  setReconnecting: (isReconnecting: boolean, attempt?: number) => void
   reset: () => void
 }
 
-export const useNetworkStore = create<NetworkState>((set) => ({
+const initialState = {
   latency: 0,
   lastHeartbeatSent: 0,
   lastHeartbeatReceived: 0,
   messagesSent: 0,
   messagesReceived: 0,
+  isReconnecting: false,
+  reconnectAttempt: 0,
+}
+
+export const useNetworkStore = create<NetworkState>((set) => ({
+  ...initialState,
 
   setLatency: (latency) => set({ latency }),
   recordHeartbeatSent: () => set({ lastHeartbeatSent: Date.now() }),
@@ -28,12 +37,7 @@ export const useNetworkStore = create<NetworkState>((set) => ({
   incrementSent: () => set((s) => ({ messagesSent: s.messagesSent + 1 })),
   incrementReceived: () =>
     set((s) => ({ messagesReceived: s.messagesReceived + 1 })),
-  reset: () =>
-    set({
-      latency: 0,
-      lastHeartbeatSent: 0,
-      lastHeartbeatReceived: 0,
-      messagesSent: 0,
-      messagesReceived: 0,
-    }),
+  setReconnecting: (isReconnecting, attempt) =>
+    set({ isReconnecting, reconnectAttempt: attempt ?? 0 }),
+  reset: () => set(initialState),
 }))
