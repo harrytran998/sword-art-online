@@ -1,5 +1,6 @@
 import type { ServerMessage } from "@sao/shared"
 import { useGameStore } from "@application/stores/game.store"
+import { usePlayerStore } from "@application/stores/player.store"
 import { useNetworkStore } from "@application/stores/network.store"
 import { createPosition } from "@domain/entities/position"
 
@@ -20,6 +21,42 @@ export const handleServerMessage = (data: unknown) => {
     case "connection_ready": {
       useGameStore.getState().setConnectionStatus("connected")
       useGameStore.getState().setCurrentFloor(msg.floor)
+      break
+    }
+
+    case "character_data": {
+      const game = useGameStore.getState()
+      const playerStore = usePlayerStore.getState()
+
+      game.setCurrentCharacter({
+        id: msg.characterId,
+        name: msg.name,
+        level: msg.level,
+        experience: msg.experience,
+        currentHp: msg.currentHp,
+        maxHp: msg.maxHp,
+        currentFloor: msg.currentFloor,
+        col: msg.col,
+        isAlive: msg.currentHp > 0,
+        stats: msg.stats,
+      })
+
+      playerStore.setHp(msg.currentHp)
+      playerStore.setMaxHp(msg.maxHp)
+      playerStore.setCol(msg.col)
+
+      game.setGamePhase("in_game")
+      break
+    }
+
+    case "no_character": {
+      useGameStore.getState().setGamePhase("character_create")
+      break
+    }
+
+    case "character_create_error": {
+      // Store error for CharacterCreate to display
+      useGameStore.getState().setCharacterCreateError(msg.message)
       break
     }
 

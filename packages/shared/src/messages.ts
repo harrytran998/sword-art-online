@@ -54,6 +54,12 @@ export interface ZoneChangeMessage {
   readonly targetZoneId: string
 }
 
+export interface CreateCharacterMessage {
+  readonly _tag: "create_character"
+  readonly name: string
+  readonly classId: number
+}
+
 export type ClientMessage =
   | MovementMessage
   | SkillActivateMessage
@@ -63,6 +69,7 @@ export type ClientMessage =
   | ItemEquipMessage
   | HeartbeatMessage
   | ZoneChangeMessage
+  | CreateCharacterMessage
 
 // ============================================================
 // Server → Client messages
@@ -156,6 +163,36 @@ export interface ZoneStateMessage {
   }[]
 }
 
+export interface CharacterDataMessage {
+  readonly _tag: "character_data"
+  readonly characterId: string
+  readonly name: string
+  readonly level: number
+  readonly experience: number
+  readonly currentHp: number
+  readonly maxHp: number
+  readonly currentFloor: number
+  readonly col: number
+  readonly stats: {
+    readonly str: number
+    readonly agi: number
+    readonly vit: number
+    readonly dex: number
+    readonly int: number
+    readonly lck: number
+  }
+}
+
+export interface CharacterCreateErrorMessage {
+  readonly _tag: "character_create_error"
+  readonly code: string
+  readonly message: string
+}
+
+export interface NoCharacterMessage {
+  readonly _tag: "no_character"
+}
+
 export type ServerMessage =
   | StateUpdateMessage
   | DamageMessage
@@ -167,3 +204,6 @@ export type ServerMessage =
   | PlayerLeftMessage
   | PlayerMovedMessage
   | ZoneStateMessage
+  | CharacterDataMessage
+  | CharacterCreateErrorMessage
+  | NoCharacterMessage

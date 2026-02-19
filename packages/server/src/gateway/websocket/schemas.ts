@@ -60,6 +60,20 @@ export const ZoneChangeSchema = Schema.Struct({
   ),
 })
 
+export const CreateCharacterSchema = Schema.Struct({
+  _tag: Schema.Literal("create_character"),
+  name: Schema.String.pipe(
+    Schema.minLength(3),
+    Schema.maxLength(20),
+    Schema.pattern(/^[a-zA-Z0-9_]+$/),
+  ),
+  classId: Schema.Number.pipe(
+    Schema.int(),
+    Schema.greaterThanOrEqualTo(1),
+    Schema.lessThanOrEqualTo(7),
+  ),
+})
+
 export const ClientMessageSchema = Schema.Union(
   MovementSchema,
   SkillActivateSchema,
@@ -71,6 +85,7 @@ export const ClientMessageSchema = Schema.Union(
   ItemEquipSchema,
   HeartbeatSchema,
   ZoneChangeSchema,
+  CreateCharacterSchema,
 )
 
 export type ValidatedClientMessage = typeof ClientMessageSchema.Type

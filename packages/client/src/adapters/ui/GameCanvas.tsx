@@ -1,38 +1,39 @@
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, type MutableRefObject } from "react"
 import { createPixiAdapter } from "@adapters/renderer/pixi.adapter"
 import { createWebSocketAdapter } from "@adapters/network/websocket.adapter"
 import { createKeyboardAdapter } from "@adapters/input/keyboard.adapter"
 import { createInputProcessor } from "@application/use-cases/process-input"
-import { handleServerMessage } from "@application/use-cases/handle-server-message"
 import { useGameStore } from "@application/stores/game.store"
 import { useNetworkStore } from "@application/stores/network.store"
-import { useAuthStore } from "@application/stores/auth.store"
 import { HEARTBEAT_CLIENT_INTERVAL_MS } from "@sao/shared"
 
-export const GameCanvas = () => {
+interface GameCanvasProps {
+  readonly networkRef: MutableRefObject<ReturnType<typeof createWebSocketAdapter> | null>
+}
+
+export const GameCanvas = ({ networkRef }: GameCanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const rendererRef = useRef<ReturnType<typeof createPixiAdapter> | null>(null)
-  const networkRef = useRef<ReturnType<typeof createWebSocketAdapter> | null>(null)
   const keyboardRef = useRef<ReturnType<typeof createKeyboardAdapter> | null>(null)
   const rafRef = useRef<number>(0)
   const prevPlayersRef = useRef<Set<string>>(new Set())
 
-  const token = useAuthStore((s) => s.token)
   const connectionStatus = useGameStore((s) => s.connectionStatus)
   const currentPosition = useGameStore((s) => s.currentPosition)
   const currentZone = useGameStore((s) => s.currentZone)
   const currentZoneName = useGameStore((s) => s.currentZoneName)
   const latency = useNetworkStore((s) => s.latency)
   const playerId = useGameStore((s) => s.currentCharacter?.id)
+  const isReconnecting = useNetworkStore((s) => s.isReconnecting)
+  const reconnectAttempt = useNetworkStore((s) => s.reconnectAttempt)
 
   useEffect(() => {
     const canvas = canvasRef.current
-    if (!canvas || !token) return
+    const network = networkRef.current
+    if (!canvas || !network) return
 
     const renderer = createPixiAdapter()
-    const network = createWebSocketAdapter()
     rendererRef.current = renderer
-    networkRef.current = network
 
     const inputProcessor = createInputProcessor(network)
 
@@ -44,8 +45,6 @@ export const GameCanvas = () => {
 
     let destroyed = false
     let heartbeatInterval: ReturnType<typeof setInterval> | undefined
-    let unsubMessage: (() => void) | undefined
-    let unsubDisconnect: (() => void) | undefined
 
     const setup = async () => {
       await renderer.init(canvas)
@@ -54,16 +53,6 @@ export const GameCanvas = () => {
         return
       }
 
-      // Connect WebSocket
-      const wsUrl = `ws://${window.location.hostname}:${window.location.port || "8080"}`
-      useGameStore.getState().setConnectionStatus("connecting")
-
-      unsubMessage = network.onMessage(handleServerMessage)
-      unsubDisconnect = network.onDisconnect(() => {
-        useGameStore.getState().setConnectionStatus("disconnected")
-      })
-
-      network.connect(wsUrl, token)
       keyboard.attach()
 
       // Heartbeat interval
@@ -118,16 +107,25 @@ export const GameCanvas = () => {
       if (heartbeatInterval) clearInterval(heartbeatInterval)
       cancelAnimationFrame(rafRef.current)
       keyboardRef.current?.detach()
-      unsubMessage?.()
-      unsubDisconnect?.()
-      networkRef.current?.disconnect()
       rendererRef.current?.destroy()
     }
-  }, [token])
+  }, [networkRef])
 
   return (
     <div className="relative h-full w-full bg-sao-dark">
       <canvas ref={canvasRef} className="h-full w-full" />
+
+      {/* Reconnection overlay */}
+      {isReconnecting && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/70">
+          <div className="text-center">
+            <p className="text-lg text-sao-gold">Reconnecting...</p>
+            <p className="mt-1 text-sm text-gray-400">
+              Attempt {reconnectAttempt} of 5
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* HUD overlay */}
       <div className="pointer-events-none absolute left-4 top-4 flex flex-col gap-2">

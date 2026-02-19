@@ -2,6 +2,7 @@ import { Context, Effect } from "effect"
 import type { Character } from "../../domain/entities/character"
 import type { PlayerId, AccountId } from "../../../../shared/kernel/types"
 import type {
+  AccountAlreadyHasCharacterError,
   PlayerNotFoundError,
   CharacterNameTakenError,
   InvalidCharacterNameError,
@@ -29,7 +30,7 @@ export class PlayerPort extends Context.Tag("PlayerPort")<
   {
     readonly createCharacter: (
       params: CreateCharacterParams,
-    ) => Effect.Effect<Character, CharacterNameTakenError | InvalidCharacterNameError | InvalidClassIdError>
+    ) => Effect.Effect<Character, CharacterNameTakenError | InvalidCharacterNameError | InvalidClassIdError | AccountAlreadyHasCharacterError>
     readonly getPlayer: (
       id: PlayerId,
     ) => Effect.Effect<Character, PlayerNotFoundError>

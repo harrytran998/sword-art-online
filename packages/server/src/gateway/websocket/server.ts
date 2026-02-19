@@ -4,6 +4,7 @@ import { createRemoteJWKSet, jwtVerify } from "jose"
 import { HEARTBEAT_TIMEOUT_MS } from "@sao/shared"
 import { AppConfig } from "../../shared/infrastructure/config/index"
 import { WorldPort } from "../../modules/world/ports/inbound/world.port"
+import { PlayerPort } from "../../modules/player/ports/inbound/player.port"
 import { EventBus } from "../../shared/infrastructure/event-bus/index"
 import { CacheService } from "../../shared/infrastructure/cache/index"
 import { handleRequest } from "../http/routes"
@@ -13,10 +14,11 @@ import { ErrorCodes } from "../security/error-codes"
 import { logSecurityEvent, SecurityEventType } from "../../shared/infrastructure/security/security-logger"
 import { decodeClientMessage, routeMessage } from "./message-router"
 import { PlayerLeftZone } from "../../modules/world/events/published"
-import type { PlayerId, ZoneId } from "../../shared/kernel/types"
+import type { PlayerId, ZoneId, AccountId } from "../../shared/kernel/types"
 
 interface WebSocketData {
-  readonly playerId: PlayerId
+  playerId: PlayerId
+  readonly accountId: AccountId
   readonly sessionToken: string
   readonly connectedAt: number
   zoneId: ZoneId
@@ -51,7 +53,7 @@ export const WebSocketGatewayLive = Layer.effect(
   Effect.gen(function* () {
     const config = yield* AppConfig
     const ctx = yield* Effect.context<
-      WorldPort | EventBus | CacheService
+      WorldPort | PlayerPort | EventBus | CacheService
     >()
 
     const connections = new Map<string, ServerWebSocket<WebSocketData>>()
@@ -126,9 +128,10 @@ export const WebSocketGatewayLive = Layer.effect(
             return new Response("Invalid token", { status: 401 })
           }
 
-          const playerId = payload.sub as PlayerId
+          const accountId = payload.sub as AccountId
           const data: WebSocketData = {
-            playerId,
+            playerId: accountId as unknown as PlayerId,
+            accountId,
             sessionToken: token,
             connectedAt: Date.now(),
             zoneId: DEFAULT_ZONE,
@@ -193,15 +196,51 @@ export const WebSocketGatewayLive = Layer.effect(
             }),
           )
 
-          // Broadcast player_joined to zone
-          server.publish(
-            `zone:${ws.data.zoneId}`,
-            JSON.stringify({
-              _tag: "player_joined",
-              playerId: ws.data.playerId,
-              name: ws.data.playerName,
-              level: ws.data.playerLevel,
-            }),
+          // Check if account has an existing character
+          void Effect.runPromise(
+            Effect.gen(function* () {
+              const player = yield* PlayerPort
+              const character = yield* player.getPlayerByAccountId(ws.data.accountId)
+              if (character) {
+                // Update websocket data with real character info
+                ws.data.playerId = character.id
+                ws.data.playerName = character.name
+                ws.data.playerLevel = character.level
+
+                ws.send(
+                  JSON.stringify({
+                    _tag: "character_data",
+                    characterId: character.id,
+                    name: character.name,
+                    level: character.level,
+                    experience: character.experience,
+                    currentHp: character.currentHp,
+                    maxHp: character.maxHp,
+                    currentFloor: character.currentFloor,
+                    col: character.col,
+                    stats: character.stats,
+                  }),
+                )
+
+                // Broadcast player_joined to zone
+                server.publish(
+                  `zone:${ws.data.zoneId}`,
+                  JSON.stringify({
+                    _tag: "player_joined",
+                    playerId: character.id,
+                    name: character.name,
+                    level: character.level,
+                  }),
+                )
+              } else {
+                ws.send(JSON.stringify({ _tag: "no_character" }))
+              }
+            }).pipe(
+              Effect.provide(ctx),
+              Effect.catchAll((err) =>
+                Effect.logError(`Failed to load character: ${String(err)}`),
+              ),
+            ),
           )
         },
 
@@ -251,6 +290,7 @@ export const WebSocketGatewayLive = Layer.effect(
                 const result = yield* routeMessage(
                   decoded,
                   playerId,
+                  ws.data.accountId,
                 ).pipe(
                   Effect.catchAll((err) => {
                     const error =
@@ -265,6 +305,30 @@ export const WebSocketGatewayLive = Layer.effect(
                         ErrorCodes.INVALID_POSITION,
                         "Invalid position",
                       )
+                    } else if (error?._tag === "AccountAlreadyHasCharacterError") {
+                      ws.send(JSON.stringify({
+                        _tag: "character_create_error",
+                        code: "ALREADY_HAS_CHARACTER",
+                        message: "This account already has a character",
+                      }))
+                    } else if (error?._tag === "CharacterNameTakenError") {
+                      ws.send(JSON.stringify({
+                        _tag: "character_create_error",
+                        code: "NAME_TAKEN",
+                        message: "That character name is already taken",
+                      }))
+                    } else if (error?._tag === "InvalidCharacterNameError") {
+                      ws.send(JSON.stringify({
+                        _tag: "character_create_error",
+                        code: "INVALID_NAME",
+                        message: "Invalid character name",
+                      }))
+                    } else if (error?._tag === "InvalidClassIdError") {
+                      ws.send(JSON.stringify({
+                        _tag: "character_create_error",
+                        code: "INVALID_CLASS",
+                        message: "Invalid class selection",
+                      }))
                     } else {
                       sendError(
                         ws,
@@ -285,6 +349,30 @@ export const WebSocketGatewayLive = Layer.effect(
                   const tag = (result as { _tag: string })._tag
                   if (tag === "heartbeat_ack") {
                     ws.send(JSON.stringify(result))
+                  } else if (tag === "character_data") {
+                    const charResult = result as {
+                      _tag: string
+                      characterId: string
+                      name: string
+                      level: number
+                    }
+                    // Update websocket data with the new character
+                    ws.data.playerId = charResult.characterId as PlayerId
+                    ws.data.playerName = charResult.name
+                    ws.data.playerLevel = charResult.level
+
+                    ws.send(JSON.stringify(result))
+
+                    // Broadcast player_joined to zone
+                    server.publish(
+                      `zone:${ws.data.zoneId}`,
+                      JSON.stringify({
+                        _tag: "player_joined",
+                        playerId: charResult.characterId,
+                        name: charResult.name,
+                        level: charResult.level,
+                      }),
+                    )
                   } else if (tag === "zone_state") {
                     // Zone change: switch pub/sub topics
                     const zoneResult = result as { _tag: string; zoneId: string }

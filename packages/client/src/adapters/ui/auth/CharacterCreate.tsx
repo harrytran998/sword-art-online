@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { CLASS_DEFINITIONS, type ClassDefinition } from "@sao/shared"
+import { useGameStore } from "@application/stores/game.store"
 
 interface CharacterCreateProps {
   readonly onCreateCharacter: (name: string, classId: number) => void
@@ -11,20 +12,25 @@ const STAT_KEYS = ["str", "agi", "vit", "dex", "int", "lck"] as const
 export const CharacterCreate = ({ onCreateCharacter }: CharacterCreateProps) => {
   const [name, setName] = useState("")
   const [selectedClass, setSelectedClass] = useState<ClassDefinition>(CLASS_DEFINITIONS[0]!)
-  const [error, setError] = useState<string | null>(null)
+  const [localError, setLocalError] = useState<string | null>(null)
+
+  const serverError = useGameStore((s) => s.characterCreateError)
+  const isCreating = useGameStore((s) => s.isCreatingCharacter)
+
+  const error = serverError ?? localError
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const trimmed = name.trim()
     if (trimmed.length < 3 || trimmed.length > 20) {
-      setError("Name must be 3-20 characters")
+      setLocalError("Name must be 3-20 characters")
       return
     }
     if (!/^[a-zA-Z0-9_]+$/.test(trimmed)) {
-      setError("Name can only contain letters, numbers, and underscores")
+      setLocalError("Name can only contain letters, numbers, and underscores")
       return
     }
-    setError(null)
+    setLocalError(null)
     onCreateCharacter(trimmed, selectedClass.id)
   }
 
@@ -49,11 +55,13 @@ export const CharacterCreate = ({ onCreateCharacter }: CharacterCreateProps) => 
               value={name}
               onChange={(e) => {
                 setName(e.target.value)
-                setError(null)
+                setLocalError(null)
+                useGameStore.getState().setCharacterCreateError(null)
               }}
               placeholder="Enter your character name..."
               maxLength={20}
-              className="w-full rounded border border-sao-blue/30 bg-sao-panel px-4 py-2.5 text-white placeholder:text-gray-600 focus:border-sao-blue focus:outline-none"
+              disabled={isCreating}
+              className="w-full rounded border border-sao-blue/30 bg-sao-panel px-4 py-2.5 text-white placeholder:text-gray-600 focus:border-sao-blue focus:outline-none disabled:opacity-50"
             />
             {error && (
               <p className="mt-1 text-xs text-red-400">{error}</p>
@@ -71,11 +79,12 @@ export const CharacterCreate = ({ onCreateCharacter }: CharacterCreateProps) => 
                   key={cls.id}
                   type="button"
                   onClick={() => setSelectedClass(cls)}
+                  disabled={isCreating}
                   className={`rounded border p-3 text-left transition-colors ${
                     selectedClass.id === cls.id
                       ? "border-sao-blue bg-sao-blue/10"
                       : "border-gray-700 bg-sao-panel hover:border-gray-500"
-                  }`}
+                  } disabled:opacity-50`}
                 >
                   <div className="text-sm font-semibold text-white">
                     {cls.name}
@@ -132,10 +141,10 @@ export const CharacterCreate = ({ onCreateCharacter }: CharacterCreateProps) => 
 
           <button
             type="submit"
-            disabled={name.trim().length < 3}
+            disabled={name.trim().length < 3 || isCreating}
             className="w-full rounded bg-sao-blue py-3 font-semibold text-white transition-colors hover:bg-sao-blue/80 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Create Character
+            {isCreating ? "Creating..." : "Create Character"}
           </button>
         </form>
       </div>

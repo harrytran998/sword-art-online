@@ -4,6 +4,7 @@ import { Kysely } from "kysely"
 import { WebSocketGateway, WebSocketGatewayLive } from "../websocket/server"
 import { SuspicionTrackerLive } from "../../shared/infrastructure/security/suspicion-tracker"
 import { WorldModule } from "../../modules/world/index"
+import { PlayerPort } from "../../modules/player/ports/inbound/player.port"
 import { InMemoryEventBusLive } from "../../shared/infrastructure/event-bus/index"
 import { AppConfig } from "../../shared/infrastructure/config/index"
 import { CacheService } from "../../shared/infrastructure/cache/index"
@@ -41,6 +42,14 @@ const TestCacheLayer = Layer.succeed(CacheService, {
   exists: () => Effect.succeed(false),
   expire: () => Effect.void,
   getOrSet: (_key, factory, _ttl) => factory(),
+  sadd: () => Effect.succeed(1),
+  srem: () => Effect.succeed(1),
+  smembers: () => Effect.succeed([]),
+  scard: () => Effect.succeed(0),
+  hset: () => Effect.void,
+  hgetall: () => Effect.succeed({}),
+  hmset: () => Effect.void,
+  hdel: () => Effect.void,
 })
 
 const TestConfigLayer = Layer.succeed(AppConfig, {
@@ -62,6 +71,14 @@ const TestDatabaseLayer = Layer.succeed(DatabaseService, {
   kysely: {} as Kysely<Database>,
 })
 
+// Stub PlayerPort for gateway tests
+const TestPlayerPortLayer = Layer.succeed(PlayerPort, {
+  createCharacter: () => Effect.succeed(null as never),
+  getPlayer: () => Effect.succeed(null as never),
+  getPlayerByAccountId: () => Effect.succeed(null),
+  allocateStats: () => Effect.void,
+})
+
 const InfraLayer = Layer.mergeAll(
   TestCacheLayer,
   InMemoryEventBusLive,
@@ -71,7 +88,10 @@ const InfraLayer = Layer.mergeAll(
 
 const SecurityLayer = SuspicionTrackerLive.pipe(Layer.provide(InfraLayer))
 
-const ModuleLayer = WorldModule.pipe(
+const ModuleLayer = Layer.mergeAll(
+  WorldModule,
+  TestPlayerPortLayer,
+).pipe(
   Layer.provide(SecurityLayer),
   Layer.provide(InfraLayer),
 )

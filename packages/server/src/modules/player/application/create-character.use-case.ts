@@ -4,6 +4,7 @@ import { Character } from "../domain/entities/character"
 import { CharacterName } from "../domain/value-objects/character-name"
 import { getStartingStats } from "../domain/value-objects/stats"
 import {
+  AccountAlreadyHasCharacterError,
   CharacterNameTakenError,
   InvalidCharacterNameError,
   InvalidClassIdError,
@@ -29,6 +30,13 @@ export const createCharacter = (params: CreateCharacterParams) =>
     if (!isValidClassId(params.classId)) {
       return yield* Effect.fail(
         new InvalidClassIdError({ classId: params.classId }),
+      )
+    }
+
+    const existingForAccount = yield* repo.findByAccountId(params.accountId)
+    if (existingForAccount) {
+      return yield* Effect.fail(
+        new AccountAlreadyHasCharacterError({ accountId: params.accountId }),
       )
     }
 

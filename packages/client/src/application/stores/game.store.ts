@@ -29,6 +29,10 @@ interface GameState {
   // Other players
   otherPlayers: Map<string, RemotePlayer>
 
+  // Character creation
+  characterCreateError: string | null
+  isCreatingCharacter: boolean
+
   // Actions
   setConnectionStatus: (status: ConnectionStatus) => void
   setGamePhase: (phase: GamePhase) => void
@@ -42,6 +46,8 @@ interface GameState {
   updateOtherPlayer: (id: string, updates: Partial<RemotePlayer>) => void
   removeOtherPlayer: (id: string) => void
   clearOtherPlayers: () => void
+  setCharacterCreateError: (error: string | null) => void
+  setIsCreatingCharacter: (creating: boolean) => void
 }
 
 export const useGameStore = create<GameState>((set, get) => ({
@@ -56,6 +62,8 @@ export const useGameStore = create<GameState>((set, get) => ({
   currentZoneName: null,
   isSafeZone: false,
   otherPlayers: new Map(),
+  characterCreateError: null,
+  isCreatingCharacter: false,
 
   setConnectionStatus: (status) => set({ connectionStatus: status }),
   setGamePhase: (phase) => set({ gamePhase: phase }),
@@ -95,4 +103,6 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
 
   clearOtherPlayers: () => set({ otherPlayers: new Map() }),
+  setCharacterCreateError: (error) => set({ characterCreateError: error, isCreatingCharacter: false }),
+  setIsCreatingCharacter: (creating) => set({ isCreatingCharacter: creating, characterCreateError: null }),
 }))
