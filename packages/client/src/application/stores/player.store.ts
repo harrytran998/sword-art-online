@@ -1,4 +1,5 @@
 import { create } from "zustand"
+import type { SkillState } from "../../domain/value-objects/skill"
 
 interface PlayerState {
   hp: number
@@ -8,6 +9,8 @@ interface PlayerState {
   experience: number
   experienceToNext: number
   col: number
+  skills: SkillState[]
+  selectedTargetId: string | null
 
   setHp: (hp: number) => void
   setMaxHp: (maxHp: number) => void
@@ -15,6 +18,9 @@ interface PlayerState {
   setMaxMp: (maxMp: number) => void
   setExperience: (experience: number, experienceToNext: number) => void
   setCol: (col: number) => void
+  setSkills: (skills: SkillState[]) => void
+  setSkillCooldown: (skillId: number, cooldown: number) => void
+  setSelectedTarget: (targetId: string | null) => void
   reset: () => void
 }
 
@@ -26,6 +32,8 @@ const initialState = {
   experience: 0,
   experienceToNext: 100,
   col: 0,
+  skills: [],
+  selectedTargetId: null,
 }
 
 export const usePlayerStore = create<PlayerState>((set) => ({
@@ -38,5 +46,13 @@ export const usePlayerStore = create<PlayerState>((set) => ({
   setExperience: (experience, experienceToNext) =>
     set({ experience, experienceToNext }),
   setCol: (col) => set({ col }),
+  setSkills: (skills) => set({ skills }),
+  setSkillCooldown: (skillId, cooldown) =>
+    set((state) => ({
+      skills: state.skills.map((s) =>
+        s.skillId === skillId ? { ...s, currentCooldown: cooldown } : s,
+      ),
+    })),
+  setSelectedTarget: (selectedTargetId) => set({ selectedTargetId }),
   reset: () => set(initialState),
 }))

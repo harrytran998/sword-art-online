@@ -2,6 +2,7 @@ import { create } from "zustand"
 import type { Character } from "@domain/entities/character"
 import type { Position } from "@domain/entities/position"
 import type { RemotePlayer } from "@domain/entities/remote-player"
+import type { Target } from "../../domain/value-objects/target"
 
 export type ConnectionStatus = "disconnected" | "connecting" | "connected" | "error"
 
@@ -29,6 +30,9 @@ interface GameState {
   // Other players
   otherPlayers: Map<string, RemotePlayer>
 
+  targets: Map<string, Target>
+  activeSkillId: number | null
+
   // Character creation
   characterCreateError: string | null
   isCreatingCharacter: boolean
@@ -46,6 +50,10 @@ interface GameState {
   updateOtherPlayer: (id: string, updates: Partial<RemotePlayer>) => void
   removeOtherPlayer: (id: string) => void
   clearOtherPlayers: () => void
+  addTarget: (target: Target) => void
+  updateTarget: (id: string, updates: Partial<Target>) => void
+  removeTarget: (id: string) => void
+  setActiveSkill: (skillId: number | null) => void
   setCharacterCreateError: (error: string | null) => void
   setIsCreatingCharacter: (creating: boolean) => void
 }
@@ -62,6 +70,8 @@ export const useGameStore = create<GameState>((set, get) => ({
   currentZoneName: null,
   isSafeZone: false,
   otherPlayers: new Map(),
+  targets: new Map(),
+  activeSkillId: null,
   characterCreateError: null,
   isCreatingCharacter: false,
 
@@ -103,6 +113,31 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
 
   clearOtherPlayers: () => set({ otherPlayers: new Map() }),
+
+  addTarget: (target) => {
+    const current = get().targets
+    const next = new Map(current)
+    next.set(target.id, target)
+    set({ targets: next })
+  },
+
+  updateTarget: (id, updates) => {
+    const current = get().targets
+    const existing = current.get(id)
+    if (!existing) return
+    const next = new Map(current)
+    next.set(id, { ...existing, ...updates })
+    set({ targets: next })
+  },
+
+  removeTarget: (id) => {
+    const current = get().targets
+    const next = new Map(current)
+    next.delete(id)
+    set({ targets: next })
+  },
+
+  setActiveSkill: (activeSkillId) => set({ activeSkillId }),
   setCharacterCreateError: (error) => set({ characterCreateError: error, isCreatingCharacter: false }),
   setIsCreatingCharacter: (creating) => set({ isCreatingCharacter: creating, characterCreateError: null }),
 }))
