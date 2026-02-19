@@ -76,6 +76,9 @@ export const routeMessage = (
     Match.when({ _tag: "skill_cancel" }, () =>
       Effect.logDebug("Skill cancel not yet implemented").pipe(Effect.as(undefined)),
     ),
+    Match.when({ _tag: "skill_slot_assign" }, () =>
+      Effect.logDebug("Skill slot assign not yet implemented").pipe(Effect.as(undefined)),
+    ),
     Match.when({ _tag: "trade_request" }, () =>
       Effect.logDebug("Trade request not yet implemented").pipe(Effect.as(undefined)),
     ),

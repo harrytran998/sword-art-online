@@ -18,8 +18,18 @@ export interface MovementMessage {
 
 export interface SkillActivateMessage {
   readonly _tag: "skill_activate"
-  readonly skillId: string
+  readonly skillId: number
   readonly targetId: string | null
+}
+
+export interface SkillCancelMessage {
+  readonly _tag: "skill_cancel"
+}
+
+export interface SkillSlotAssignMessage {
+  readonly _tag: "skill_slot_assign"
+  readonly skillId: number
+  readonly slotIndex: number
 }
 
 export interface ChatMessage {
@@ -63,6 +73,8 @@ export interface CreateCharacterMessage {
 export type ClientMessage =
   | MovementMessage
   | SkillActivateMessage
+  | SkillCancelMessage
+  | SkillSlotAssignMessage
   | ChatMessage
   | TradeRequestMessage
   | ItemUseMessage
@@ -93,6 +105,71 @@ export interface DamageMessage {
   readonly targetId: string
   readonly damage: number
   readonly isCritical: boolean
+}
+
+export interface SkillActivatedMessage {
+  readonly _tag: "skill_activated"
+  readonly playerId: string
+  readonly skillId: number
+  readonly skillName: string
+  readonly targetId: string | null
+  readonly phase: "pre_motion" | "execution" | "post_motion"
+  readonly phaseDurationMs: number
+}
+
+export interface SkillExecutedMessage {
+  readonly _tag: "skill_executed"
+  readonly attackerId: string
+  readonly skillId: number
+  readonly skillName: string
+  readonly targetId: string
+  readonly hits: number
+  readonly totalDamage: number
+  readonly isCritical: boolean
+}
+
+export interface SkillCancelledMessage {
+  readonly _tag: "skill_cancelled"
+  readonly playerId: string
+  readonly skillId: number
+}
+
+export interface SkillCooldownMessage {
+  readonly _tag: "skill_cooldown"
+  readonly skillId: number
+  readonly remainingMs: number
+  readonly totalCooldownMs: number
+}
+
+export interface HpMpUpdateMessage {
+  readonly _tag: "hp_mp_update"
+  readonly currentHp: number
+  readonly maxHp: number
+  readonly currentMp: number
+  readonly maxMp: number
+}
+
+export interface TargetHpUpdateMessage {
+  readonly _tag: "target_hp_update"
+  readonly targetId: string
+  readonly currentHp: number
+  readonly maxHp: number
+}
+
+export interface SkillUnlockedMessage {
+  readonly _tag: "skill_unlocked"
+  readonly skillId: number
+  readonly skillName: string
+  readonly weaponType: string
+}
+
+export interface SkillSlotsUpdateMessage {
+  readonly _tag: "skill_slots_update"
+  readonly slots: readonly {
+    readonly slotIndex: number
+    readonly skillId: number | null
+    readonly skillName: string | null
+  }[]
 }
 
 export interface ChatBroadcastMessage {
@@ -171,6 +248,8 @@ export interface CharacterDataMessage {
   readonly experience: number
   readonly currentHp: number
   readonly maxHp: number
+  readonly currentMp: number
+  readonly maxMp: number
   readonly currentFloor: number
   readonly col: number
   readonly stats: {
@@ -181,6 +260,10 @@ export interface CharacterDataMessage {
     readonly int: number
     readonly lck: number
   }
+  readonly skills: readonly {
+    readonly skillId: number
+    readonly slotIndex: number
+  }[]
 }
 
 export interface CharacterCreateErrorMessage {
@@ -196,6 +279,14 @@ export interface NoCharacterMessage {
 export type ServerMessage =
   | StateUpdateMessage
   | DamageMessage
+  | SkillActivatedMessage
+  | SkillExecutedMessage
+  | SkillCancelledMessage
+  | SkillCooldownMessage
+  | HpMpUpdateMessage
+  | TargetHpUpdateMessage
+  | SkillUnlockedMessage
+  | SkillSlotsUpdateMessage
   | ChatBroadcastMessage
   | ErrorMessage
   | HeartbeatAckMessage

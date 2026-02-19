@@ -11,10 +11,11 @@ export const MAX_LEVEL = 100
 export const STARTING_LEVEL = 1
 export const BASE_HP = 100
 export const HP_PER_VIT = 10
+export const BASE_MP = 50
+export const MP_PER_INT = 5
 export const STAT_POINTS_PER_LEVEL = 5
 export const MAX_STAT_VALUE = 999
 
-// Base stats
 export const BASE_STATS = {
   STR: 1,
   AGI: 1,
@@ -30,6 +31,24 @@ export const COMBAT_RANGE_MELEE = 2.5
 export const COMBAT_RANGE_SPEAR = 4.0
 export const COMBAT_RANGE_BOW = 15.0
 export const CRITICAL_HIT_BASE_CHANCE = 0.05
+export const CRITICAL_HIT_BASE_DAMAGE = 1.5
+export const CRITICAL_CHANCE_PER_DEX = 0.005
+export const CRITICAL_DAMAGE_PER_LCK = 0.005
+export const BASE_ATTACK_POWER = 10
+export const ATTACK_POWER_PER_STR = 2
+export const DEFENSE_REDUCTION_FACTOR = 100
+export const SKILL_SLOT_COUNT = 9
+export const MAX_SKILL_LEVEL = 10
+export const MAX_SKILL_PROFICIENCY = 9999
+export const ACTION_RATE_LIMIT_PER_SECOND = 10
+
+export const SKILL_PROFICIENCY_TIERS = {
+  NOVICE: { min: 0, max: 99, damageMultiplier: 0.9 },
+  APPRENTICE: { min: 100, max: 499, damageMultiplier: 1.0 },
+  EXPERT: { min: 500, max: 999, damageMultiplier: 1.1 },
+  MASTER: { min: 1000, max: 4999, damageMultiplier: 1.25, cooldownReduction: 0.1 },
+  GRANDMASTER: { min: 5000, max: 9999, damageMultiplier: 1.5, cooldownReduction: 0.2 },
+} as const
 
 // Party
 export const MAX_PARTY_SIZE = 6

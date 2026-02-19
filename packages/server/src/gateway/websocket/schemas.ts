@@ -11,13 +11,18 @@ export const MovementSchema = Schema.Struct({
 
 export const SkillActivateSchema = Schema.Struct({
   _tag: Schema.Literal("skill_activate"),
-  skillId: Schema.String,
+  skillId: Schema.Number.pipe(Schema.int(), Schema.positive()),
   targetId: Schema.NullOr(Schema.String),
 })
 
 export const SkillCancelSchema = Schema.Struct({
   _tag: Schema.Literal("skill_cancel"),
-  skillId: Schema.String,
+})
+
+export const SkillSlotAssignSchema = Schema.Struct({
+  _tag: Schema.Literal("skill_slot_assign"),
+  skillId: Schema.Number.pipe(Schema.int(), Schema.positive()),
+  slotIndex: Schema.Number.pipe(Schema.int(), Schema.greaterThanOrEqualTo(0), Schema.lessThanOrEqualTo(8)),
 })
 
 export const ChatSchema = Schema.Struct({
@@ -78,6 +83,7 @@ export const ClientMessageSchema = Schema.Union(
   MovementSchema,
   SkillActivateSchema,
   SkillCancelSchema,
+  SkillSlotAssignSchema,
   ChatSchema,
   TradeRequestSchema,
   TradeAcceptSchema,
