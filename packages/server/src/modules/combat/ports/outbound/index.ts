@@ -1,3 +1,2 @@
-// Combat outbound ports (repository interfaces)
-// TODO: Define repository interfaces
-export {}
+export * from "./skill.repository"
+export * from "./cooldown.repository"

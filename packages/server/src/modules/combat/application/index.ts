@@ -1,3 +1,1 @@
-// Combat use case implementations
-// TODO: Implement use cases
-export {}
+export * from "./activate-skill.use-case"

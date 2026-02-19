@@ -120,6 +120,35 @@ export interface ZoneDefinitionTable {
   updated_at: Generated<Date>
 }
 
+export type WeaponType = "one_handed_sword" | "rapier" | "dagger" | "two_handed_sword" | "spear" | "bow" | "fist"
+
+export interface SkillDefinitionTable {
+  id: Generated<number>
+  name: string
+  weapon_type: WeaponType
+  level_req: number
+  hits: number
+  damage_multiplier: number
+  mp_cost: number
+  cooldown_ms: number
+  range: number
+  pre_motion_ms: number
+  execution_ms: number
+  post_motion_ms: number
+  created_at: Generated<Date>
+  updated_at: Generated<Date>
+}
+
+export interface CharacterSkillTable {
+  character_id: string
+  skill_id: number
+  level: number
+  proficiency: number
+  slot_index: number | null
+  created_at: Generated<Date>
+  updated_at: Generated<Date>
+}
+
 export interface Database {
   "sao.accounts": AccountTable
   "sao.characters": CharacterTable
@@ -131,4 +160,6 @@ export interface Database {
   "sao.jwks": JwksTable
   "sao.floor_definitions": FloorDefinitionTable
   "sao.zone_definitions": ZoneDefinitionTable
+  "sao.skill_definitions": SkillDefinitionTable
+  "sao.character_skills": CharacterSkillTable
 }

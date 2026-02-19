@@ -1,3 +1,2 @@
-// Combat domain entities
-// TODO: Implement entities for Sprint X
-export {}
+export * from "./sword-skill"
+export * from "./active-skill"

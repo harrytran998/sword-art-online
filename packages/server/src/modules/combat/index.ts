@@ -1,3 +1,4 @@
 export * from "./events/index"
 export * from "./ports/index"
-// export { CombatModule } from "./module"
+export * from "./domain/errors"
+export * from "./application/activate-skill.use-case"
