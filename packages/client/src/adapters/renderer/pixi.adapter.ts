@@ -149,31 +149,33 @@ export const createPixiAdapter = (): RendererPort => {
       playerSprites.delete(id)
     },
 
-    showDamageNumber: (x, y, amount) => {
+    showDamageNumber: (x, y, amount, isCritical = false) => {
       if (!app) return
 
       const text = new Text({
-        text: `-${amount}`,
+        text: isCritical ? `CRIT ${amount}!` : `-${amount}`,
         style: {
-          fontSize: 16,
-          fill: DAMAGE_COLOR,
+          fontSize: isCritical ? 24 : 16,
+          fill: isCritical ? 0xffd700 : DAMAGE_COLOR,
           fontWeight: "bold",
           fontFamily: "monospace",
+          stroke: { color: 0x000000, width: 2 },
         },
       })
       text.anchor.set(0.5)
       text.x = x
-      text.y = y
+      text.y = y - 40
 
       mapContainer.addChild(text)
 
-      // Animate upward and fade
       let frame = 0
-      const maxFrames = 40
+      const maxFrames = 60
       const animate = () => {
         frame++
-        text.y -= 1.5
+        text.y -= isCritical ? 0.5 : 1.5
+        text.scale.set(isCritical ? 1 + Math.sin(frame * 0.1) * 0.2 : 1)
         text.alpha = 1 - frame / maxFrames
+        
         if (frame >= maxFrames) {
           mapContainer.removeChild(text)
           text.destroy()
@@ -183,5 +185,75 @@ export const createPixiAdapter = (): RendererPort => {
       }
       requestAnimationFrame(animate)
     },
+
+    showSkillEffect: (x, y, skillId, _isPlayer) => {
+      if (!app) return
+      
+      const colors = [0xff0000, 0x0000ff, 0x00ff00, 0xffff00, 0xff00ff]
+      const color = colors[skillId % colors.length] || 0xffffff
+      
+      const burst = new Graphics()
+      burst.x = x
+      burst.y = y
+      mapContainer.addChild(burst)
+      
+      let frame = 0
+      const maxFrames = 30
+      
+      const animate = () => {
+        frame++
+        const progress = frame / maxFrames
+        
+        burst.clear()
+        burst.circle(0, 0, progress * 100)
+        burst.fill({ color, alpha: 1 - progress })
+        
+        if (frame >= maxFrames) {
+          mapContainer.removeChild(burst)
+          burst.destroy()
+        } else {
+          requestAnimationFrame(animate)
+        }
+      }
+      requestAnimationFrame(animate)
+    },
+
+    showGlowEffect: (playerId, color) => {
+      const sprite = playerSprites.get(playerId)
+      if (!sprite) return
+      
+      const glow = new Graphics()
+      glow.circle(0, 0, PLAYER_SIZE)
+      glow.fill({ color, alpha: 0.5 })
+      glow.blendMode = 'add'
+      
+      sprite.container.addChildAt(glow, 0)
+      
+      setTimeout(() => {
+        sprite.container.removeChild(glow)
+        glow.destroy()
+      }, 500)
+    },
+
+    getEntityAt: (screenX, screenY) => {
+       if (!app) return null
+       
+       const worldPos = mapContainer.toLocal({ x: screenX, y: screenY })
+       
+       for (const [id, sprite] of playerSprites) {
+         const dx = sprite.container.x - worldPos.x
+         const dy = sprite.container.y - worldPos.y
+         if (dx * dx + dy * dy < (PLAYER_SIZE * 1.5) ** 2) {
+           return id
+         }
+       }
+       return null
+    },
+
+    screenToWorld: (screenX, screenY) => {
+       if (!app) return { x: 0, y: 0 }
+       const pos = mapContainer.toLocal({ x: screenX, y: screenY })
+       return { x: pos.x, y: pos.y }
+    }
   }
 }

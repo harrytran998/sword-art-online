@@ -2,10 +2,15 @@ import { useEffect, useRef, type MutableRefObject } from "react"
 import { createPixiAdapter } from "@adapters/renderer/pixi.adapter"
 import { createWebSocketAdapter } from "@adapters/network/websocket.adapter"
 import { createKeyboardAdapter } from "@adapters/input/keyboard.adapter"
+import { createSkillInputAdapter } from "@adapters/input/skill-input.adapter"
+import { createMouseAdapter } from "@adapters/input/mouse.adapter"
 import { createInputProcessor } from "@application/use-cases/process-input"
 import { useGameStore } from "@application/stores/game.store"
 import { useNetworkStore } from "@application/stores/network.store"
 import { HEARTBEAT_CLIENT_INTERVAL_MS } from "@sao/shared"
+import { HpMpBars } from "./hud/HpMpBars"
+import { SkillBar } from "./hud/SkillBar"
+import { TargetFrame } from "./hud/TargetFrame"
 
 interface GameCanvasProps {
   readonly networkRef: MutableRefObject<ReturnType<typeof createWebSocketAdapter> | null>
@@ -15,6 +20,8 @@ export const GameCanvas = ({ networkRef }: GameCanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const rendererRef = useRef<ReturnType<typeof createPixiAdapter> | null>(null)
   const keyboardRef = useRef<ReturnType<typeof createKeyboardAdapter> | null>(null)
+  const skillInputRef = useRef<ReturnType<typeof createSkillInputAdapter> | null>(null)
+  const mouseRef = useRef<ReturnType<typeof createMouseAdapter> | null>(null)
   const rafRef = useRef<number>(0)
   const prevPlayersRef = useRef<Set<string>>(new Set())
 
@@ -42,6 +49,25 @@ export const GameCanvas = ({ networkRef }: GameCanvasProps) => {
       onStop: () => inputProcessor.stopMoving(),
     })
     keyboardRef.current = keyboard
+    
+    const skillInput = createSkillInputAdapter({
+      activateSkill: (skillId) => inputProcessor.activateSkill(skillId),
+      cancelSkill: () => inputProcessor.cancelSkill(),
+      selectTarget: (targetId) => inputProcessor.selectTarget(targetId),
+    })
+    skillInputRef.current = skillInput
+
+    const mouse = createMouseAdapter(canvas, {
+      onClick: (x, y) => {
+        const entityId = renderer.getEntityAt(x, y)
+        if (entityId) {
+          inputProcessor.selectTarget(entityId)
+        } else {
+          inputProcessor.selectTarget(null)
+        }
+      }
+    })
+    mouseRef.current = mouse
 
     let destroyed = false
     let heartbeatInterval: ReturnType<typeof setInterval> | undefined
@@ -54,6 +80,8 @@ export const GameCanvas = ({ networkRef }: GameCanvasProps) => {
       }
 
       keyboard.attach()
+      skillInput.attach()
+      mouse.attach()
 
       // Heartbeat interval
       heartbeatInterval = setInterval(() => {
@@ -107,6 +135,8 @@ export const GameCanvas = ({ networkRef }: GameCanvasProps) => {
       if (heartbeatInterval) clearInterval(heartbeatInterval)
       cancelAnimationFrame(rafRef.current)
       keyboardRef.current?.detach()
+      skillInputRef.current?.detach()
+      mouseRef.current?.detach()
       rendererRef.current?.destroy()
     }
   }, [networkRef])
@@ -114,6 +144,10 @@ export const GameCanvas = ({ networkRef }: GameCanvasProps) => {
   return (
     <div className="relative h-full w-full bg-sao-dark">
       <canvas ref={canvasRef} className="h-full w-full" />
+      
+      <HpMpBars />
+      <TargetFrame />
+      <SkillBar />
 
       {/* Reconnection overlay */}
       {isReconnecting && (
@@ -128,7 +162,7 @@ export const GameCanvas = ({ networkRef }: GameCanvasProps) => {
       )}
 
       {/* HUD overlay */}
-      <div className="pointer-events-none absolute left-4 top-4 flex flex-col gap-2">
+      <div className="pointer-events-none absolute left-4 top-24 flex flex-col gap-2">
         <div className="rounded bg-sao-panel/80 px-3 py-1.5 text-xs text-gray-300">
           <span className="text-sao-gold">{currentZoneName ?? "---"}</span>
           {currentZone && (
@@ -157,7 +191,7 @@ export const GameCanvas = ({ networkRef }: GameCanvasProps) => {
       </div>
 
       <div className="pointer-events-none absolute bottom-4 left-4 rounded bg-sao-panel/80 px-3 py-1.5 text-xs text-gray-500">
-        WASD to move
+        WASD to move • 1-9 Skills • Click to Select
       </div>
     </div>
   )

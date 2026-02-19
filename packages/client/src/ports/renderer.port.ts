@@ -22,5 +22,9 @@ export interface RendererPort {
     rotation: number,
   ) => void
   readonly removePlayer: (id: string) => void
-  readonly showDamageNumber: (x: number, y: number, amount: number) => void
+  readonly showDamageNumber: (x: number, y: number, amount: number, isCritical?: boolean) => void
+  readonly showSkillEffect: (x: number, y: number, skillId: number, isPlayer: boolean) => void
+  readonly showGlowEffect: (playerId: string, color: number) => void
+  readonly getEntityAt: (x: number, y: number) => string | null
+  readonly screenToWorld: (x: number, y: number) => { x: number; y: number }
 }

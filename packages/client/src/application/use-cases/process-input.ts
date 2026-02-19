@@ -1,4 +1,5 @@
 import type { NetworkPort } from "@ports/network.port"
+import { usePlayerStore } from "@application/stores/player.store"
 import { useGameStore } from "@application/stores/game.store"
 import { useNetworkStore } from "@application/stores/network.store"
 import { MAX_MOVE_SPEED } from "@sao/shared"
@@ -42,5 +43,28 @@ export const createInputProcessor = (network: NetworkPort) => {
     useGameStore.getState().setVelocity({ x: 0, y: 0, z: 0 })
   }
 
-  return { move, stopMoving }
+  const activateSkill = (skillId: number, targetId?: string) => {
+    useGameStore.getState().setActiveSkill(skillId)
+    network.send({
+      _tag: "skill_activate",
+      skillId,
+      targetId: targetId ?? usePlayerStore.getState().selectedTargetId ?? undefined,
+      timestamp: Date.now(),
+    })
+    useNetworkStore.getState().incrementSent()
+  }
+
+  const cancelSkill = () => {
+    useGameStore.getState().setActiveSkill(null)
+    network.send({
+      _tag: "skill_cancel",
+      timestamp: Date.now(),
+    })
+  }
+
+  const selectTarget = (targetId: string | null) => {
+    usePlayerStore.getState().setSelectedTarget(targetId)
+  }
+
+  return { move, stopMoving, activateSkill, cancelSkill, selectTarget }
 }
