@@ -190,7 +190,7 @@ export const createPixiAdapter = (): RendererPort => {
       if (!app) return
       
       const colors = [0xff0000, 0x0000ff, 0x00ff00, 0xffff00, 0xff00ff]
-      const color = colors[skillId % colors.length] || 0xffffff
+      const color = colors[skillId % colors.length] ?? 0xffffff
       
       const burst = new Graphics()
       burst.x = x

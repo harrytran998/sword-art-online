@@ -122,6 +122,44 @@ export const GameCanvas = ({ networkRef }: GameCanvasProps) => {
         }
         prevPlayersRef.current = currentIds
 
+        const effects = state.combatEffects
+        if (effects.length > 0) {
+          for (const effect of effects) {
+            if (effect.type === "damage") {
+              const target =
+                effect.targetId === state.currentCharacter?.id
+                  ? { position: state.currentPosition }
+                  : state.otherPlayers.get(effect.targetId) ?? state.targets.get(effect.targetId)
+
+              if (target?.position) {
+                renderer.showDamageNumber(
+                  target.position.x,
+                  target.position.z,
+                  effect.amount,
+                  effect.isCritical,
+                )
+              }
+            } else if (effect.type === "skill") {
+              const source =
+                effect.sourceId === state.currentCharacter?.id
+                  ? { position: state.currentPosition }
+                  : state.otherPlayers.get(effect.sourceId)
+
+              if (source?.position) {
+                renderer.showSkillEffect(
+                  source.position.x,
+                  source.position.z,
+                  effect.skillId,
+                  effect.sourceId === state.currentCharacter?.id,
+                )
+              }
+            } else if (effect.type === "glow") {
+              renderer.showGlowEffect(effect.targetId, effect.color)
+            }
+          }
+          state.clearCombatEffects()
+        }
+
         rafRef.current = requestAnimationFrame(renderLoop)
       }
 

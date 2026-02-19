@@ -141,7 +141,74 @@ export const handleServerMessage = (data: unknown) => {
       break
     }
 
-    case "damage":
+    case "skill_activated": {
+      const game = useGameStore.getState()
+      if (msg.playerId === game.currentCharacter?.id) {
+        game.setActiveSkill(msg.skillId)
+      }
+      game.addCombatEffect({
+        type: "glow",
+        targetId: msg.playerId,
+        color: 0xffff00,
+      })
+      break
+    }
+
+    case "skill_executed": {
+      const game = useGameStore.getState()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const message = msg as any
+
+      if (message.attackerId === game.currentCharacter?.id) {
+        game.setActiveSkill(null)
+      }
+      
+      if (message.damage) {
+        game.addCombatEffect({
+          type: "damage",
+          targetId: message.targetId,
+          amount: message.damage.finalDamage,
+          isCritical: message.damage.isCritical,
+        })
+      }
+      
+      game.addCombatEffect({
+        type: "skill",
+        skillId: message.skillId,
+        sourceId: message.attackerId,
+      })
+      break
+    }
+
+    case "damage": {
+       const game = useGameStore.getState()
+       // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       const message = msg as any
+
+       if (game.targets.has(message.targetId)) {
+           game.updateTarget(message.targetId, { currentHp: message.currentHp })
+       }
+
+       game.addCombatEffect({
+           type: "damage",
+           targetId: message.targetId,
+           amount: message.amount,
+           isCritical: false
+       })
+       break
+    }
+
+    case "target_hp_update": {
+       const game = useGameStore.getState()
+       // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       const message = msg as any
+
+       if (game.targets.has(message.targetId)) {
+           game.updateTarget(message.targetId, { currentHp: message.currentHp, maxHp: message.maxHp })
+       }
+       break
+    }
+
     case "chat_broadcast":
       // Will be handled in future sprints
       break

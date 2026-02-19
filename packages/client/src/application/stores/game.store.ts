@@ -4,6 +4,11 @@ import type { Position } from "@domain/entities/position"
 import type { RemotePlayer } from "@domain/entities/remote-player"
 import type { Target } from "../../domain/value-objects/target"
 
+export type CombatEffect = 
+  | { type: 'damage', targetId: string, amount: number, isCritical: boolean }
+  | { type: 'skill', skillId: number, sourceId: string }
+  | { type: 'glow', targetId: string, color: number }
+
 export type ConnectionStatus = "disconnected" | "connecting" | "connected" | "error"
 
 export type GamePhase = "loading" | "character_select" | "character_create" | "in_game"
@@ -33,7 +38,11 @@ interface GameState {
   targets: Map<string, Target>
   activeSkillId: number | null
 
-  // Character creation
+  // Combat Effects
+  combatEffects: CombatEffect[]
+  addCombatEffect: (effect: CombatEffect) => void
+  clearCombatEffects: () => void
+
   characterCreateError: string | null
   isCreatingCharacter: boolean
 
@@ -72,8 +81,13 @@ export const useGameStore = create<GameState>((set, get) => ({
   otherPlayers: new Map(),
   targets: new Map(),
   activeSkillId: null,
+  combatEffects: [],
+
   characterCreateError: null,
   isCreatingCharacter: false,
+
+  addCombatEffect: (effect) => set((state) => ({ combatEffects: [...state.combatEffects, effect] })),
+  clearCombatEffects: () => set({ combatEffects: [] }),
 
   setConnectionStatus: (status) => set({ connectionStatus: status }),
   setGamePhase: (phase) => set({ gamePhase: phase }),
