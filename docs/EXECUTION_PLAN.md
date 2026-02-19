@@ -372,20 +372,20 @@
 
 #### 4.1 World Module - Zone Architecture `[PARALLEL]`
 
-- [ ] Create go-migrate migration +  Kysely type definition: `floor_definitions` table
-- [ ] Create go-migrate migration +  Kysely type definition: `zone_definitions` table (id, floor_id, name, type, bounds, spawn point, pvp_enabled, safe_zone)
-- [ ] Create `modules/world/ports/outbound/zone.repository.ts` with `ZoneRepository` Context.Tag
-- [ ] Create `modules/world/adapters/outbound/pg-zone.repository.ts` Kysely query builder implementation
-- [ ] Create `modules/world/application/change-zone.use-case.ts`:
+- [x] Create go-migrate migration +  Kysely type definition: `floor_definitions` table
+- [x] Create go-migrate migration +  Kysely type definition: `zone_definitions` table (id, floor_id, name, type, bounds, spawn point, pvp_enabled, safe_zone)
+- [x] Create `modules/world/ports/outbound/zone.repository.ts` with `ZoneRepository` Context.Tag
+- [x] Create `modules/world/adapters/outbound/pg-zone.repository.ts` Kysely query builder implementation
+- [x] Create `modules/world/application/change-zone.use-case.ts`:
   - Validate player can enter target zone
   - Unsubscribe from old zone topic
   - Subscribe to new zone topic
   - Publish `PlayerLeftZone` event (old zone)
   - Send `full_state` of new zone to player
   - Publish `PlayerEnteredZone` event (new zone)
-- [ ] Implement zone-based pub/sub: players subscribe to `zone:{zone_id}`, `player:{player_id}`
-- [ ] Implement zone player tracking (Redis SET per zone)
-- [ ] Seed Floor 1 zones:
+- [x] Implement zone-based pub/sub: players subscribe to `zone:{zone_id}`, `player:{player_id}`
+- [x] Implement zone player tracking (Redis SET per zone)
+- [x] Seed Floor 1 zones:
   - `floor_1_town` (Town of Beginnings, safe zone)
   - `floor_1_field_west` (Western Field)
   - `floor_1_field_east` (Eastern Field)
@@ -394,10 +394,10 @@
 
 #### 4.2 Frontend Setup (Clean Architecture) `[PARALLEL]`
 
-- [ ] Create `packages/client/` with React + TypeScript + Vite
-- [ ] Create `packages/client/moon.yml` with tasks: `dev`, `build`, `test`, `lint`, `format`
-- [ ] Install and configure: Tailwind CSS, Zustand, PixiJS 8
-- [ ] Create Clean Architecture project structure:
+- [x] Create `packages/client/` with React + TypeScript + Vite
+- [x] Create `packages/client/moon.yml` with tasks: `dev`, `build`, `test`, `lint`, `format`
+- [x] Install and configure: Tailwind CSS, Zustand, PixiJS 8
+- [x] Create Clean Architecture project structure:
   ```
   packages/client/src/
   ├── domain/                           # Pure TypeScript - ZERO dependencies
@@ -430,60 +430,60 @@
 
 #### 4.3 Client Domain & Ports `[DEPENDS: 4.2]`
 
-- [ ] Create `domain/entities/player.ts`: `LocalPlayer`, `RemotePlayer` interfaces (pure TypeScript)
-- [ ] Create `domain/entities/monster.ts`: `MonsterEntity` (render-side representation)
-- [ ] Create `domain/value-objects/position.ts`: `Position`, `Velocity`, `Direction`, `lerp()` function
-- [ ] Create `domain/value-objects/stats.ts`: `HP`, `MP`, `StatBlock`
-- [ ] Create `ports/outbound/network.port.ts`: `NetworkPort` interface (connect, send, onMessage, disconnect)
-- [ ] Create `ports/outbound/renderer.port.ts`: `RendererPort` interface (addEntity, updateEntity, removeEntity, updateCamera)
-- [ ] Create `ports/inbound/game.port.ts`: `GamePort` interface (processInput, handleServerMessage)
+- [x] Create `domain/entities/player.ts`: `LocalPlayer`, `RemotePlayer` interfaces (pure TypeScript)
+- [x] Create `domain/entities/monster.ts`: `MonsterEntity` (render-side representation)
+- [x] Create `domain/value-objects/position.ts`: `Position`, `Velocity`, `Direction`, `lerp()` function
+- [x] Create `domain/value-objects/stats.ts`: `HP`, `MP`, `StatBlock`
+- [x] Create `ports/outbound/network.port.ts`: `NetworkPort` interface (connect, send, onMessage, disconnect)
+- [x] Create `ports/outbound/renderer.port.ts`: `RendererPort` interface (addEntity, updateEntity, removeEntity, updateCamera)
+- [x] Create `ports/inbound/game.port.ts`: `GamePort` interface (processInput, handleServerMessage)
 
 #### 4.4 Client Adapters - Network & Renderer `[DEPENDS: 4.3]`
 
-- [ ] Create `adapters/outbound/websocket.adapter.ts` implementing `NetworkPort`: connect, send, reconnect, heartbeat (every 10s)
-- [ ] Create `adapters/outbound/pixi-renderer.adapter.ts` implementing `RendererPort`: PixiJS Application setup, sprite management, camera
-- [ ] Create basic tile-based map renderer for Floor 1 Town
-- [ ] Implement player sprite rendering (placeholder art)
-- [ ] Implement other-player sprite rendering from server state updates
-- [ ] Create camera system: follow local player, smooth scrolling
+- [x] Create `adapters/outbound/websocket.adapter.ts` implementing `NetworkPort`: connect, send, reconnect, heartbeat (every 10s)
+- [x] Create `adapters/outbound/pixi-renderer.adapter.ts` implementing `RendererPort`: PixiJS Application setup, sprite management, camera
+- [x] Create basic tile-based map renderer for Floor 1 Town
+- [x] Implement player sprite rendering (placeholder art)
+- [x] Implement other-player sprite rendering from server state updates
+- [x] Create camera system: follow local player, smooth scrolling
 
 #### 4.5 Client Application Layer `[DEPENDS: 4.3]`
 
-- [ ] Create `application/stores/game.store.ts` (Zustand): tick, entities map, currentZone
-- [ ] Create `application/stores/player.store.ts` (Zustand): localPlayer, stats, inventory, skillSlots
-- [ ] Create `application/stores/ui.store.ts` (Zustand): activePanel, tooltips, modals
-- [ ] Create `application/stores/network.store.ts` (Zustand): connectionStatus, latency, pendingInputs
-- [ ] Create `application/use-cases/process-input.ts`: keyboard/mouse → game action → send to server
-- [ ] Create `application/use-cases/handle-server-message.ts`: ServerMessage → update stores
-- [ ] Create `application/use-cases/prediction.ts`: client-side prediction + server reconciliation
+- [x] Create `application/stores/game.store.ts` (Zustand): tick, entities map, currentZone
+- [x] Create `application/stores/player.store.ts` (Zustand): localPlayer, stats, inventory, skillSlots
+- [x] Create `application/stores/ui.store.ts` (Zustand): activePanel, tooltips, modals
+- [x] Create `application/stores/network.store.ts` (Zustand): connectionStatus, latency, pendingInputs
+- [x] Create `application/use-cases/process-input.ts`: keyboard/mouse → game action → send to server
+- [x] Create `application/use-cases/handle-server-message.ts`: ServerMessage → update stores
+- [x] Create `application/use-cases/prediction.ts`: client-side prediction + server reconciliation
 
 #### 4.6 Client Adapters - Input & UI `[DEPENDS: 4.4, 4.5]`
 
-- [ ] Create `adapters/inbound/keyboard.adapter.ts`: WASD movement, 1-9 skill hotkeys, Escape menu
-- [ ] Create `adapters/inbound/mouse.adapter.ts`: click target selection, drag-and-drop
-- [ ] Create `adapters/ui/auth/LoginPage.tsx`: email + password form, use `authClient.signIn.email()`
-- [ ] Create `adapters/ui/auth/RegisterPage.tsx`: email + username + password, use `authClient.signUp.email()`
-- [ ] Create `adapters/ui/auth/CharacterCreate.tsx`:
+- [x] Create `adapters/inbound/keyboard.adapter.ts`: WASD movement, 1-9 skill hotkeys, Escape menu
+- [x] Create `adapters/inbound/mouse.adapter.ts`: click target selection, drag-and-drop
+- [x] Create `adapters/ui/auth/LoginPage.tsx`: email + password form, use `authClient.signIn.email()`
+- [x] Create `adapters/ui/auth/RegisterPage.tsx`: email + username + password, use `authClient.signUp.email()`
+- [x] Create `adapters/ui/auth/CharacterCreate.tsx`:
   - Name input (validated against `^[A-Za-z0-9_]{2,64}$`)
   - Class selection (7 classes with descriptions)
   - Appearance options (face, hair style, hair color, eye color, skin tone)
   - Preview panel
-- [ ] After login/create: fetch JWT via `authClient.token()`, then establish WebSocket with `?token={jwt}`
-- [ ] Handle `connection_ready` message: load player data into stores, initialize renderer
-- [ ] Render player name labels above sprites
+- [x] After login/create: fetch JWT via `authClient.token()`, then establish WebSocket with `?token={jwt}`
+- [x] Handle `connection_ready` message: load player data into stores, initialize renderer
+- [x] Render player name labels above sprites
 
 ### Phase 0 Exit Checklist
 
-- [ ] `moon run :dev` starts server + client in development mode
-- [ ] Player can register, login, create character
-- [ ] WebSocket connects with JWT auth
-- [ ] Player appears on Floor 1 Town of Beginnings
-- [ ] WASD movement works with server-authoritative validation
-- [ ] Other players visible and moving in real-time
-- [ ] Speed hack attempts are detected and rejected
-- [ ] 60Hz game loop runs without frame drops
-- [ ] Docker Compose spins up full dev environment
-- [ ] CI pipeline passes: lint + typecheck + tests
+- [x] `moon run :dev` starts server + client in development mode
+- [x] Player can register, login, create character
+- [x] WebSocket connects with JWT auth
+- [x] Player appears on Floor 1 Town of Beginnings
+- [x] WASD movement works with server-authoritative validation
+- [x] Other players visible and moving in real-time
+- [x] Speed hack attempts are detected and rejected
+- [x] 60Hz game loop runs without frame drops
+- [x] Docker Compose spins up full dev environment
+- [x] CI pipeline passes: lint + typecheck + tests
 
 ---
 
