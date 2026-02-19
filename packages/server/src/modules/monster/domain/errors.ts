@@ -1,9 +1,14 @@
 import { Data } from "effect"
 
 export class MonsterNotFoundError extends Data.TaggedError("MonsterNotFoundError")<{
-  readonly id: string
+  readonly monsterId: string
 }> {}
 
-export class SpawnPointOccupiedError extends Data.TaggedError("SpawnPointOccupiedError")<{
-  readonly spawnPointId: string
+export class SpawnPointNotFoundError extends Data.TaggedError("SpawnPointNotFoundError")<{
+  readonly spawnId: number
+}> {}
+
+export class InvalidTargetError extends Data.TaggedError("InvalidTargetError")<{
+  readonly targetId: string
+  readonly reason: string
 }> {}

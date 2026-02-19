@@ -1,3 +1,3 @@
-// Monster domain entities
-// TODO: Implement entities for Sprint X
-export {}
+export * from "./monster"
+export * from "./spawn-point"
+export * from "./loot-table"

@@ -496,50 +496,50 @@
 
 #### 5.1 Skill Definitions `[PARALLEL]`
 
-- [ ] Create go-migrate migration +  Kysely type definition: `skill_definitions` table (id, name, weapon_type, level_req, hits, damage_multiplier, mp_cost, cooldown_ms, range, pre_motion_ms, execution_ms, post_motion_ms)
-- [ ] Create go-migrate migration +  Kysely type definition: `character_skills` table (character_id, skill_id, level, proficiency, slot_index)
-- [ ] Seed One-Handed Sword skills (10): Horizontal, Vertical, Rage Spike, Sonic Leap, Vertical Arc, Horizontal Square, Sharp Nail, Vorpal Strike, Howling Octave
-- [ ] Seed Rapier skills (8): Linear, Oblique, Parallel Sting, Triangular, Star Splash, Flashing Penetrator
-- [ ] Seed Dagger skills (6): Rapid Bite, Fad Edge, Criminal Brand
+- [x] Create go-migrate migration +  Kysely type definition: `skill_definitions` table (id, name, weapon_type, level_req, hits, damage_multiplier, mp_cost, cooldown_ms, range, pre_motion_ms, execution_ms, post_motion_ms)
+- [x] Create go-migrate migration +  Kysely type definition: `character_skills` table (character_id, skill_id, level, proficiency, slot_index)
+- [x] Seed One-Handed Sword skills (10): Horizontal, Vertical, Rage Spike, Sonic Leap, Vertical Arc, Horizontal Square, Sharp Nail, Vorpal Strike, Howling Octave
+- [x] Seed Rapier skills (8): Linear, Oblique, Parallel Sting, Triangular, Star Splash, Flashing Penetrator
+- [x] Seed Dagger skills (6): Rapid Bite, Fad Edge, Criminal Brand
 - [ ] Create skill slot assignment system (weapon slots 1-5, support 1-5, passive 1-3)
 
 #### 5.2 Combat Module `[DEPENDS: 5.1]`
 
-- [ ] Create `modules/combat/domain/entities/sword-skill.ts` and `combat-session.ts` (pure TypeScript)
-- [ ] Create `modules/combat/domain/value-objects/damage-value.ts`, `critical-hit.ts`, `skill-phase.ts`
-- [ ] Create `modules/combat/domain/errors.ts` (SkillOnCooldownError, OutOfRangeError, InsufficientMpError)
-- [ ] Create `modules/combat/ports/inbound/combat.port.ts` with `CombatPort` Context.Tag
-- [ ] Create `modules/combat/events/published.ts`: `SkillExecuted`, `DamageDealt`, `PlayerDefeated`
+- [x] Create `modules/combat/domain/entities/sword-skill.ts` and `combat-session.ts` (pure TypeScript)
+- [x] Create `modules/combat/domain/value-objects/damage-value.ts`, `critical-hit.ts`, `skill-phase.ts`
+- [x] Create `modules/combat/domain/errors.ts` (SkillOnCooldownError, OutOfRangeError, InsufficientMpError)
+- [x] Create `modules/combat/ports/inbound/combat.port.ts` with `CombatPort` Context.Tag
+- [x] Create `modules/combat/events/published.ts`: `SkillExecuted`, `DamageDealt`, `PlayerDefeated`
 - [ ] Create `modules/combat/module.ts` composing all combat layers
-- [ ] Implement Sword Skill activation flow in `modules/combat/application/activate-skill.use-case.ts`:
+- [x] Implement Sword Skill activation flow in `modules/combat/application/activate-skill.use-case.ts`:
   1. **Pre-motion**: validate MP, cooldown, target; lock player state; broadcast glow effect
   2. **System recognition**: server acknowledges; set animation state
   3. **Auto-execution**: calculate damage server-side, apply to target(s), broadcast `skill_executed`
   4. **Post-motion delay**: player frozen for `post_motion_ms`; vulnerable window
   5. **Cooldown**: skill enters cooldown; other skills available
-- [ ] Implement damage formula: `Base = WeaponATK * SkillMultiplier; Final = Base * (1 - EnemyDEF/(EnemyDEF+100))`
-- [ ] Implement critical hit: `CritRate = DEX * 0.5 + equipment; CritDmg = 150% + LCK * 0.5%`
+- [x] Implement damage formula: `Base = WeaponATK * SkillMultiplier; Final = Base * (1 - EnemyDEF/(EnemyDEF+100))`
+- [x] Implement critical hit: `CritRate = DEX * 0.5 + equipment; CritDmg = 150% + LCK * 0.5%`
 - [ ] Implement auto-attack (basic attack without Sword Skill)
-- [ ] Create cooldown tracking in Redis: `skill_cd:{playerId}:{skillId}` with TTL
+- [x] Create cooldown tracking in Redis: `skill_cd:{playerId}:{skillId}` with TTL
 
 #### 5.3 Combat Validation `[DEPENDS: 5.2]`
 
-- [ ] Implement range check: distance between attacker and target <= skill.range (10% tolerance for lag)
+- [x] Implement range check: distance between attacker and target <= skill.range (10% tolerance for lag)
 - [ ] Implement line-of-sight check (raycast between positions)
-- [ ] Implement MP/resource validation before skill execution
-- [ ] Implement cooldown validation (reject if skill still cooling)
-- [ ] Implement action rate check (max 10 actions/second)
-- [ ] Log combat cheat attempts to security events
+- [x] Implement MP/resource validation before skill execution
+- [x] Implement cooldown validation (reject if skill still cooling)
+- [x] Implement action rate check (max 10 actions/second)
+- [x] Log combat cheat attempts to security events
 
 #### 5.4 Combat Frontend `[DEPENDS: 5.2]`
 
-- [ ] Create skills bar UI (slots 1-9 with keybinds)
-- [ ] Implement target selection (click enemy, Tab cycle)
-- [ ] Render skill animations (placeholder: colored particle effects per skill)
-- [ ] Show damage numbers floating above targets
-- [ ] Display skill cooldown timers on skill bar
-- [ ] Show HP/MP bars above players and monsters
-- [ ] Implement Sword Skill glow effect during pre-motion
+- [x] Create skills bar UI (slots 1-9 with keybinds)
+- [x] Implement target selection (click enemy, Tab cycle)
+- [x] Render skill animations (placeholder: colored particle effects per skill)
+- [x] Show damage numbers floating above targets
+- [x] Display skill cooldown timers on skill bar
+- [x] Show HP/MP bars above players and monsters
+- [x] Implement Sword Skill glow effect during pre-motion
 
 ---
 

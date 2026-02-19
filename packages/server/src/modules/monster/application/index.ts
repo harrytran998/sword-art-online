@@ -1,3 +1,1 @@
-// Monster use case implementations
-// TODO: Implement use cases
-export {}
+export * from "./monster.use-case"

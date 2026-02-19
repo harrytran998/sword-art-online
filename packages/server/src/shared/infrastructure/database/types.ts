@@ -149,6 +149,59 @@ export interface CharacterSkillTable {
   updated_at: Generated<Date>
 }
 
+export type MonsterType = "beast" | "humanoid" | "undead" | "elemental" | "demon" | "boss"
+
+export interface MonsterDefinitionTable {
+  id: Generated<number>
+  name: string
+  monster_type: MonsterType
+  level: number
+  hp: number
+  attack: number
+  defense: number
+  exp_reward: number
+  col_min: number
+  col_max: number
+  loot_table_id: number | null
+  aggro_range: number
+  patrol_range: number
+  respawn_time_ms: number
+  attack_range: number
+  attackCooldown_ms: number
+  created_at: Generated<Date>
+  updated_at: Generated<Date>
+}
+
+export interface MonsterSpawnTable {
+  id: Generated<number>
+  monster_def_id: number
+  zone_id: string
+  spawn_x: number
+  spawn_y: number
+  spawn_z: number
+  spawn_count: number
+  spawn_radius: number
+  is_active: boolean
+  created_at: Generated<Date>
+  updated_at: Generated<Date>
+}
+
+export interface LootTableTable {
+  id: Generated<number>
+  name: string
+  created_at: Generated<Date>
+}
+
+export interface LootTableEntryTable {
+  id: Generated<number>
+  loot_table_id: number
+  item_name: string
+  drop_chance: number
+  quantity_min: number
+  quantity_max: number
+  created_at: Generated<Date>
+}
+
 export interface Database {
   "sao.accounts": AccountTable
   "sao.characters": CharacterTable
@@ -162,4 +215,8 @@ export interface Database {
   "sao.zone_definitions": ZoneDefinitionTable
   "sao.skill_definitions": SkillDefinitionTable
   "sao.character_skills": CharacterSkillTable
+  "sao.monster_definitions": MonsterDefinitionTable
+  "sao.monster_spawns": MonsterSpawnTable
+  "sao.loot_tables": LootTableTable
+  "sao.loot_table_entries": LootTableEntryTable
 }
