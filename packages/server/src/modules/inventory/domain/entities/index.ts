@@ -1,3 +1,2 @@
-// Inventory domain entities
-// TODO: Implement entities for Sprint X
-export {}
+export * from "./item-definition"
+export * from "./inventory-slot"
