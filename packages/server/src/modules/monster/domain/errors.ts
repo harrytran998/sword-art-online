@@ -1,14 +1,29 @@
-import { Data } from "effect"
+export class MonsterNotFoundError extends Error {
+  readonly _tag = "MonsterNotFoundError" as const
 
-export class MonsterNotFoundError extends Data.TaggedError("MonsterNotFoundError")<{
-  readonly monsterId: string
-}> {}
+  constructor(readonly monsterId: string) {
+    super(`Monster not found: ${monsterId}`)
+    this.name = "MonsterNotFoundError"
+  }
+}
 
-export class SpawnPointNotFoundError extends Data.TaggedError("SpawnPointNotFoundError")<{
-  readonly spawnId: number
-}> {}
+export class SpawnPointNotFoundError extends Error {
+  readonly _tag = "SpawnPointNotFoundError" as const
 
-export class InvalidTargetError extends Data.TaggedError("InvalidTargetError")<{
-  readonly targetId: string
-  readonly reason: string
-}> {}
+  constructor(readonly spawnId: number) {
+    super(`Spawn point not found: ${spawnId}`)
+    this.name = "SpawnPointNotFoundError"
+  }
+}
+
+export class InvalidTargetError extends Error {
+  readonly _tag = "InvalidTargetError" as const
+
+  constructor(
+    readonly targetId: string,
+    readonly reason: string,
+  ) {
+    super(`Invalid target ${targetId}: ${reason}`)
+    this.name = "InvalidTargetError"
+  }
+}
