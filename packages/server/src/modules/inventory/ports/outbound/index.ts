@@ -1,3 +1,1 @@
-// Inventory outbound ports (repository interfaces)
-// TODO: Define repository interfaces
-export {}
+export * from "./inventory.repository"
