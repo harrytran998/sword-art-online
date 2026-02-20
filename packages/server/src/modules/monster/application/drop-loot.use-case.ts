@@ -32,7 +32,7 @@ export const dropLoot = (
 
     const monster = yield* monsterRepo.getMonsterById(monsterId)
     if (!monster) {
-      return yield* Effect.fail(new MonsterNotFoundError({ monsterId }))
+      return yield* Effect.fail(new MonsterNotFoundError(monsterId))
     }
 
     const loot: DroppedLoot[] = []

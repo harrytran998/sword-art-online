@@ -24,7 +24,7 @@ export const startTelegraph = (
 
     const monster = yield* monsterRepo.getMonsterById(monsterId)
     if (!monster) {
-      return yield* Effect.fail(new MonsterNotFoundError({ monsterId }))
+      return yield* Effect.fail(new MonsterNotFoundError(monsterId))
     }
 
     const pattern = getAttackPattern(attackType)
@@ -78,7 +78,7 @@ export const executeMonsterAttack = (
 
     const monster = yield* monsterRepo.getMonsterById(attack.monsterId)
     if (!monster) {
-      return yield* Effect.fail(new MonsterNotFoundError({ monsterId: attack.monsterId }))
+      return yield* Effect.fail(new MonsterNotFoundError(attack.monsterId))
     }
 
     const targets: PlayerId[] = []

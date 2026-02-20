@@ -63,8 +63,7 @@ export const updateMonsterAI = (
 
     const monster = yield* monsterRepo.getMonsterById(monsterId)
     if (!monster) {
-      yield* Effect.fail(new MonsterNotFoundError({ monsterId }))
-      return yield* Effect.fail(new MonsterNotFoundError({ monsterId }))
+      return yield* Effect.fail(new MonsterNotFoundError(monsterId))
     }
 
     if (!monster.isAlive()) {

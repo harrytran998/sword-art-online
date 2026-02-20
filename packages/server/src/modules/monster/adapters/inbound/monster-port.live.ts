@@ -17,7 +17,7 @@ export const MonsterPortLive = Layer.effect(
           const spawnPoints = yield* spawnRepo.getAllActiveSpawnPoints()
           const spawnPoint = spawnPoints.find((sp) => sp.id === spawnPointId)
           if (!spawnPoint) {
-            return yield* Effect.fail(new MonsterNotFoundError({ monsterId: `spawn_${spawnPointId}` as MonsterId }))
+            return yield* Effect.fail(new MonsterNotFoundError(`spawn_${spawnPointId}` as MonsterId))
           }
 
           const pos = spawnPoint.getRandomSpawnPosition()
@@ -59,7 +59,7 @@ export const MonsterPortLive = Layer.effect(
         Effect.gen(function* () {
           const monster = yield* monsterRepo.getMonsterById(monsterId)
           if (!monster) {
-            return yield* Effect.fail(new MonsterNotFoundError({ monsterId }))
+            return yield* Effect.fail(new MonsterNotFoundError(monsterId))
           }
           return monster
         }),
@@ -73,7 +73,7 @@ export const MonsterPortLive = Layer.effect(
         Effect.gen(function* () {
           const monster = yield* monsterRepo.getMonsterById(monsterId)
           if (!monster) {
-            return yield* Effect.fail(new MonsterNotFoundError({ monsterId }))
+            return yield* Effect.fail(new MonsterNotFoundError(monsterId))
           }
           const updated = monster.withState(state)
           yield* monsterRepo.saveMonster(updated)
@@ -84,7 +84,7 @@ export const MonsterPortLive = Layer.effect(
         Effect.gen(function* () {
           const monster = yield* monsterRepo.getMonsterById(monsterId)
           if (!monster) {
-            return yield* Effect.fail(new MonsterNotFoundError({ monsterId }))
+            return yield* Effect.fail(new MonsterNotFoundError(monsterId))
           }
           const updated = monster.withPosition(x, y, z)
           yield* monsterRepo.saveMonster(updated)
@@ -95,10 +95,10 @@ export const MonsterPortLive = Layer.effect(
         Effect.gen(function* () {
           const monster = yield* monsterRepo.getMonsterById(monsterId)
           if (!monster) {
-            return yield* Effect.fail(new MonsterNotFoundError({ monsterId }))
+            return yield* Effect.fail(new MonsterNotFoundError(monsterId))
           }
           if (!monster.isAlive()) {
-            return yield* Effect.fail(new InvalidTargetError({ targetId: monsterId, reason: "Target is dead" }))
+            return yield* Effect.fail(new InvalidTargetError(monsterId, "Target is dead"))
           }
           const updated = monster.takeDamage(damage).withTarget(attackerId).withState("aggro")
           yield* monsterRepo.saveMonster(updated)
