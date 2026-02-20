@@ -547,10 +547,10 @@
 
 #### 6.1 Monster Definitions `[PARALLEL]`
 
-- [ ] Create go-migrate migration +  Kysely type definition: `monster_definitions` table (id, name, type, level, hp, attack, defense, exp_reward, col_min, col_max, loot_table_id, aggro_range, respawn_time)
-- [ ] Create go-migrate migration +  Kysely type definition: `monster_spawns` table (id, monster_def_id, zone_id, spawn_x/y/z, spawn_count, spawn_radius)
-- [ ] Create go-migrate migration +  Kysely type definition: `loot_tables` + `loot_table_entries` (item_def_id, drop_chance, quantity_min, quantity_max)
-- [ ] Seed Floor 1 monsters (10 types):
+- [x] Create go-migrate migration +  Kysely type definition: `monster_definitions` table (id, name, type, level, hp, attack, defense, exp_reward, col_min, col_max, loot_table_id, aggro_range, respawn_time)
+- [x] Create go-migrate migration +  Kysely type definition: `monster_spawns` table (id, monster_def_id, zone_id, spawn_x/y/z, spawn_count, spawn_radius)
+- [x] Create go-migrate migration +  Kysely type definition: `loot_tables` + `loot_table_entries` (item_def_id, drop_chance, quantity_min, quantity_max)
+- [x] Seed Floor 1 monsters (10 types):
   - Frenzy Boar (Lv 1-3, field)
   - Dire Wolf (Lv 2-4, forest)
   - Ruin Kobold (Lv 3-5, labyrinth)
@@ -564,43 +564,43 @@
 
 #### 6.2 Monster Module - Spawn System `[DEPENDS: 6.1]`
 
-- [ ] Create `modules/monster/domain/entities/monster.ts`, `spawn-point.ts`, `loot-table.ts` (pure TypeScript)
-- [ ] Create `modules/monster/domain/value-objects/aggro-range.ts`, `respawn-timer.ts`
-- [ ] Create `modules/monster/ports/inbound/monster.port.ts` with `MonsterPort` Context.Tag
-- [ ] Create `modules/monster/events/published.ts`: `MonsterSpawned`, `MonsterKilled`, `LootDropped`
-- [ ] Create `modules/monster/module.ts` composing all monster layers
-- [ ] Implement spawn manager in `modules/monster/application/spawn-monster.use-case.ts`: on server start, load all spawn points for active zones
-- [ ] Create spawn logic: for each spawn point, if no alive instance and respawn timer elapsed, spawn monster
-- [ ] Implement respawn timer: on monster death, set `next_spawn_at = now + respawn_time`
-- [ ] Create dynamic spawn adjustment: reduce spawn count if zone has few players
-- [ ] Integrate spawn updates into game loop tick
+- [x] Create `modules/monster/domain/entities/monster.ts`, `spawn-point.ts`, `loot-table.ts` (pure TypeScript)
+- [x] Create `modules/monster/domain/value-objects/aggro-range.ts`, `respawn-timer.ts`
+- [x] Create `modules/monster/ports/inbound/monster.port.ts` with `MonsterPort` Context.Tag
+- [x] Create `modules/monster/events/published.ts`: `MonsterSpawned`, `MonsterKilled`, `LootDropped`
+- [x] Create `modules/monster/module.ts` composing all monster layers
+- [x] Implement spawn manager in `modules/monster/application/spawn-monster.use-case.ts`: on server start, load all spawn points for active zones
+- [x] Create spawn logic: for each spawn point, if no alive instance and respawn timer elapsed, spawn monster
+- [x] Implement respawn timer: on monster death, set `next_spawn_at = now + respawn_time`
+- [x] Create dynamic spawn adjustment: reduce spawn count if zone has few players
+- [x] Integrate spawn updates into game loop tick
 
 #### 6.3 Monster Module - AI `[DEPENDS: 6.2]`
 
-- [ ] Create `modules/monster/application/update-monster-ai.use-case.ts`
-- [ ] Implement finite state machine for monster behavior:
+- [x] Create `modules/monster/application/update-monster-ai.use-case.ts`
+- [x] Implement finite state machine for monster behavior:
   - **Idle**: stand at spawn, face random direction
   - **Patrol**: walk randomly within `patrol_range` of spawn
   - **Aggro**: player enters `aggro_range`, start pursuing
   - **Attack**: within melee range, execute attack pattern
   - **Return**: if target escapes aggro range, return to spawn (reset HP)
   - **Death**: play death animation, drop loot, schedule respawn
-- [ ] Create `AggroManager`: track aggro per player (damage * 1.0, heal * 0.5, proximity * 10/tick)
-- [ ] Implement monster attack patterns: basic melee, charge, AoE (varies by monster type)
-- [ ] Implement telegraphed attacks: broadcast warning to nearby players before big attacks
-- [ ] Write test: monster aggros on player in range, attacks, drops loot on death
+- [x] Create `AggroManager`: track aggro per player (damage * 1.0, heal * 0.5, proximity * 10/tick)
+- [x] Implement monster attack patterns: basic melee, charge, AoE (varies by monster type)
+- [x] Implement telegraphed attacks: broadcast warning to nearby players before big attacks
+- [x] Write test: monster aggros on player in range, attacks, drops loot on death
 
 #### 6.4 Monster Module - Loot System `[DEPENDS: 6.3]`
 
-- [ ] Create `modules/monster/application/drop-loot.use-case.ts`
-- [ ] Implement server-authoritative loot drop:
+- [x] Create `modules/monster/application/drop-loot.use-case.ts`
+- [x] Implement server-authoritative loot drop:
   1. On monster death, roll loot table entries against drop_chance
   2. Determine Col reward: random between `col_min` and `col_max`
   3. Create dropped item entities at monster death position
   4. Broadcast `monster_killed { monsterId, loot, experience }` to zone
-- [ ] Implement Last Attack Bonus: extra loot for player dealing killing blow
-- [ ] Implement loot pickup: validate player proximity, add to inventory
-- [ ] Create loot protection timer: 30s exclusive to killer, then free-for-all
+- [x] Implement Last Attack Bonus: extra loot for player dealing killing blow
+- [x] Implement loot pickup: validate player proximity, add to inventory
+- [x] Create loot protection timer: 30s exclusive to killer, then free-for-all
 
 ---
 
