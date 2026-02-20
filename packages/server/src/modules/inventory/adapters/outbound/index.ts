@@ -1,3 +1,1 @@
-// Inventory outbound adapters (DB/cache implementations)
-// TODO: Implement repository adapters
-export {}
+export { InMemoryInventoryRepositoryLive, PgItemDefinitionRepositoryLive } from "./inventory.repository.live"
