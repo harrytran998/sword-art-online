@@ -1,3 +1,3 @@
 export * from "./events/index"
 export * from "./ports/index"
-// export { MonsterModule } from "./module"
+export * from "./module"

@@ -496,50 +496,50 @@
 
 #### 5.1 Skill Definitions `[PARALLEL]`
 
-- [ ] Create go-migrate migration +  Kysely type definition: `skill_definitions` table (id, name, weapon_type, level_req, hits, damage_multiplier, mp_cost, cooldown_ms, range, pre_motion_ms, execution_ms, post_motion_ms)
-- [ ] Create go-migrate migration +  Kysely type definition: `character_skills` table (character_id, skill_id, level, proficiency, slot_index)
-- [ ] Seed One-Handed Sword skills (10): Horizontal, Vertical, Rage Spike, Sonic Leap, Vertical Arc, Horizontal Square, Sharp Nail, Vorpal Strike, Howling Octave
-- [ ] Seed Rapier skills (8): Linear, Oblique, Parallel Sting, Triangular, Star Splash, Flashing Penetrator
-- [ ] Seed Dagger skills (6): Rapid Bite, Fad Edge, Criminal Brand
+- [x] Create go-migrate migration +  Kysely type definition: `skill_definitions` table (id, name, weapon_type, level_req, hits, damage_multiplier, mp_cost, cooldown_ms, range, pre_motion_ms, execution_ms, post_motion_ms)
+- [x] Create go-migrate migration +  Kysely type definition: `character_skills` table (character_id, skill_id, level, proficiency, slot_index)
+- [x] Seed One-Handed Sword skills (10): Horizontal, Vertical, Rage Spike, Sonic Leap, Vertical Arc, Horizontal Square, Sharp Nail, Vorpal Strike, Howling Octave
+- [x] Seed Rapier skills (8): Linear, Oblique, Parallel Sting, Triangular, Star Splash, Flashing Penetrator
+- [x] Seed Dagger skills (6): Rapid Bite, Fad Edge, Criminal Brand
 - [ ] Create skill slot assignment system (weapon slots 1-5, support 1-5, passive 1-3)
 
 #### 5.2 Combat Module `[DEPENDS: 5.1]`
 
-- [ ] Create `modules/combat/domain/entities/sword-skill.ts` and `combat-session.ts` (pure TypeScript)
-- [ ] Create `modules/combat/domain/value-objects/damage-value.ts`, `critical-hit.ts`, `skill-phase.ts`
-- [ ] Create `modules/combat/domain/errors.ts` (SkillOnCooldownError, OutOfRangeError, InsufficientMpError)
-- [ ] Create `modules/combat/ports/inbound/combat.port.ts` with `CombatPort` Context.Tag
-- [ ] Create `modules/combat/events/published.ts`: `SkillExecuted`, `DamageDealt`, `PlayerDefeated`
+- [x] Create `modules/combat/domain/entities/sword-skill.ts` and `combat-session.ts` (pure TypeScript)
+- [x] Create `modules/combat/domain/value-objects/damage-value.ts`, `critical-hit.ts`, `skill-phase.ts`
+- [x] Create `modules/combat/domain/errors.ts` (SkillOnCooldownError, OutOfRangeError, InsufficientMpError)
+- [x] Create `modules/combat/ports/inbound/combat.port.ts` with `CombatPort` Context.Tag
+- [x] Create `modules/combat/events/published.ts`: `SkillExecuted`, `DamageDealt`, `PlayerDefeated`
 - [ ] Create `modules/combat/module.ts` composing all combat layers
-- [ ] Implement Sword Skill activation flow in `modules/combat/application/activate-skill.use-case.ts`:
+- [x] Implement Sword Skill activation flow in `modules/combat/application/activate-skill.use-case.ts`:
   1. **Pre-motion**: validate MP, cooldown, target; lock player state; broadcast glow effect
   2. **System recognition**: server acknowledges; set animation state
   3. **Auto-execution**: calculate damage server-side, apply to target(s), broadcast `skill_executed`
   4. **Post-motion delay**: player frozen for `post_motion_ms`; vulnerable window
   5. **Cooldown**: skill enters cooldown; other skills available
-- [ ] Implement damage formula: `Base = WeaponATK * SkillMultiplier; Final = Base * (1 - EnemyDEF/(EnemyDEF+100))`
-- [ ] Implement critical hit: `CritRate = DEX * 0.5 + equipment; CritDmg = 150% + LCK * 0.5%`
+- [x] Implement damage formula: `Base = WeaponATK * SkillMultiplier; Final = Base * (1 - EnemyDEF/(EnemyDEF+100))`
+- [x] Implement critical hit: `CritRate = DEX * 0.5 + equipment; CritDmg = 150% + LCK * 0.5%`
 - [ ] Implement auto-attack (basic attack without Sword Skill)
-- [ ] Create cooldown tracking in Redis: `skill_cd:{playerId}:{skillId}` with TTL
+- [x] Create cooldown tracking in Redis: `skill_cd:{playerId}:{skillId}` with TTL
 
 #### 5.3 Combat Validation `[DEPENDS: 5.2]`
 
-- [ ] Implement range check: distance between attacker and target <= skill.range (10% tolerance for lag)
+- [x] Implement range check: distance between attacker and target <= skill.range (10% tolerance for lag)
 - [ ] Implement line-of-sight check (raycast between positions)
-- [ ] Implement MP/resource validation before skill execution
-- [ ] Implement cooldown validation (reject if skill still cooling)
-- [ ] Implement action rate check (max 10 actions/second)
-- [ ] Log combat cheat attempts to security events
+- [x] Implement MP/resource validation before skill execution
+- [x] Implement cooldown validation (reject if skill still cooling)
+- [x] Implement action rate check (max 10 actions/second)
+- [x] Log combat cheat attempts to security events
 
 #### 5.4 Combat Frontend `[DEPENDS: 5.2]`
 
-- [ ] Create skills bar UI (slots 1-9 with keybinds)
-- [ ] Implement target selection (click enemy, Tab cycle)
-- [ ] Render skill animations (placeholder: colored particle effects per skill)
-- [ ] Show damage numbers floating above targets
-- [ ] Display skill cooldown timers on skill bar
-- [ ] Show HP/MP bars above players and monsters
-- [ ] Implement Sword Skill glow effect during pre-motion
+- [x] Create skills bar UI (slots 1-9 with keybinds)
+- [x] Implement target selection (click enemy, Tab cycle)
+- [x] Render skill animations (placeholder: colored particle effects per skill)
+- [x] Show damage numbers floating above targets
+- [x] Display skill cooldown timers on skill bar
+- [x] Show HP/MP bars above players and monsters
+- [x] Implement Sword Skill glow effect during pre-motion
 
 ---
 
@@ -547,10 +547,10 @@
 
 #### 6.1 Monster Definitions `[PARALLEL]`
 
-- [ ] Create go-migrate migration +  Kysely type definition: `monster_definitions` table (id, name, type, level, hp, attack, defense, exp_reward, col_min, col_max, loot_table_id, aggro_range, respawn_time)
-- [ ] Create go-migrate migration +  Kysely type definition: `monster_spawns` table (id, monster_def_id, zone_id, spawn_x/y/z, spawn_count, spawn_radius)
-- [ ] Create go-migrate migration +  Kysely type definition: `loot_tables` + `loot_table_entries` (item_def_id, drop_chance, quantity_min, quantity_max)
-- [ ] Seed Floor 1 monsters (10 types):
+- [x] Create go-migrate migration +  Kysely type definition: `monster_definitions` table (id, name, type, level, hp, attack, defense, exp_reward, col_min, col_max, loot_table_id, aggro_range, respawn_time)
+- [x] Create go-migrate migration +  Kysely type definition: `monster_spawns` table (id, monster_def_id, zone_id, spawn_x/y/z, spawn_count, spawn_radius)
+- [x] Create go-migrate migration +  Kysely type definition: `loot_tables` + `loot_table_entries` (item_def_id, drop_chance, quantity_min, quantity_max)
+- [x] Seed Floor 1 monsters (10 types):
   - Frenzy Boar (Lv 1-3, field)
   - Dire Wolf (Lv 2-4, forest)
   - Ruin Kobold (Lv 3-5, labyrinth)
@@ -564,43 +564,43 @@
 
 #### 6.2 Monster Module - Spawn System `[DEPENDS: 6.1]`
 
-- [ ] Create `modules/monster/domain/entities/monster.ts`, `spawn-point.ts`, `loot-table.ts` (pure TypeScript)
-- [ ] Create `modules/monster/domain/value-objects/aggro-range.ts`, `respawn-timer.ts`
-- [ ] Create `modules/monster/ports/inbound/monster.port.ts` with `MonsterPort` Context.Tag
-- [ ] Create `modules/monster/events/published.ts`: `MonsterSpawned`, `MonsterKilled`, `LootDropped`
-- [ ] Create `modules/monster/module.ts` composing all monster layers
-- [ ] Implement spawn manager in `modules/monster/application/spawn-monster.use-case.ts`: on server start, load all spawn points for active zones
-- [ ] Create spawn logic: for each spawn point, if no alive instance and respawn timer elapsed, spawn monster
-- [ ] Implement respawn timer: on monster death, set `next_spawn_at = now + respawn_time`
-- [ ] Create dynamic spawn adjustment: reduce spawn count if zone has few players
-- [ ] Integrate spawn updates into game loop tick
+- [x] Create `modules/monster/domain/entities/monster.ts`, `spawn-point.ts`, `loot-table.ts` (pure TypeScript)
+- [x] Create `modules/monster/domain/value-objects/aggro-range.ts`, `respawn-timer.ts`
+- [x] Create `modules/monster/ports/inbound/monster.port.ts` with `MonsterPort` Context.Tag
+- [x] Create `modules/monster/events/published.ts`: `MonsterSpawned`, `MonsterKilled`, `LootDropped`
+- [x] Create `modules/monster/module.ts` composing all monster layers
+- [x] Implement spawn manager in `modules/monster/application/spawn-monster.use-case.ts`: on server start, load all spawn points for active zones
+- [x] Create spawn logic: for each spawn point, if no alive instance and respawn timer elapsed, spawn monster
+- [x] Implement respawn timer: on monster death, set `next_spawn_at = now + respawn_time`
+- [x] Create dynamic spawn adjustment: reduce spawn count if zone has few players
+- [x] Integrate spawn updates into game loop tick
 
 #### 6.3 Monster Module - AI `[DEPENDS: 6.2]`
 
-- [ ] Create `modules/monster/application/update-monster-ai.use-case.ts`
-- [ ] Implement finite state machine for monster behavior:
+- [x] Create `modules/monster/application/update-monster-ai.use-case.ts`
+- [x] Implement finite state machine for monster behavior:
   - **Idle**: stand at spawn, face random direction
   - **Patrol**: walk randomly within `patrol_range` of spawn
   - **Aggro**: player enters `aggro_range`, start pursuing
   - **Attack**: within melee range, execute attack pattern
   - **Return**: if target escapes aggro range, return to spawn (reset HP)
   - **Death**: play death animation, drop loot, schedule respawn
-- [ ] Create `AggroManager`: track aggro per player (damage * 1.0, heal * 0.5, proximity * 10/tick)
-- [ ] Implement monster attack patterns: basic melee, charge, AoE (varies by monster type)
-- [ ] Implement telegraphed attacks: broadcast warning to nearby players before big attacks
-- [ ] Write test: monster aggros on player in range, attacks, drops loot on death
+- [x] Create `AggroManager`: track aggro per player (damage * 1.0, heal * 0.5, proximity * 10/tick)
+- [x] Implement monster attack patterns: basic melee, charge, AoE (varies by monster type)
+- [x] Implement telegraphed attacks: broadcast warning to nearby players before big attacks
+- [x] Write test: monster aggros on player in range, attacks, drops loot on death
 
 #### 6.4 Monster Module - Loot System `[DEPENDS: 6.3]`
 
-- [ ] Create `modules/monster/application/drop-loot.use-case.ts`
-- [ ] Implement server-authoritative loot drop:
+- [x] Create `modules/monster/application/drop-loot.use-case.ts`
+- [x] Implement server-authoritative loot drop:
   1. On monster death, roll loot table entries against drop_chance
   2. Determine Col reward: random between `col_min` and `col_max`
   3. Create dropped item entities at monster death position
   4. Broadcast `monster_killed { monsterId, loot, experience }` to zone
-- [ ] Implement Last Attack Bonus: extra loot for player dealing killing blow
-- [ ] Implement loot pickup: validate player proximity, add to inventory
-- [ ] Create loot protection timer: 30s exclusive to killer, then free-for-all
+- [x] Implement Last Attack Bonus: extra loot for player dealing killing blow
+- [x] Implement loot pickup: validate player proximity, add to inventory
+- [x] Create loot protection timer: 30s exclusive to killer, then free-for-all
 
 ---
 

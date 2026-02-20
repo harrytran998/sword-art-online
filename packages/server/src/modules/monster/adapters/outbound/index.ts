@@ -1,3 +1,1 @@
-// Monster outbound adapters (DB/cache implementations)
-// TODO: Implement repository adapters
-export {}
+export { PgMonsterRepositoryLive, PgSpawnPointRepositoryLive, PgLootTableRepositoryLive } from "./pg-monster.repository"

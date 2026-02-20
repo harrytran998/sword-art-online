@@ -23,3 +23,6 @@ export const QuestId = Brand.nominal<QuestId>()
 
 export type AccountId = string & Brand.Brand<"AccountId">
 export const AccountId = Brand.nominal<AccountId>()
+
+export type MonsterId = string & Brand.Brand<"MonsterId">
+export const MonsterId = Brand.nominal<MonsterId>()
