@@ -1,3 +1,5 @@
 export * from "./monster"
 export * from "./spawn-point"
 export * from "./loot-table"
+export * from "./monster-attack"
+export * from "./dropped-loot"
