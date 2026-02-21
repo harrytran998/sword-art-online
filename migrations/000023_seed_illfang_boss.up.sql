@@ -49,6 +49,6 @@ INSERT INTO sao.monster_definitions (
 ) VALUES (
   'Ruin Kobold Sentinel (Boss Add)', 'humanoid', 12, 3000, 60, 40,
   5000, 500, 1000, NULL,
-  15, 3, 0,  -- No respawn (boss adds)
+  15, 3, 2147483647,  -- Effectively no respawn (boss adds); constraint requires > 0
   3, 2500
 );
