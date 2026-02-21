@@ -3,7 +3,7 @@ import { ItemDefinition } from "./item-definition"
 
 export interface InventorySlotProps {
   readonly id: ItemId
-  readonly characterId: number
+  readonly characterId: string
   readonly itemDefinition: ItemDefinition
   readonly quantity: number
   readonly enhancementLevel: number
@@ -20,7 +20,7 @@ export class InventorySlot {
   }
 
   get id(): ItemId { return this.props.id }
-  get characterId(): number { return this.props.characterId }
+  get characterId(): string { return this.props.characterId }
   get itemDefinition(): ItemDefinition { return this.props.itemDefinition }
   get quantity(): number { return this.props.quantity }
   get enhancementLevel(): number { return this.props.enhancementLevel }

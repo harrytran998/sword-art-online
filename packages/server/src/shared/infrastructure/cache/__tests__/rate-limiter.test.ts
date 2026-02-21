@@ -43,6 +43,8 @@ const makeInMemoryCache = () => {
       }),
     exists: (key: string) =>
       Effect.sync(() => store.has(key)),
+    acquireLock: () => Effect.succeed(true),
+    releaseLock: () => Effect.void,
     expire: (key: string, ttlSeconds: number) =>
       Effect.sync(() => {
         const entry = store.get(key)

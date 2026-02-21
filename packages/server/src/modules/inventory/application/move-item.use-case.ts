@@ -5,7 +5,7 @@ import { ItemNotFoundError, InsufficientQuantityError } from "../domain/errors"
 import { EventBus } from "../../../shared/infrastructure/event-bus/index"
 
 export const removeItem = (
-  characterId: number,
+  characterId: string,
   slotId: ItemId,
   quantity: number,
 ): Effect.Effect<void, ItemNotFoundError | InsufficientQuantityError, InventoryRepository | EventBus> =>
@@ -13,7 +13,7 @@ export const removeItem = (
     const inventoryRepo = yield* InventoryRepository
 
     const slot = yield* inventoryRepo.getSlotById(slotId)
-    if (!slot || slot.characterId !== characterId) {
+    if (!slot || slot?.characterId !== characterId) {
       return yield* Effect.fail(new ItemNotFoundError(slotId))
     }
 
@@ -30,7 +30,7 @@ export const removeItem = (
   })
 
 export const moveItem = (
-  characterId: number,
+  characterId: string,
   fromSlotIndex: number,
   toSlotIndex: number,
 ): Effect.Effect<void, ItemNotFoundError, InventoryRepository> =>

@@ -7,7 +7,7 @@ import { EventBus } from "../../../shared/infrastructure/event-bus/index"
 import { ItemPickedUp } from "../events/published"
 
 export const addItem = (
-  characterId: number,
+  characterId: string,
   itemDefId: number,
   quantity: number,
 ): Effect.Effect<InventorySlot, InventoryFullError | ItemDefinitionNotFoundError, InventoryRepository | ItemDefinitionRepository | EventBus> =>

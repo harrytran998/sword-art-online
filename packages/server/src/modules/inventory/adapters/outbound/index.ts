@@ -1,1 +1,1 @@
-export { InMemoryInventoryRepositoryLive, PgItemDefinitionRepositoryLive } from "./inventory.repository.live"
+export { PgInventoryRepositoryLive, PgItemDefinitionRepositoryLive } from "./inventory.repository.live"

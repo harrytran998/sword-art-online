@@ -40,6 +40,8 @@ const TestCacheLayer = Layer.succeed(CacheService, {
   del: () => Effect.void,
   increment: () => Effect.succeed(1),
   exists: () => Effect.succeed(false),
+  acquireLock: () => Effect.succeed(true),
+  releaseLock: () => Effect.void,
   expire: () => Effect.void,
   getOrSet: (_key, factory, _ttl) => factory(),
   sadd: () => Effect.succeed(1),
@@ -77,6 +79,8 @@ const TestPlayerPortLayer = Layer.succeed(PlayerPort, {
   getPlayer: () => Effect.succeed(null as never),
   getPlayerByAccountId: () => Effect.succeed(null),
   allocateStats: () => Effect.void,
+  addCurrency: () => Effect.void,
+  deductCurrency: () => Effect.void,
 })
 
 const InfraLayer = Layer.mergeAll(

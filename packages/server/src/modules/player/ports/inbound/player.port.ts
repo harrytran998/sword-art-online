@@ -41,5 +41,13 @@ export class PlayerPort extends Context.Tag("PlayerPort")<
       id: PlayerId,
       stats: StatAllocation,
     ) => Effect.Effect<void, PlayerNotFoundError | InvalidStatsError>
+    readonly deductCurrency: (
+      id: string,
+      amount: number,
+    ) => Effect.Effect<void, PlayerNotFoundError | Error> // Should have InsufficientFundsError
+    readonly addCurrency: (
+      id: string,
+      amount: number,
+    ) => Effect.Effect<void, PlayerNotFoundError>
   }
 >() {}

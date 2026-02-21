@@ -8,14 +8,15 @@ import type { ItemCategory } from "../../../../shared/infrastructure/database/ty
 export class InventoryRepository extends Context.Tag("InventoryRepository")<
   InventoryRepository,
   {
-    readonly getInventorySlots: (characterId: number) => Effect.Effect<InventorySlot[]>
-    readonly getEquipmentSlots: (characterId: number) => Effect.Effect<Map<EquipmentSlotType, InventorySlot>>
+    readonly getInventorySlots: (characterId: string) => Effect.Effect<InventorySlot[]>
+    readonly getEquipmentSlots: (characterId: string) => Effect.Effect<Map<EquipmentSlotType, InventorySlot>>
     readonly getSlotById: (slotId: ItemId) => Effect.Effect<InventorySlot | null>
-    readonly getSlotByIndex: (characterId: number, slotIndex: number) => Effect.Effect<InventorySlot | null>
-    readonly saveSlot: (slot: InventorySlot) => Effect.Effect<void>
+    readonly getSlotByIndex: (characterId: string, slotIndex: number) => Effect.Effect<InventorySlot | null>
+    readonly saveSlot: (slot: InventorySlot) => Effect.Effect<InventorySlot>
+    readonly saveSlots: (slots: InventorySlot[]) => Effect.Effect<InventorySlot[]>
     readonly deleteSlot: (slotId: ItemId) => Effect.Effect<void>
-    readonly findStackableSlot: (characterId: number, itemDefId: number) => Effect.Effect<InventorySlot | null>
-    readonly findEmptySlot: (characterId: number) => Effect.Effect<number | null>
+    readonly findStackableSlot: (characterId: string, itemDefId: number) => Effect.Effect<InventorySlot | null>
+    readonly findEmptySlot: (characterId: string) => Effect.Effect<number | null>
   }
 >() {}
 

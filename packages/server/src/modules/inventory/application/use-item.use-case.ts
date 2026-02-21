@@ -6,7 +6,7 @@ import { EventBus } from "../../../shared/infrastructure/event-bus/index"
 import { ItemUsed, ItemDropped } from "../events/published"
 
 export const useItem = (
-  characterId: number,
+  characterId: string,
   slotId: ItemId,
 ): Effect.Effect<{ healHp?: number; healMp?: number; teleport?: boolean }, ItemNotFoundError | RequirementsNotMetError, InventoryRepository | EventBus> =>
   Effect.gen(function* () {
@@ -14,7 +14,7 @@ export const useItem = (
     const eventBus = yield* EventBus
 
     const slot = yield* inventoryRepo.getSlotById(slotId)
-    if (!slot || slot.characterId !== characterId) {
+    if (!slot || slot?.characterId !== characterId) {
       return yield* Effect.fail(new ItemNotFoundError(slotId))
     }
 
@@ -49,7 +49,7 @@ export const useItem = (
   })
 
 export const dropItem = (
-  characterId: number,
+  characterId: string,
   slotId: ItemId,
   quantity: number,
   positionX: number,
@@ -61,7 +61,7 @@ export const dropItem = (
     const eventBus = yield* EventBus
 
     const slot = yield* inventoryRepo.getSlotById(slotId)
-    if (!slot || slot.characterId !== characterId) {
+    if (!slot || slot?.characterId !== characterId) {
       return yield* Effect.fail(new ItemNotFoundError(slotId))
     }
 

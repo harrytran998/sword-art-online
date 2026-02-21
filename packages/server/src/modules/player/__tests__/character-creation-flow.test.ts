@@ -90,6 +90,8 @@ const makeMockCache = () => {
         }),
       increment: () => Effect.succeed(1),
       exists: (key: string) => Effect.succeed(store.has(key)),
+      acquireLock: () => Effect.succeed(true),
+      releaseLock: () => Effect.void,
       expire: () => Effect.void,
       getOrSet: (key: string, factory: () => Effect.Effect<string>) =>
         Effect.gen(function* () {

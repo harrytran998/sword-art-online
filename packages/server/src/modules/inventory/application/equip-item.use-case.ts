@@ -7,7 +7,7 @@ import { EventBus } from "../../../shared/infrastructure/event-bus/index"
 import { ItemEquipped, ItemUnequipped } from "../events/published"
 
 export const equipItem = (
-  characterId: number,
+  characterId: string,
   slotId: ItemId,
   targetSlot: EquipmentSlotType,
 ): Effect.Effect<void, ItemNotFoundError | RequirementsNotMetError | InvalidSlotError | EquipmentSlotOccupiedError, InventoryRepository | EventBus> =>
@@ -20,7 +20,7 @@ export const equipItem = (
     }
 
     const slot = yield* inventoryRepo.getSlotById(slotId)
-    if (!slot || slot.characterId !== characterId) {
+    if (!slot || slot?.characterId !== characterId) {
       return yield* Effect.fail(new ItemNotFoundError(slotId))
     }
 
@@ -64,7 +64,7 @@ export const equipItem = (
   })
 
 export const unequipItem = (
-  characterId: number,
+  characterId: string,
   slot: EquipmentSlotType,
 ): Effect.Effect<void, InvalidSlotError | InventoryFullError, InventoryRepository | EventBus> =>
   Effect.gen(function* () {

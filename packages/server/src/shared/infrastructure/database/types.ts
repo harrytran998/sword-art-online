@@ -223,7 +223,7 @@ export interface ItemDefinitionTable {
 
 export interface CharacterInventoryTable {
   id: Generated<number>
-  character_id: number
+  character_id: string
   item_def_id: number
   quantity: number
   enhancement_level: number
