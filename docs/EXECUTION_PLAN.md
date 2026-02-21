@@ -608,50 +608,50 @@
 
 #### 7.1 Item System `[PARALLEL]`
 
-- [ ] Create go-migrate migration +  Kysely type definition: `item_definitions` table (id, name, description, category, subcategory, rarity, stats JSONB, requirements JSONB, max_stack, tradeable, base_price)
-- [ ] Create go-migrate migration +  Kysely type definition: `character_inventory` table (id, character_id, item_def_id, quantity, enhancement_level, enhancement_stats JSONB, durability, slot_type, slot_index)
-- [ ] Seed starter equipment per class (weapon + basic armor set)
-- [ ] Seed consumables: HP Potion (Small/Medium/Large), MP Potion, Antidote, Teleport Crystal
-- [ ] Seed Floor 1 monster drop items: materials, equipment, crystals
-- [ ] Create equipment slot mapping:
+- [x] Create go-migrate migration +  Kysely type definition: `item_definitions` table (id, name, description, category, subcategory, rarity, stats JSONB, requirements JSONB, max_stack, tradeable, base_price)
+- [x] Create go-migrate migration +  Kysely type definition: `character_inventory` table (id, character_id, item_def_id, quantity, enhancement_level, enhancement_stats JSONB, durability, slot_type, slot_index)
+- [x] Seed starter equipment per class (weapon + basic armor set)
+- [x] Seed consumables: HP Potion (Small/Medium/Large), MP Potion, Antidote, Teleport Crystal
+- [x] Seed Floor 1 monster drop items: materials, equipment, crystals
+- [x] Create equipment slot mapping:
   - 0: Main Hand, 1: Off Hand, 2: Head, 3: Chest, 4: Hands, 5: Legs, 6: Feet, 7-9: Accessories
 
 #### 7.2 Inventory Module `[DEPENDS: 7.1]`
 
-- [ ] Create `modules/inventory/domain/entities/inventory-slot.ts`, `equipment.ts`, `item-definition.ts` (pure TypeScript)
-- [ ] Create `modules/inventory/domain/value-objects/equipment-slot.ts`, `enhancement-level.ts`
-- [ ] Create `modules/inventory/ports/inbound/inventory.port.ts` with `InventoryPort` Context.Tag
-- [ ] Create `modules/inventory/ports/outbound/inventory.repository.ts` with `InventoryRepository` Context.Tag
-- [ ] Create `modules/inventory/events/published.ts`: `ItemPickedUp`, `ItemEquipped`, `ItemUsed`, `ItemEnhanced`
-- [ ] Create `modules/inventory/events/subscriptions.ts`: subscribe to `MonsterKilled` → generate loot
-- [ ] Create `modules/inventory/module.ts` composing all inventory layers
-- [ ] Implement `addItem` in `modules/inventory/application/add-item.use-case.ts`: find stackable slot or empty slot, validate max stack, insert
-- [ ] Implement `removeItem`: validate ownership + quantity, decrement or delete
-- [ ] Implement `moveItem`: swap slot positions within inventory
-- [ ] Implement `equipItem`: validate requirements (level, class, stats), move to equipment slot, recalculate derived stats
-- [ ] Implement `unequipItem`: move from equipment slot to inventory (check space)
-- [ ] Implement `useItem`: consume consumable (heal HP/MP, teleport), validate cooldown
-- [ ] Implement `dropItem`: remove from inventory, create world item entity
-- [ ] Implement NPC buy/sell: validate proximity to merchant NPC, calculate price
+- [x] Create `modules/inventory/domain/entities/inventory-slot.ts`, `equipment.ts`, `item-definition.ts` (pure TypeScript)
+- [x] Create `modules/inventory/domain/value-objects/equipment-slot.ts`, `enhancement-level.ts`
+- [x] Create `modules/inventory/ports/inbound/inventory.port.ts` with `InventoryPort` Context.Tag
+- [x] Create `modules/inventory/ports/outbound/inventory.repository.ts` with `InventoryRepository` Context.Tag
+- [x] Create `modules/inventory/events/published.ts`: `ItemPickedUp`, `ItemEquipped`, `ItemUsed`, `ItemEnhanced`
+- [x] Create `modules/inventory/events/subscriptions.ts`: subscribe to `MonsterKilled` → generate loot
+- [x] Create `modules/inventory/module.ts` composing all inventory layers
+- [x] Implement `addItem` in `modules/inventory/application/add-item.use-case.ts`: find stackable slot or empty slot, validate max stack, insert
+- [x] Implement `removeItem`: validate ownership + quantity, decrement or delete
+- [x] Implement `moveItem`: swap slot positions within inventory
+- [x] Implement `equipItem`: validate requirements (level, class, stats), move to equipment slot, recalculate derived stats
+- [x] Implement `unequipItem`: move from equipment slot to inventory (check space)
+- [x] Implement `useItem`: consume consumable (heal HP/MP, teleport), validate cooldown
+- [x] Implement `dropItem`: remove from inventory, create world item entity
+- [x] Implement NPC buy/sell: validate proximity to merchant NPC, calculate price
 
 #### 7.3 Inventory Security `[DEPENDS: 7.2]`
 
-- [ ] Implement inventory lock during operations (Redis distributed lock)
-- [ ] Implement item ownership validation on every operation
-- [ ] Create inventory state validation: check for negative quantities, impossible enhancements, duplicate unique slots
-- [ ] Implement atomic item transfers using database transactions
-- [ ] Implement duplication prevention: unique transaction IDs, idempotency checks
-- [ ] Write test: concurrent inventory operations don't cause duplication
+- [x] Implement inventory lock during operations (Redis distributed lock)
+- [x] Implement item ownership validation on every operation
+- [x] Create inventory state validation: check for negative quantities, impossible enhancements, duplicate unique slots
+- [x] Implement atomic item transfers using database transactions
+- [x] Implement duplication prevention: unique transaction IDs, idempotency checks
+- [x] Write test: concurrent inventory operations don't cause duplication
 
 #### 7.4 Inventory Frontend `[DEPENDS: 7.2]`
 
-- [ ] Create Inventory UI panel (grid layout, 40 slots)
-- [ ] Create Equipment UI panel (paper doll with 10 slots)
-- [ ] Implement drag-and-drop item movement
-- [ ] Show item tooltips on hover (name, rarity, stats, requirements)
-- [ ] Implement right-click context menu: Equip, Use, Drop, Info
-- [ ] Display character stats panel with derived stat calculations
-- [ ] Show equipment stat bonuses
+- [x] Create Inventory UI panel (grid layout, 40 slots)
+- [x] Create Equipment UI panel (paper doll with 10 slots)
+- [x] Implement drag-and-drop item movement
+- [x] Show item tooltips on hover (name, rarity, stats, requirements)
+- [x] Implement right-click context menu: Equip, Use, Drop, Info
+- [x] Display character stats panel with derived stat calculations
+- [x] Show equipment stat bonuses
 
 ---
 
