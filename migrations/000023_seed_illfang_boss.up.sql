@@ -4,7 +4,7 @@ INSERT INTO sao.monster_definitions (
   name, monster_type, level, hp, attack, defense,
   exp_reward, col_min, col_max, loot_table_id,
   aggro_range, patrol_range, respawn_time_ms,
-  attack_range, "attackCooldown_ms"
+  attack_range, attackCooldown_ms
 ) VALUES (
   'Illfang the Kobold Lord', 'boss', 15, 15000, 120, 80,
   50000, 10000, 15000, NULL,
@@ -45,7 +45,7 @@ INSERT INTO sao.monster_definitions (
   name, monster_type, level, hp, attack, defense,
   exp_reward, col_min, col_max, loot_table_id,
   aggro_range, patrol_range, respawn_time_ms,
-  attack_range, "attackCooldown_ms"
+  attack_range, attackCooldown_ms
 ) VALUES (
   'Ruin Kobold Sentinel (Boss Add)', 'humanoid', 12, 3000, 60, 40,
   5000, 500, 1000, NULL,
