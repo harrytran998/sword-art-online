@@ -276,6 +276,36 @@ export interface NoCharacterMessage {
   readonly _tag: "no_character"
 }
 
+export interface BossPhaseChangedMessage {
+  readonly _tag: "boss_phase_changed"
+  readonly bossId: string
+  readonly bossName: string
+  readonly newPhase: number
+  readonly currentHp: number
+  readonly totalHp: number
+  readonly level: number
+}
+
+export interface BossDefeatedMessage {
+  readonly _tag: "boss_defeated"
+  readonly bossId: string
+  readonly bossName: string
+  readonly floorId: number
+  readonly lastAttackPlayerId: string
+}
+
+export interface BossRoomSealedMessage {
+  readonly _tag: "boss_room_sealed"
+  readonly zoneId: string
+  readonly bossName: string
+}
+
+export interface BossRoomUnsealedMessage {
+  readonly _tag: "boss_room_unsealed"
+  readonly zoneId: string
+  readonly reason: string
+}
+
 export type ServerMessage =
   | StateUpdateMessage
   | DamageMessage
@@ -298,3 +328,8 @@ export type ServerMessage =
   | CharacterDataMessage
   | CharacterCreateErrorMessage
   | NoCharacterMessage
+  | BossPhaseChangedMessage
+  | BossDefeatedMessage
+  | BossRoomSealedMessage
+  | BossRoomUnsealedMessage
+

@@ -11,6 +11,9 @@ import { HEARTBEAT_CLIENT_INTERVAL_MS } from "@sao/shared"
 import { HpMpBars } from "./hud/HpMpBars"
 import { SkillBar } from "./hud/SkillBar"
 import { TargetFrame } from "./hud/TargetFrame"
+import { BossHpBar } from "./hud/BossHpBar"
+import { BossAggroIndicator } from "./hud/BossAggroIndicator"
+import { BossRoomTransition } from "./hud/BossRoomTransition"
 import { InventoryPanel } from "./panels/InventoryPanel"
 import { EquipmentPanel } from "./panels/EquipmentPanel"
 import { CharacterStatsPanel } from "./panels/CharacterStatsPanel"
@@ -212,6 +215,9 @@ export const GameCanvas = ({ networkRef }: GameCanvasProps) => {
       <HpMpBars />
       <TargetFrame />
       <SkillBar />
+      <BossHpBar />
+      <BossAggroIndicator />
+      <BossRoomTransition />
       <InventoryPanel />
       <EquipmentPanel />
       <CharacterStatsPanel />

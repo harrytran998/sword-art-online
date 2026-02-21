@@ -4,6 +4,15 @@ import type { Position } from "@domain/entities/position"
 import type { RemotePlayer } from "@domain/entities/remote-player"
 import type { Target } from "../../domain/value-objects/target"
 
+export interface ActiveBoss {
+  name: string
+  level: number
+  phase: number
+  hpBars: number[]
+  currentHp: number
+  targetPlayerId: string | null
+}
+
 export type CombatEffect = 
   | { type: 'damage', targetId: string, amount: number, isCritical: boolean }
   | { type: 'skill', skillId: number, sourceId: string }
@@ -43,6 +52,9 @@ interface GameState {
   addCombatEffect: (effect: CombatEffect) => void
   clearCombatEffects: () => void
 
+  // Boss
+  activeBoss: ActiveBoss | null
+
   characterCreateError: string | null
   isCreatingCharacter: boolean
 
@@ -65,6 +77,9 @@ interface GameState {
   setActiveSkill: (skillId: number | null) => void
   setCharacterCreateError: (error: string | null) => void
   setIsCreatingCharacter: (creating: boolean) => void
+  setActiveBoss: (boss: ActiveBoss | null) => void
+  updateBossHp: (currentHp: number, phase: number) => void
+  updateBossTarget: (targetPlayerId: string | null) => void
 }
 
 export const useGameStore = create<GameState>((set, get) => ({
@@ -154,4 +169,17 @@ export const useGameStore = create<GameState>((set, get) => ({
   setActiveSkill: (activeSkillId) => set({ activeSkillId }),
   setCharacterCreateError: (error) => set({ characterCreateError: error, isCreatingCharacter: false }),
   setIsCreatingCharacter: (creating) => set({ isCreatingCharacter: creating, characterCreateError: null }),
+
+  activeBoss: null,
+  setActiveBoss: (boss) => set({ activeBoss: boss }),
+  updateBossHp: (currentHp, phase) => {
+    const boss = get().activeBoss
+    if (!boss) return
+    set({ activeBoss: { ...boss, currentHp, phase } })
+  },
+  updateBossTarget: (targetPlayerId) => {
+    const boss = get().activeBoss
+    if (!boss) return
+    set({ activeBoss: { ...boss, targetPlayerId } })
+  },
 }))
