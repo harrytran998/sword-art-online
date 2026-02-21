@@ -11,6 +11,10 @@ import { HEARTBEAT_CLIENT_INTERVAL_MS } from "@sao/shared"
 import { HpMpBars } from "./hud/HpMpBars"
 import { SkillBar } from "./hud/SkillBar"
 import { TargetFrame } from "./hud/TargetFrame"
+import { InventoryPanel } from "./panels/InventoryPanel"
+import { EquipmentPanel } from "./panels/EquipmentPanel"
+import { CharacterStatsPanel } from "./panels/CharacterStatsPanel"
+import { useUiStore } from "@application/stores/ui.store"
 
 interface GameCanvasProps {
   readonly networkRef: MutableRefObject<ReturnType<typeof createWebSocketAdapter> | null>
@@ -168,10 +172,32 @@ export const GameCanvas = ({ networkRef }: GameCanvasProps) => {
 
     void setup()
 
+    // Global hotkeys for UI
+    const onKeyDown = (e: KeyboardEvent) => {
+      // Ignore input when typing in an input field
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement
+      ) {
+        return
+      }
+      
+      const key = e.key.toLowerCase()
+      if (key === "i" || key === "b") {
+        useUiStore.getState().toggleInventory()
+      } else if (key === "c" || key === "e") {
+        useUiStore.getState().toggleEquipment()
+      } else if (key === "escape") {
+        useUiStore.getState().closeAll()
+      }
+    }
+    globalThis.addEventListener("keydown", onKeyDown)
+
     return () => {
       destroyed = true
       if (heartbeatInterval) clearInterval(heartbeatInterval)
       cancelAnimationFrame(rafRef.current)
+      globalThis.removeEventListener("keydown", onKeyDown)
       keyboardRef.current?.detach()
       skillInputRef.current?.detach()
       mouseRef.current?.detach()
@@ -186,6 +212,9 @@ export const GameCanvas = ({ networkRef }: GameCanvasProps) => {
       <HpMpBars />
       <TargetFrame />
       <SkillBar />
+      <InventoryPanel />
+      <EquipmentPanel />
+      <CharacterStatsPanel />
 
       {/* Reconnection overlay */}
       {isReconnecting && (

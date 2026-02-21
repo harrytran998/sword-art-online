@@ -1,5 +1,7 @@
 import { create } from "zustand"
 import type { SkillState } from "../../domain/value-objects/skill"
+import type { InventorySlot } from "@sao/server/src/modules/inventory/domain/entities/inventory-slot"
+import type { EquipmentSlotType } from "@sao/server/src/modules/inventory/domain/value-objects/equipment-slot"
 
 interface PlayerState {
   hp: number
@@ -11,6 +13,8 @@ interface PlayerState {
   col: number
   skills: SkillState[]
   selectedTargetId: string | null
+  inventory: InventorySlot[]
+  equipment: Record<EquipmentSlotType, InventorySlot | null>
 
   setHp: (hp: number) => void
   setMaxHp: (maxHp: number) => void
@@ -21,6 +25,15 @@ interface PlayerState {
   setSkills: (skills: SkillState[]) => void
   setSkillCooldown: (skillId: number, cooldown: number) => void
   setSelectedTarget: (targetId: string | null) => void
+  setInventory: (slots: InventorySlot[]) => void
+  setEquipment: (equipment: Record<EquipmentSlotType, InventorySlot | null>) => void
+  updateInventorySlot: (slot: InventorySlot) => void
+  removeInventorySlot: (slotId: string) => void
+  moveInventoryItem: (fromIndex: number, toIndex: number) => void
+  equipItem: (inventoryIndex: number, equipmentSlot: EquipmentSlotType) => void
+  unequipItem: (equipmentSlot: EquipmentSlotType, inventoryIndex: number) => void
+  useItem: (inventoryIndex: number) => void
+  dropItem: (inventoryIndex: number) => void
   reset: () => void
 }
 
@@ -34,6 +47,16 @@ const initialState = {
   col: 0,
   skills: [],
   selectedTargetId: null,
+  inventory: [],
+  equipment: {
+    head: null,
+    chest: null,
+    hands: null,
+    legs: null,
+    feet: null,
+    main_hand: null,
+    off_hand: null,
+  } as Record<EquipmentSlotType, InventorySlot | null>,
 }
 
 export const usePlayerStore = create<PlayerState>((set) => ({
@@ -54,5 +77,64 @@ export const usePlayerStore = create<PlayerState>((set) => ({
       ),
     })),
   setSelectedTarget: (selectedTargetId) => set({ selectedTargetId }),
+  setInventory: (inventory) => set({ inventory }),
+  setEquipment: (equipment) => set({ equipment }),
+  updateInventorySlot: (slot) =>
+    set((state) => {
+      const existingIdx = state.inventory.findIndex((s) => s.id === slot.id)
+      if (existingIdx >= 0) {
+        const newInventory = [...state.inventory]
+        newInventory[existingIdx] = slot
+        return { inventory: newInventory }
+      }
+      return { inventory: [...state.inventory, slot] }
+    }),
+  removeInventorySlot: (slotId) =>
+    set((state) => ({
+      inventory: state.inventory.filter((s) => s.id !== slotId),
+    })),
+  moveInventoryItem: (fromIndex, toIndex) =>
+    set((state) => {
+      console.log(`[Store] Moving item from ${fromIndex} to ${toIndex}`)
+      const newInventory = [...state.inventory]
+      const fromItemIdx = newInventory.findIndex((s) => s.slotIndex === fromIndex)
+      const toItemIdx = newInventory.findIndex((s) => s.slotIndex === toIndex)
+      
+      if (fromItemIdx >= 0) {
+        // Simple swap logic for UI
+        const fromItem = { ...newInventory[fromItemIdx], slotIndex: toIndex } as InventorySlot
+        newInventory[fromItemIdx] = fromItem
+        
+        if (toItemIdx >= 0) {
+          const toItem = { ...newInventory[toItemIdx], slotIndex: fromIndex } as InventorySlot
+          newInventory[toItemIdx] = toItem
+        }
+      }
+      return { inventory: newInventory }
+    }),
+  equipItem: (inventoryIndex, equipmentSlot) =>
+    set((state) => {
+      console.log(`[Store] Equipping item from ${inventoryIndex} to ${equipmentSlot}`)
+      // Basic optimistic UI update
+      return state
+    }),
+  unequipItem: (equipmentSlot, inventoryIndex) =>
+    set((state) => {
+      console.log(`[Store] Unequipping ${equipmentSlot} to ${inventoryIndex}`)
+      // Basic optimistic UI update
+      return state
+    }),
+  useItem: (inventoryIndex) =>
+    set((state) => {
+      console.log(`[Store] Using item at ${inventoryIndex}`)
+      // Basic optimistic UI update
+      return state
+    }),
+  dropItem: (inventoryIndex) =>
+    set((state) => {
+      console.log(`[Store] Dropping item at ${inventoryIndex}`)
+      // Basic optimistic UI update
+      return state
+    }),
   reset: () => set(initialState),
 }))
