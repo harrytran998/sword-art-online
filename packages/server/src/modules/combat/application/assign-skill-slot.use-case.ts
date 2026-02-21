@@ -5,7 +5,19 @@ import { SkillSlotAssigned } from "../events/published"
 import { InvalidTargetError } from "../domain/errors"
 import type { PlayerId } from "../../../shared/kernel/types"
 
-const MAX_SLOT_INDEX = 10
+const WEAPON_SLOTS = { min: 1, max: 5 }
+const SUPPORT_SLOTS = { min: 6, max: 10 }
+const PASSIVE_SLOTS = { min: 11, max: 13 }
+const MAX_SLOT_INDEX = PASSIVE_SLOTS.max
+
+export type SkillSlotType = "weapon" | "support" | "passive"
+
+export const getSlotType = (slotIndex: number): SkillSlotType | null => {
+  if (slotIndex >= WEAPON_SLOTS.min && slotIndex <= WEAPON_SLOTS.max) return "weapon"
+  if (slotIndex >= SUPPORT_SLOTS.min && slotIndex <= SUPPORT_SLOTS.max) return "support"
+  if (slotIndex >= PASSIVE_SLOTS.min && slotIndex <= PASSIVE_SLOTS.max) return "passive"
+  return null
+}
 
 export const assignSkillSlot = (
   characterId: PlayerId,
