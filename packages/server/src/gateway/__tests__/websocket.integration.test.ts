@@ -81,6 +81,8 @@ const TestPlayerPortLayer = Layer.succeed(PlayerPort, {
   allocateStats: () => Effect.void,
   addCurrency: () => Effect.void,
   deductCurrency: () => Effect.void,
+  grantExperience: () => Effect.succeed(null as never),
+  applyDeathPenalty: () => Effect.void,
 })
 
 const InfraLayer = Layer.mergeAll(

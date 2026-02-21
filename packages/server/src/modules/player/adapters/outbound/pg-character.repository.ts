@@ -185,6 +185,38 @@ export const PgCharacterRepositoryLive = Layer.effect(
             )
             .execute(),
         ).pipe(Effect.asVoid, Effect.orDie),
+
+      updateExperienceAndLevel: (
+        characterId: PlayerId,
+        experience: number,
+        level: number,
+        unallocatedPoints: number,
+        maxHp: number,
+      ) =>
+        Effect.gen(function* () {
+          yield* Effect.tryPromise(() =>
+            db.kysely
+              .updateTable("sao.characters")
+              .set({
+                experience,
+                level,
+                max_hp: maxHp,
+              })
+              .where("id", "=", characterId)
+              .execute(),
+          ).pipe(Effect.asVoid, Effect.orDie)
+
+          yield* Effect.tryPromise(() =>
+            db.kysely
+              .updateTable("sao.character_stats")
+              .set({
+                unallocated_points: unallocatedPoints,
+              })
+              .where("character_id", "=", characterId)
+              .execute(),
+          ).pipe(Effect.asVoid, Effect.orDie)
+        }),
     }
   }),
 )
+

@@ -53,6 +53,7 @@ const makeMockRepo = (existingNames: string[] = []) => {
         Effect.sync(() => {
           saved.stats.push({ id, stats })
         }),
+      updateExperienceAndLevel: () => Effect.void,
     }),
     saved,
   }

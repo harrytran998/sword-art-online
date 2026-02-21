@@ -17,5 +17,12 @@ export class CharacterRepository extends Context.Tag("CharacterRepository")<
       characterId: PlayerId,
       stats: CharacterStats,
     ) => Effect.Effect<void>
+    readonly updateExperienceAndLevel: (
+      characterId: PlayerId,
+      experience: number,
+      level: number,
+      unallocatedPoints: number,
+      maxHp: number,
+    ) => Effect.Effect<void>
   }
 >() {}

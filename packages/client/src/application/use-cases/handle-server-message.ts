@@ -212,5 +212,51 @@ export const handleServerMessage = (data: unknown) => {
     case "chat_broadcast":
       // Will be handled in future sprints
       break
+
+    case "boss_phase_changed": {
+      const game = useGameStore.getState()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const message = msg as any
+      if (!game.activeBoss) {
+        // Boss just entered — create initial state
+        game.setActiveBoss({
+          name: message.bossName,
+          level: message.level ?? 15,
+          phase: message.newPhase,
+          hpBars: [5000, 5000, 5000],
+          currentHp: message.currentHp,
+          targetPlayerId: null,
+        })
+      } else {
+        game.updateBossHp(message.currentHp, message.newPhase)
+      }
+      break
+    }
+
+    case "boss_defeated": {
+      const game = useGameStore.getState()
+      game.setActiveBoss(null)
+      break
+    }
+
+    case "boss_room_sealed": {
+      const game = useGameStore.getState()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const message = msg as any
+      game.setActiveBoss({
+        name: message.bossName,
+        level: 15,
+        phase: 1,
+        hpBars: [5000, 5000, 5000],
+        currentHp: 15000,
+        targetPlayerId: null,
+      })
+      break
+    }
+
+    case "boss_room_unsealed": {
+      useGameStore.getState().setActiveBoss(null)
+      break
+    }
   }
 }

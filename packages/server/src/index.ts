@@ -13,7 +13,9 @@ import { IdentityModule } from "./modules/identity/index"
 import { AuthPort } from "./modules/identity/ports/inbound/auth.port"
 import { PlayerModule } from "./modules/player/index"
 import { WorldModule } from "./modules/world/index"
+import { CombatModule } from "./modules/combat/index"
 import { registerGatewaySubscriptions } from "./gateway/subscriptions"
+import { WorldSubscriptionsLive } from "./modules/world/events/subscriptions"
 
 // Infrastructure Layer
 const InfrastructureLayer = Layer.mergeAll(
@@ -29,8 +31,14 @@ const SecurityLayer = SuspicionTrackerLive.pipe(
 )
 
 // Module Layer
-const ModuleLayer = Layer.mergeAll(IdentityModule, PlayerModule, WorldModule).pipe(
+const ModuleLayer = Layer.mergeAll(IdentityModule, PlayerModule, WorldModule, CombatModule).pipe(
   Layer.provide(SecurityLayer),
+  Layer.provide(InfrastructureLayer),
+)
+
+// Subscription Layer (depends on EventBus + repositories)
+const SubscriptionLayer = WorldSubscriptionsLive.pipe(
+  Layer.provide(ModuleLayer),
   Layer.provide(InfrastructureLayer),
 )
 
@@ -46,7 +54,7 @@ const GatewayLayer = Layer.mergeAll(
 )
 
 // Application Layer — compose everything, also expose EventBus for main
-const AppLayer = Layer.mergeAll(ModuleLayer, GatewayLayer, InfrastructureLayer)
+const AppLayer = Layer.mergeAll(ModuleLayer, GatewayLayer, SubscriptionLayer, InfrastructureLayer)
 
 // Main program
 const main = Effect.gen(function* () {

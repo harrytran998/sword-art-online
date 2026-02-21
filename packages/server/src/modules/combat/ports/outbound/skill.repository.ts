@@ -10,10 +10,11 @@ export interface CharacterSkill {
   readonly slotIndex: number | null
 }
 
-export interface SkillRepository {
-  readonly getSkillById: (id: number) => Effect.Effect<SwordSkill | null>
-  readonly getSkillsByWeaponType: (weaponType: WeaponType) => Effect.Effect<SwordSkill[]>
-  readonly getCharacterSkills: (characterId: PlayerId) => Effect.Effect<CharacterSkill[]>
-}
-
-export class SkillRepository extends Context.Tag("SkillRepository")<SkillRepository, SkillRepository>() {}
+export class SkillRepository extends Context.Tag("SkillRepository")<
+  SkillRepository,
+  {
+    readonly getSkillById: (id: number) => Effect.Effect<SwordSkill | null>
+    readonly getSkillsByWeaponType: (weaponType: WeaponType) => Effect.Effect<SwordSkill[]>
+    readonly getCharacterSkills: (characterId: PlayerId) => Effect.Effect<CharacterSkill[]>
+  }
+>() {}

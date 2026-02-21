@@ -659,59 +659,59 @@
 
 #### 8.1 Experience & Leveling `[PARALLEL]`
 
-- [ ] Implement experience curve formula: `XP_needed(level) = 100 * level^2`
-- [ ] Create `modules/player/application/level-up.use-case.ts`:
+- [x] Implement experience curve formula: `XP_needed(level) = 100 * level^2`
+- [x] Create `modules/player/application/level-up.use-case.ts`:
   - Check if current XP >= XP_needed
   - Increment level, award stat points (5 per level)
   - Recalculate derived stats (maxHp, maxMp, etc.)
   - Publish `PlayerLeveledUp` event (broadcast `level_up` to zone via EventBus)
-- [ ] Implement stat point allocation: validate points available, apply to chosen stat
-- [ ] Implement death penalty: lose 10% of current level XP (never level down)
+- [x] Implement stat point allocation: validate points available, apply to chosen stat
+- [x] Implement death penalty: lose 10% of current level XP (never level down)
 - [ ] Create experience distribution: solo = 100% to killer; party = shared within range
 
 #### 8.2 Skill Proficiency `[PARALLEL]`
 
-- [ ] Implement skill proficiency tracking: increment on each use
-- [ ] Create proficiency tiers:
+- [x] Implement skill proficiency tracking: increment on each use
+- [x] Create proficiency tiers:
   - Novice (0-99): 90% skill power
   - Apprentice (100-499): 100% skill power
   - Expert (500-999): 110% skill power
   - Master (1000-4999): 125% power, -10% cooldown
   - Grandmaster (5000+): 150% power, -20% cooldown, special effects
-- [ ] Implement skill unlock requirements: level thresholds per skill
-- [ ] Create skill slot management: assign/unassign skills to hotbar
+- [x] Implement skill unlock requirements: level thresholds per skill
+- [x] Create skill slot management: assign/unassign skills to hotbar
 
 #### 8.3 Floor 1 Boss: Illfang the Kobold Lord `[DEPENDS: 6.3, 5.2]`
 
-- [ ] Create boss room zone: `floor_1_boss_room` (sealed on entry)
-- [ ] Define Illfang boss: Lv 15, 3 HP bars, floor_boss type
-- [ ] Implement 3-phase boss AI:
+- [x] Create boss room zone: `floor_1_boss_room` (sealed on entry)
+- [x] Define Illfang boss: Lv 15, 3 HP bars, floor_boss type
+- [x] Implement 3-phase boss AI:
   - **Phase 1** (HP bar 1): Basic melee attacks, summon 3 Ruin Kobold Sentinels
   - **Phase 2** (HP bar 2): Switch weapon (talwar), faster attacks, wider AoE
   - **Phase 3** (HP bar 3): Enrage mode, continuous charge attacks, room-wide AoE
-- [ ] Implement boss room sealing: once battle starts, door locks (no entry/exit until win or wipe)
-- [ ] Implement anti-crystal zone: teleport crystals disabled in boss room
-- [ ] Create boss loot: Coat of Midnight (Last Attack Bonus), Guiding Plate (participation)
+- [x] Implement boss room sealing: once battle starts, door locks (no entry/exit until win or wipe)
+- [x] Implement anti-crystal zone: teleport crystals disabled in boss room
+- [x] Create boss loot: Coat of Midnight (Last Attack Bonus), Guiding Plate (participation)
 - [ ] Implement floor unlock: on boss defeat, Floor 2 teleport gate activates
 
 #### 8.4 Boss Frontend `[DEPENDS: 8.3]`
 
-- [ ] Create boss HP bar UI (multi-bar display at top of screen)
-- [ ] Implement boss phase transition effects
-- [ ] Show boss name and level
-- [ ] Create boss aggro indicator (who the boss is targeting)
-- [ ] Implement boss room transition animation
+- [x] Create boss HP bar UI (multi-bar display at top of screen)
+- [x] Implement boss phase transition effects
+- [x] Show boss name and level
+- [x] Create boss aggro indicator (who the boss is targeting)
+- [x] Implement boss room transition animation
 
 ### Phase 1 Exit Checklist
 
-- [ ] Sword Skills system works: pre-motion -> execution -> post-motion -> cooldown
+- [x] Sword Skills system works: pre-motion -> execution -> post-motion -> cooldown
 - [ ] 10+ monster types spawning and fighting with AI
 - [ ] Loot drops and pickup working
-- [ ] Full inventory and equipment system
-- [ ] Equipment affects character stats
-- [ ] Level progression (1-20) with stat allocation
-- [ ] Skill proficiency tracking
-- [ ] Illfang boss defeatable by a coordinated party
+- [x] Full inventory and equipment system
+- [x] Equipment affects character stats
+- [x] Level progression (1-20) with stat allocation
+- [x] Skill proficiency tracking
+- [x] Illfang boss defeatable by a coordinated party
 - [ ] Floor 1 fully playable end-to-end
 - [ ] Alpha test with 100 concurrent players stable
 

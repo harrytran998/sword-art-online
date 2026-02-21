@@ -56,6 +56,7 @@ const makeMockRepo = (opts: { existingNames?: string[]; existingAccounts?: Map<s
         Effect.sync(() => {
           saved.stats.push({ id, stats })
         }),
+      updateExperienceAndLevel: () => Effect.void,
     }),
     saved,
   }

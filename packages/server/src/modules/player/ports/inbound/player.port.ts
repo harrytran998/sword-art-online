@@ -8,6 +8,7 @@ import type {
   InvalidCharacterNameError,
   InvalidClassIdError,
   InvalidStatsError,
+  MaxLevelReachedError,
 } from "../../domain/errors"
 
 export interface CreateCharacterParams {
@@ -48,6 +49,13 @@ export class PlayerPort extends Context.Tag("PlayerPort")<
     readonly addCurrency: (
       id: string,
       amount: number,
+    ) => Effect.Effect<void, PlayerNotFoundError>
+    readonly grantExperience: (
+      id: PlayerId,
+      amount: number,
+    ) => Effect.Effect<Character, PlayerNotFoundError | MaxLevelReachedError>
+    readonly applyDeathPenalty: (
+      id: PlayerId,
     ) => Effect.Effect<void, PlayerNotFoundError>
   }
 >() {}

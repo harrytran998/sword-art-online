@@ -149,7 +149,7 @@ export interface CharacterSkillTable {
   updated_at: Generated<Date>
 }
 
-export type MonsterType = "beast" | "humanoid" | "undead" | "elemental" | "demon" | "boss"
+export type MonsterType = "beast" | "humanoid" | "undead" | "elemental" | "demon" | "boss" | "floor_boss"
 
 export interface MonsterDefinitionTable {
   id: Generated<number>
