@@ -7,22 +7,22 @@ export const BossRoomTransition: React.FC = () => {
   const [fadeOut, setFadeOut] = useState(false)
 
   useEffect(() => {
-    if (activeBoss && !showTransition) {
-      setShowTransition(true)
-      setFadeOut(false)
+    if (!activeBoss || showTransition) return
 
-      const fadeTimer = setTimeout(() => {
-        setFadeOut(true)
-      }, 2500)
+    setShowTransition(true)
+    setFadeOut(false)
 
-      const hideTimer = setTimeout(() => {
-        setShowTransition(false)
-      }, 3500)
+    const fadeTimer = setTimeout(() => {
+      setFadeOut(true)
+    }, 2500)
 
-      return () => {
-        clearTimeout(fadeTimer)
-        clearTimeout(hideTimer)
-      }
+    const hideTimer = setTimeout(() => {
+      setShowTransition(false)
+    }, 3500)
+
+    return () => {
+      clearTimeout(fadeTimer)
+      clearTimeout(hideTimer)
     }
   }, [activeBoss?.name])
 

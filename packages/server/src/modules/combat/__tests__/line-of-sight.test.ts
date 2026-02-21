@@ -1,6 +1,5 @@
 import { describe, it, expect } from "bun:test"
-import { checkLineOfSight } from "../domain/value-objects/line-of-sight"
-import type { Obstacle } from "../domain/value-objects/line-of-sight"
+import { checkLineOfSight, type Obstacle } from "../domain/value-objects/line-of-sight"
 
 describe("Line of Sight", () => {
   describe("checkLineOfSight", () => {
