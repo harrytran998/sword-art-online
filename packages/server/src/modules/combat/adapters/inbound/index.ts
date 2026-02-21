@@ -1,3 +1,1 @@
-// Combat inbound adapters (WebSocket/HTTP handlers)
-// TODO: Implement handlers
-export {}
+export { CombatPortLive } from "./combat-port.live"
