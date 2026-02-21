@@ -121,6 +121,8 @@ const makeInventoryTestMocks = () => {
     allocateStats: () => Effect.void,
     addCurrency: () => Effect.void,
     deductCurrency: () => Effect.void,
+    grantExperience: () => Effect.succeed(null as never),
+    applyDeathPenalty: () => Effect.void,
   })
 
   return { repoLayer, defRepoLayer, busLayer, playerLayer, events }

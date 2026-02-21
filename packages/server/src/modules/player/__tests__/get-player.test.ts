@@ -37,6 +37,7 @@ const makeMockRepo = (character: Character | null) =>
     save: () => Effect.void,
     update: () => Effect.void,
     saveStats: () => Effect.void,
+    updateExperienceAndLevel: () => Effect.void,
   })
 
 const makeMockCache = () => {
