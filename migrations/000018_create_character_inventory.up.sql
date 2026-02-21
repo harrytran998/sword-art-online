@@ -1,6 +1,6 @@
 CREATE TABLE sao.character_inventory (
     id SERIAL PRIMARY KEY,
-    character_id INTEGER NOT NULL REFERENCES sao.characters(id) ON DELETE CASCADE,
+    character_id UUID NOT NULL REFERENCES sao.characters(id) ON DELETE CASCADE,
     item_def_id INTEGER NOT NULL REFERENCES sao.item_definitions(id) ON DELETE RESTRICT,
     quantity INTEGER NOT NULL DEFAULT 1 CHECK (quantity BETWEEN 1 AND 99),
     enhancement_level INTEGER NOT NULL DEFAULT 0 CHECK (enhancement_level BETWEEN 0 AND 15),
