@@ -1,3 +1,1 @@
-// Inventory inbound adapters (WebSocket/HTTP handlers)
-// TODO: Implement handlers
-export {}
+export { InventoryPortLive } from "./inventory-port.live"

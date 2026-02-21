@@ -1,3 +1,1 @@
-// Inventory inbound ports (use case interfaces)
-// TODO: Define use case interfaces
-export {}
+export * from "./inventory.port"

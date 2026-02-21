@@ -70,6 +70,8 @@ const makeMockPlayerPort = () => {
       getPlayer: () => Effect.succeed(null as never),
       getPlayerByAccountId: () => Effect.succeed(null),
       allocateStats: () => Effect.void,
+      addCurrency: () => Effect.void,
+      deductCurrency: () => Effect.void,
     }),
     created,
   }

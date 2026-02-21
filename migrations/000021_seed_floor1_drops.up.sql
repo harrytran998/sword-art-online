@@ -1,0 +1,70 @@
+-- Seed Floor 1 monster drop items: materials, equipment, crystals
+
+INSERT INTO sao.item_definitions (name, description, category, subcategory, rarity, stats, requirements, max_stack, tradeable, base_price) VALUES
+-- Materials (common drops)
+('Boar Hide', 'Rough hide from a Frenzy Boar. Used for crafting.', 'material', 'hide', 'common',
+ '{}', '{}', 99, true, 5),
+('Boar Tusk', 'A sharp tusk from a Frenzy Boar.', 'material', 'bone', 'common',
+ '{}', '{}', 99, true, 8),
+('Wolf Pelt', 'Fur from a Dire Wolf. Warm and durable.', 'material', 'pelt', 'common',
+ '{}', '{}', 99, true, 10),
+('Wolf Fang', 'A sharp fang from a Dire Wolf.', 'material', 'bone', 'common',
+ '{}', '{}', 99, true, 12),
+('Kobold Ear', 'A trophy from a Ruin Kobold.', 'material', 'trophy', 'common',
+ '{}', '{}', 99, true, 8),
+('Kobold Coin Pouch', 'A small pouch of Col looted from a kobold.', 'material', 'currency', 'common',
+ '{}', '{}', 99, true, 15),
+('Wasp Wing', 'A delicate wing from a Giant Wasp.', 'material', 'part', 'common',
+ '{}', '{}', 99, true, 6),
+('Wasp Stinger', 'A venomous stinger. Handle with care.', 'material', 'part', 'uncommon',
+ '{}', '{}', 50, true, 20),
+('Goblin Tooth', 'A rotten tooth from a Goblin Warrior.', 'material', 'trophy', 'common',
+ '{}', '{}', 99, true, 5),
+('Goblin Blade', 'A crude blade looted from a goblin.', 'material', 'scrap', 'uncommon',
+ '{}', '{}', 50, true, 25),
+
+-- Materials (uncommon/rare drops)
+('Golem Core Fragment', 'A piece of stone from a Stone Golem. Contains magical energy.', 'material', 'core', 'uncommon',
+ '{}', '{}', 50, true, 50),
+('Treant Bark', 'Magical bark from a Treant.', 'material', 'wood', 'uncommon',
+ '{}', '{}', 50, true, 35),
+('Treant Sap', 'Healing sap from a Treant.', 'material', 'herb', 'uncommon',
+ '{"healHp": 100}', '{}', 10, true, 60),
+('Skeleton Bone', 'An old bone from a Skeleton Archer.', 'material', 'bone', 'common',
+ '{}', '{}', 99, true, 8),
+('Ancient Arrow', 'A well-crafted arrow from a Skeleton Archer.', 'material', 'ammo', 'uncommon',
+ '{}', '{}', 99, true, 15),
+('Shadow Essence', 'Dark essence from a Shadow Lurker.', 'material', 'essence', 'rare',
+ '{}', '{}', 20, true, 100),
+('Kobold Sentinel Badge', 'A badge of rank from a Ruin Kobold Sentinel.', 'material', 'trophy', 'uncommon',
+ '{}', '{}', 50, true, 40),
+
+-- Floor 1 Equipment Drops
+('Iron Sword', 'A well-crafted iron sword. Better than the starter weapon.', 'weapon', 'one_handed_sword', 'uncommon',
+ '{"attack": 8, "criticalRate": 2}', '{"level": 3, "class": ["warrior"], "strength": 5}', 1, true, 150),
+('Hunting Bow', 'A bow designed for hunting. Good range and accuracy.', 'weapon', 'bow', 'uncommon',
+ '{"attack": 6, "criticalRate": 4}', '{"level": 3, "class": ["ranger"], "agility": 5}', 1, true, 150),
+('Mage''s Rod', 'A rod that enhances magical power.', 'weapon', 'staff', 'uncommon',
+ '{"attack": 3, "intelligence": 8}', '{"level": 3, "class": ["mage"], "intelligence": 5}', 1, true, 150),
+('Steel Shield', 'A sturdy steel shield for blocking attacks.', 'armor', 'off_hand', 'uncommon',
+ '{"defense": 5, "blockRate": 10}', '{"level": 5, "class": ["warrior"]}', 1, true, 120),
+('Padded Leather Armor', 'Reinforced leather armor with extra padding.', 'armor', 'chest', 'uncommon',
+ '{"defense": 5, "agility": 2}', '{"level": 3, "class": ["ranger"]}', 1, true, 180),
+('Enchanter''s Robe', 'A robe woven with magical threads.', 'armor', 'chest', 'uncommon',
+ '{"defense": 3, "intelligence": 4, "maxMp": 30}', '{"level": 3, "class": ["mage"]}', 1, true, 180),
+
+-- Accessories
+('Wolf''s Eye Ring', 'A ring carved from wolf bone. Increases critical rate.', 'accessory', 'ring', 'uncommon',
+ '{"criticalRate": 3}', '{"level": 5}', 1, true, 200),
+('Boar''s Tusk Necklace', 'A necklace made from boar tusks. Increases strength.', 'accessory', 'necklace', 'common',
+ '{"strength": 2}', '{}', 1, true, 80),
+('Wasp Wing Earring', 'An earring made from a wasp wing. Increases agility.', 'accessory', 'earring', 'uncommon',
+ '{"agility": 3}', '{"level": 5}', 1, true, 150),
+
+-- Rare Drops (Elite/Boss)
+('Sentinel''s Blade', 'A blade looted from a Ruin Kobold Sentinel. Sharp and deadly.', 'weapon', 'one_handed_sword', 'rare',
+ '{"attack": 12, "criticalRate": 5, "strength": 2}', '{"level": 8, "class": ["warrior"], "strength": 12}', 1, true, 500),
+('Shadow Cloak', 'A cloak that seems to absorb light. Increases evasion.', 'armor', 'chest', 'rare',
+ '{"defense": 6, "agility": 5, "evasionRate": 5}', '{"level": 10, "agility": 15}', 1, true, 800),
+('Golem''s Heart', 'A core fragment that pulses with power. Increases defense.', 'accessory', 'trinket', 'rare',
+ '{"defense": 5, "vitality": 5, "maxHp": 50}', '{"level": 8}', 1, true, 600);

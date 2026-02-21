@@ -1,3 +1,2 @@
-// Inventory value objects
-// TODO: Implement value objects for Sprint X
-export {}
+export * from "./equipment-slot"
+export * from "./enhancement-level"

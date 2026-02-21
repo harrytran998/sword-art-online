@@ -21,6 +21,8 @@ export const PlayerPortLive = Layer.effect(
         getPlayerByAccountId(accountId).pipe(Effect.provide(ctx)),
       allocateStats: (id, stats) =>
         allocateStats(id, stats).pipe(Effect.provide(ctx)),
+      addCurrency: () => Effect.void, // TODO: Implement in sprint 8
+      deductCurrency: () => Effect.void, // TODO: Implement in sprint 8
     }
   }),
 )

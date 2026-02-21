@@ -9,6 +9,8 @@ export class CacheService extends Context.Tag("CacheService")<
     readonly del: (key: string) => Effect.Effect<void>
     readonly increment: (key: string) => Effect.Effect<number>
     readonly exists: (key: string) => Effect.Effect<boolean>
+    readonly acquireLock: (key: string, ttlSeconds: number) => Effect.Effect<boolean>
+    readonly releaseLock: (key: string) => Effect.Effect<void>
     readonly expire: (key: string, ttlSeconds: number) => Effect.Effect<void>
     readonly getOrSet: (
       key: string,
@@ -43,6 +45,13 @@ export const CacheServiceLive = Layer.effect(
       increment: (key) => Effect.tryPromise(() => redis.incr(key)).pipe(Effect.orDie),
       exists: (key) =>
         Effect.tryPromise(() => redis.exists(key)).pipe(Effect.map((v) => v === 1), Effect.orDie),
+      acquireLock: (key, ttlSeconds) =>
+        Effect.tryPromise(() => redis.set(key, "locked", "EX", ttlSeconds, "NX")).pipe(
+          Effect.map((res) => res === "OK"),
+          Effect.orDie,
+        ),
+      releaseLock: (key) =>
+        Effect.tryPromise(() => redis.del(key)).pipe(Effect.asVoid, Effect.orDie),
       expire: (key, ttlSeconds) =>
         Effect.tryPromise(() => redis.expire(key, ttlSeconds)).pipe(Effect.asVoid, Effect.orDie),
       getOrSet: (key, factory, ttlSeconds) =>

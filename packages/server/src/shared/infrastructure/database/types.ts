@@ -202,6 +202,39 @@ export interface LootTableEntryTable {
   created_at: Generated<Date>
 }
 
+export type ItemCategory = "weapon" | "armor" | "accessory" | "consumable" | "material" | "crystal"
+export type ItemRarity = "common" | "uncommon" | "rare" | "epic" | "legendary"
+export type EquipmentSlotType = "inventory" | "main_hand" | "off_hand" | "head" | "chest" | "hands" | "legs" | "feet" | "accessory1" | "accessory2" | "accessory3"
+
+export interface ItemDefinitionTable {
+  id: Generated<number>
+  name: string
+  description: string | null
+  category: ItemCategory
+  subcategory: string | null
+  rarity: ItemRarity
+  stats: Generated<string>
+  requirements: Generated<string>
+  max_stack: number
+  tradeable: boolean
+  base_price: number
+  created_at: Generated<Date>
+}
+
+export interface CharacterInventoryTable {
+  id: Generated<number>
+  character_id: string
+  item_def_id: number
+  quantity: number
+  enhancement_level: number
+  enhancement_stats: Generated<string>
+  durability: number | null
+  slot_type: EquipmentSlotType | null
+  slot_index: number | null
+  created_at: Generated<Date>
+  updated_at: Generated<Date>
+}
+
 export interface Database {
   "sao.accounts": AccountTable
   "sao.characters": CharacterTable
@@ -219,4 +252,6 @@ export interface Database {
   "sao.monster_spawns": MonsterSpawnTable
   "sao.loot_tables": LootTableTable
   "sao.loot_table_entries": LootTableEntryTable
+  "sao.item_definitions": ItemDefinitionTable
+  "sao.character_inventory": CharacterInventoryTable
 }
