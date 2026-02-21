@@ -6,6 +6,7 @@ import type {
   OutOfRangeError,
   InvalidTargetError,
   InsufficientMpError,
+  SkillNotUnlockedError,
 } from "../../domain/errors"
 
 export interface CombatPort {
@@ -17,6 +18,24 @@ export interface CombatPort {
   readonly cancelSkill: (playerId: PlayerId) => Effect.Effect<void>
   readonly getActiveSkill: (playerId: PlayerId) => Effect.Effect<ActiveSkill | null>
   readonly getCooldownRemaining: (playerId: PlayerId, skillId: number) => Effect.Effect<number>
+  readonly updateProficiency: (
+    characterId: PlayerId,
+    skillId: number,
+  ) => Effect.Effect<void, InvalidTargetError>
+  readonly assignSkillSlot: (
+    characterId: PlayerId,
+    skillId: number,
+    slotIndex: number,
+  ) => Effect.Effect<void, InvalidTargetError>
+  readonly clearSkillSlot: (
+    characterId: PlayerId,
+    slotIndex: number,
+  ) => Effect.Effect<void, InvalidTargetError>
+  readonly unlockSkill: (
+    characterId: PlayerId,
+    skillId: number,
+    playerLevel: number,
+  ) => Effect.Effect<void, SkillNotUnlockedError | InvalidTargetError>
 }
 
 export class CombatPort extends Context.Tag("CombatPort")<CombatPort, CombatPort>() {}
