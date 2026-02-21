@@ -23,3 +23,7 @@ export class InvalidClassIdError extends Data.TaggedError("InvalidClassIdError")
 export class AccountAlreadyHasCharacterError extends Data.TaggedError("AccountAlreadyHasCharacterError")<{
   readonly accountId: string
 }> {}
+
+export class MaxLevelReachedError extends Data.TaggedError("MaxLevelReachedError")<{
+  readonly level: number
+}> {}
