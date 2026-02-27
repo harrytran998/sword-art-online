@@ -70,6 +70,53 @@ export interface CreateCharacterMessage {
   readonly classId: number
 }
 
+export interface PartyCreateMessage {
+  readonly _tag: "party_create"
+}
+
+export interface PartyInviteMessage {
+  readonly _tag: "party_invite"
+  readonly targetPlayerId: string
+}
+
+export interface PartyInviteRespondMessage {
+  readonly _tag: "party_invite_respond"
+  readonly inviteId: string
+  readonly accept: boolean
+}
+
+export interface PartyLeaveMessage {
+  readonly _tag: "party_leave"
+}
+
+export interface PartyKickMessage {
+  readonly _tag: "party_kick"
+  readonly targetPlayerId: string
+}
+
+export interface PartyTransferLeaderMessage {
+  readonly _tag: "party_transfer_leader"
+  readonly targetPlayerId: string
+}
+
+export interface PartyDisbandMessage {
+  readonly _tag: "party_disband"
+}
+
+export interface PartySetLootModeMessage {
+  readonly _tag: "party_set_loot_mode"
+  readonly mode: "free_for_all" | "round_robin" | "leader_distribute"
+}
+
+export interface RaidCreateMessage {
+  readonly _tag: "raid_create"
+}
+
+export interface RaidJoinPartyMessage {
+  readonly _tag: "raid_join_party"
+  readonly raidId: string
+}
+
 export type ClientMessage =
   | MovementMessage
   | SkillActivateMessage
@@ -82,6 +129,16 @@ export type ClientMessage =
   | HeartbeatMessage
   | ZoneChangeMessage
   | CreateCharacterMessage
+  | PartyCreateMessage
+  | PartyInviteMessage
+  | PartyInviteRespondMessage
+  | PartyLeaveMessage
+  | PartyKickMessage
+  | PartyTransferLeaderMessage
+  | PartyDisbandMessage
+  | PartySetLootModeMessage
+  | RaidCreateMessage
+  | RaidJoinPartyMessage
 
 // ============================================================
 // Server → Client messages
@@ -276,6 +333,47 @@ export interface NoCharacterMessage {
   readonly _tag: "no_character"
 }
 
+export interface PartyInviteReceivedMessage {
+  readonly _tag: "party_invite_received"
+  readonly inviteId: string
+  readonly partyId: string
+  readonly leaderId: string
+}
+
+export interface PartyMemberState {
+  readonly playerId: string
+  readonly name: string
+  readonly level: number
+  readonly currentHp: number
+  readonly maxHp: number
+  readonly currentMp: number
+  readonly maxMp: number
+  readonly x: number
+  readonly z: number
+}
+
+export interface PartyStateMessage {
+  readonly _tag: "party_state"
+  readonly partyId: string
+  readonly leaderId: string
+  readonly lootMode: "free_for_all" | "round_robin" | "leader_distribute"
+  readonly members: readonly PartyMemberState[]
+}
+
+export interface PartyDisbandedMessage {
+  readonly _tag: "party_disbanded"
+  readonly partyId: string
+}
+
+export interface RaidStateMessage {
+  readonly _tag: "raid_state"
+  readonly raidId: string
+  readonly leaderId: string
+  readonly partyIds: readonly string[]
+  readonly memberCount: number
+  readonly members: readonly PartyMemberState[]
+}
+
 export type ServerMessage =
   | StateUpdateMessage
   | DamageMessage
@@ -298,3 +396,7 @@ export type ServerMessage =
   | CharacterDataMessage
   | CharacterCreateErrorMessage
   | NoCharacterMessage
+  | PartyInviteReceivedMessage
+  | PartyStateMessage
+  | PartyDisbandedMessage
+  | RaidStateMessage
