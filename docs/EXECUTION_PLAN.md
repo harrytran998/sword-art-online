@@ -726,25 +726,25 @@
 
 #### 9.1 Social Module - Party System `[PARALLEL]`
 
-- [ ] Create `modules/social/domain/entities/party.ts`, `guild.ts`, `friendship.ts`, `chat-message.ts` (pure TypeScript)
-- [ ] Create `modules/social/domain/value-objects/party-id.ts`, `guild-id.ts`, `guild-rank.ts`, `chat-channel.ts`
-- [ ] Create `modules/social/ports/inbound/social.port.ts` with `SocialPort` Context.Tag
-- [ ] Create `modules/social/events/published.ts`: `PartyCreated`, `GuildCreated`, `ChatSent`, `FriendAdded`
-- [ ] Create `modules/social/module.ts` composing all social layers
-- [ ] Implement party creation in `modules/social/application/create-party.use-case.ts`: leader creates, max 6 members
-- [ ] Implement invite flow: leader sends invite -> target receives `party_invite_received` -> accept/decline
-- [ ] Implement party leave and kick
-- [ ] Implement leader transfer
-- [ ] Implement party disband (when leader leaves with < 2 members or explicit disband)
-- [ ] Store party state in Redis (ephemeral, not persisted)
+- [x] Create `modules/social/domain/entities/party.ts`, `guild.ts`, `friendship.ts`, `chat-message.ts` (pure TypeScript)
+- [x] Create `modules/social/domain/value-objects/party-id.ts`, `guild-id.ts`, `guild-rank.ts`, `chat-channel.ts`
+- [x] Create `modules/social/ports/inbound/social.port.ts` with `SocialPort` Context.Tag
+- [x] Create `modules/social/events/published.ts`: `PartyCreated`, `GuildCreated`, `ChatSent`, `FriendAdded`
+- [x] Create `modules/social/module.ts` composing all social layers
+- [x] Implement party creation in `modules/social/application/create-party.use-case.ts`: leader creates, max 6 members
+- [x] Implement invite flow: leader sends invite -> target receives `party_invite_received` -> accept/decline
+- [x] Implement party leave and kick
+- [x] Implement leader transfer
+- [x] Implement party disband (when leader leaves with < 2 members or explicit disband)
+- [x] Store party state in Redis (ephemeral, not persisted)
 - [ ] Create party pub/sub topic: `party:{party_id}` for party-wide messages
 
 #### 9.2 Party Features `[DEPENDS: 9.1]`
 
-- [ ] Implement shared HP/MP bars: party members see each other's health
-- [ ] Implement party minimap markers: show party member positions
-- [ ] Implement party chat channel
-- [ ] Implement loot distribution modes:
+- [x] Implement shared HP/MP bars: party members see each other's health
+- [x] Implement party minimap markers: show party member positions
+- [x] Implement party chat channel
+- [x] Implement loot distribution modes:
   - **Free-for-All**: first pickup gets it
   - **Round-Robin**: auto-distribute in rotation
   - **Leader Distribute**: leader assigns loot
@@ -752,19 +752,19 @@
 
 #### 9.3 Raid System `[DEPENDS: 9.1]`
 
-- [ ] Implement raid group: up to 8 parties (48 players)
-- [ ] Create raid leader role
+- [x] Implement raid group: up to 8 parties (48 players)
+- [x] Create raid leader role
 - [ ] Implement raid chat channel
 - [ ] Create raid HP bar display (all 48 members)
 - [ ] Implement raid-wide loot distribution
 
 #### 9.4 Party Frontend `[DEPENDS: 9.2]`
 
-- [ ] Create party frame UI: show member names, HP bars, class icons
-- [ ] Create party invite dialog
-- [ ] Create loot distribution settings UI
-- [ ] Add party markers on minimap
-- [ ] Show party chat tab in chat window
+- [x] Create party frame UI: show member names, HP bars, class icons
+- [x] Create party invite dialog
+- [x] Create loot distribution settings UI
+- [x] Add party markers on minimap
+- [x] Show party chat tab in chat window
 
 ---
 
