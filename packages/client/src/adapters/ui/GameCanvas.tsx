@@ -11,10 +11,14 @@ import { HEARTBEAT_CLIENT_INTERVAL_MS } from "@sao/shared"
 import { HpMpBars } from "./hud/HpMpBars"
 import { SkillBar } from "./hud/SkillBar"
 import { TargetFrame } from "./hud/TargetFrame"
+import { PartyMinimap } from "./hud/PartyMinimap"
 import { InventoryPanel } from "./panels/InventoryPanel"
 import { EquipmentPanel } from "./panels/EquipmentPanel"
 import { CharacterStatsPanel } from "./panels/CharacterStatsPanel"
 import { useUiStore } from "@application/stores/ui.store"
+import { PartyFrame } from "./social/PartyFrame"
+import { PartyInviteDialog } from "./social/PartyInviteDialog"
+import { ChatWindow } from "./social/ChatWindow"
 
 interface GameCanvasProps {
   readonly networkRef: MutableRefObject<ReturnType<typeof createWebSocketAdapter> | null>
@@ -211,10 +215,38 @@ export const GameCanvas = ({ networkRef }: GameCanvasProps) => {
       
       <HpMpBars />
       <TargetFrame />
+      <PartyMinimap />
       <SkillBar />
       <InventoryPanel />
       <EquipmentPanel />
       <CharacterStatsPanel />
+      <PartyFrame
+        onCreateParty={() => {
+          networkRef.current?.send({ _tag: "party_create" })
+        }}
+        onInvite={(targetPlayerId) => {
+          networkRef.current?.send({ _tag: "party_invite", targetPlayerId })
+        }}
+        onLeaveParty={() => {
+          networkRef.current?.send({ _tag: "party_leave" })
+        }}
+        onDisbandParty={() => {
+          networkRef.current?.send({ _tag: "party_disband" })
+        }}
+        onSetLootMode={(mode) => {
+          networkRef.current?.send({ _tag: "party_set_loot_mode", mode })
+        }}
+      />
+      <PartyInviteDialog
+        onRespond={(inviteId, accept) => {
+          networkRef.current?.send({ _tag: "party_invite_respond", inviteId, accept })
+        }}
+      />
+      <ChatWindow
+        onSend={(channel, message) => {
+          networkRef.current?.send({ _tag: "chat", channel, message })
+        }}
+      />
 
       {/* Reconnection overlay */}
       {isReconnecting && (

@@ -13,6 +13,7 @@ import { IdentityModule } from "./modules/identity/index"
 import { AuthPort } from "./modules/identity/ports/inbound/auth.port"
 import { PlayerModule } from "./modules/player/index"
 import { WorldModule } from "./modules/world/index"
+import { SocialModule } from "./modules/social/index"
 import { registerGatewaySubscriptions } from "./gateway/subscriptions"
 
 // Infrastructure Layer
@@ -29,7 +30,7 @@ const SecurityLayer = SuspicionTrackerLive.pipe(
 )
 
 // Module Layer
-const ModuleLayer = Layer.mergeAll(IdentityModule, PlayerModule, WorldModule).pipe(
+const ModuleLayer = Layer.mergeAll(IdentityModule, PlayerModule, WorldModule, SocialModule).pipe(
   Layer.provide(SecurityLayer),
   Layer.provide(InfrastructureLayer),
 )

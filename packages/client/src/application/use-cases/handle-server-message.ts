@@ -2,6 +2,7 @@ import type { ServerMessage } from "@sao/shared"
 import { useGameStore } from "@application/stores/game.store"
 import { usePlayerStore } from "@application/stores/player.store"
 import { useNetworkStore } from "@application/stores/network.store"
+import { useSocialStore } from "@application/stores/social.store"
 import { createPosition } from "@domain/entities/position"
 
 const isServerMessage = (data: unknown): data is ServerMessage =>
@@ -209,8 +210,50 @@ export const handleServerMessage = (data: unknown) => {
        break
     }
 
-    case "chat_broadcast":
-      // Will be handled in future sprints
+    case "chat_broadcast": {
+      useSocialStore.getState().addChatMessage({
+        senderId: msg.senderId,
+        senderName: msg.senderName,
+        channel: msg.channel,
+        message: msg.message,
+        timestamp: msg.timestamp,
+      })
       break
+    }
+
+    case "party_invite_received": {
+      useSocialStore.getState().addInvite({
+        inviteId: msg.inviteId,
+        partyId: msg.partyId,
+        leaderId: msg.leaderId,
+      })
+      break
+    }
+
+    case "party_state": {
+      useSocialStore.getState().setPartyState({
+        partyId: msg.partyId,
+        leaderId: msg.leaderId,
+        lootMode: msg.lootMode,
+        members: [...msg.members],
+      })
+      break
+    }
+
+    case "party_disbanded": {
+      useSocialStore.getState().clearParty()
+      break
+    }
+
+    case "raid_state": {
+      useSocialStore.getState().setRaidState({
+        raidId: msg.raidId,
+        leaderId: msg.leaderId,
+        partyIds: [...msg.partyIds],
+        memberCount: msg.memberCount,
+        members: [...msg.members],
+      })
+      break
+    }
   }
 }

@@ -79,6 +79,57 @@ export const CreateCharacterSchema = Schema.Struct({
   ),
 })
 
+export const PartyCreateSchema = Schema.Struct({
+  _tag: Schema.Literal("party_create"),
+})
+
+export const PartyInviteSchema = Schema.Struct({
+  _tag: Schema.Literal("party_invite"),
+  targetPlayerId: Schema.String,
+})
+
+export const PartyInviteRespondSchema = Schema.Struct({
+  _tag: Schema.Literal("party_invite_respond"),
+  inviteId: Schema.String,
+  accept: Schema.Boolean,
+})
+
+export const PartyLeaveSchema = Schema.Struct({
+  _tag: Schema.Literal("party_leave"),
+})
+
+export const PartyKickSchema = Schema.Struct({
+  _tag: Schema.Literal("party_kick"),
+  targetPlayerId: Schema.String,
+})
+
+export const PartyTransferLeaderSchema = Schema.Struct({
+  _tag: Schema.Literal("party_transfer_leader"),
+  targetPlayerId: Schema.String,
+})
+
+export const PartyDisbandSchema = Schema.Struct({
+  _tag: Schema.Literal("party_disband"),
+})
+
+export const PartySetLootModeSchema = Schema.Struct({
+  _tag: Schema.Literal("party_set_loot_mode"),
+  mode: Schema.Union(
+    Schema.Literal("free_for_all"),
+    Schema.Literal("round_robin"),
+    Schema.Literal("leader_distribute"),
+  ),
+})
+
+export const RaidCreateSchema = Schema.Struct({
+  _tag: Schema.Literal("raid_create"),
+})
+
+export const RaidJoinPartySchema = Schema.Struct({
+  _tag: Schema.Literal("raid_join_party"),
+  raidId: Schema.String,
+})
+
 export const ClientMessageSchema = Schema.Union(
   MovementSchema,
   SkillActivateSchema,
@@ -92,6 +143,16 @@ export const ClientMessageSchema = Schema.Union(
   HeartbeatSchema,
   ZoneChangeSchema,
   CreateCharacterSchema,
+  PartyCreateSchema,
+  PartyInviteSchema,
+  PartyInviteRespondSchema,
+  PartyLeaveSchema,
+  PartyKickSchema,
+  PartyTransferLeaderSchema,
+  PartyDisbandSchema,
+  PartySetLootModeSchema,
+  RaidCreateSchema,
+  RaidJoinPartySchema,
 )
 
 export type ValidatedClientMessage = typeof ClientMessageSchema.Type
