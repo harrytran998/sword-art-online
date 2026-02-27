@@ -1,2 +1,1 @@
-// Social inbound ports (use case interfaces)
-export {}
+export * from "./social.port"

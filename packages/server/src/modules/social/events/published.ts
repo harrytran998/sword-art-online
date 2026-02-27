@@ -21,3 +21,10 @@ export class ChatSent extends Schema.TaggedClass<ChatSent>()("ChatSent", {
   channel: Schema.String,
   message: Schema.String,
 }) {}
+
+export class FriendAdded extends Schema.TaggedClass<FriendAdded>()("FriendAdded", {
+  timestamp: Schema.DateFromSelf,
+  aggregateId: Schema.String,
+  requesterId: Schema.String,
+  accepterId: Schema.String,
+}) {}

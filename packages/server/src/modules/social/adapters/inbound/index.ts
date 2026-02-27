@@ -1,2 +1,1 @@
-// Social inbound adapters (handlers)
-export {}
+export * from "./social-port.live"
