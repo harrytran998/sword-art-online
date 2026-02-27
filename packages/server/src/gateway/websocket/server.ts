@@ -405,6 +405,48 @@ export const WebSocketGatewayLive = Layer.effect(
                         level: ws.data.playerLevel,
                       }),
                     )
+                  } else if (tag === "party_invite_received") {
+                    const invite = result as {
+                      _tag: string
+                      targetPlayerId: string
+                    }
+                    const target = connections.get(invite.targetPlayerId)
+                    if (target) {
+                      target.send(JSON.stringify(result))
+                    }
+                  } else if (tag === "party_chat_broadcast") {
+                    const payload = result as unknown as {
+                      recipients: readonly string[]
+                      senderId: string
+                      senderName: string
+                      channel: string
+                      message: string
+                      timestamp: number
+                    }
+
+                    const chatPayload = {
+                      _tag: "chat_broadcast",
+                      senderId: payload.senderId,
+                      senderName: payload.senderName,
+                      channel: payload.channel,
+                      message: payload.message,
+                      timestamp: payload.timestamp,
+                    }
+
+                    for (const recipientId of payload.recipients) {
+                      const target = connections.get(recipientId)
+                      if (target) {
+                        target.send(JSON.stringify(chatPayload))
+                      }
+                    }
+                  } else if (
+                    tag === "party_state" ||
+                    tag === "party_disbanded" ||
+                    tag === "raid_state" ||
+                    tag === "chat_broadcast" ||
+                    tag === "error"
+                  ) {
+                    ws.send(JSON.stringify(result))
                   }
                 }
               }).pipe(
